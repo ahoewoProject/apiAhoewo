@@ -10,8 +10,6 @@ public class RegisterForm {
     private String email;
     private String motDePasse;
     private String telephone;
-    private boolean etatCompte;
-    private boolean estCertifie;
     private Role role;
 
     public RegisterForm() {
@@ -22,8 +20,6 @@ public class RegisterForm {
         this.email = "";
         this.motDePasse = "";
         this.telephone = "";
-        this.etatCompte = true;
-        this.etatCompte = true;
         this.role = new Role();
     }
 
@@ -47,10 +43,6 @@ public class RegisterForm {
         return prenom;
     }
 
-    public void setPrenom(String prenom) {
-        this.prenom = prenom;
-    }
-
     public String getUsername() {
         return username;
     }
@@ -71,32 +63,8 @@ public class RegisterForm {
         return motDePasse;
     }
 
-    public void setMotDePasse(String motDePasse) {
-        this.motDePasse = motDePasse;
-    }
-
     public String getTelephone() {
         return telephone;
-    }
-
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
-    }
-
-    public boolean isEtatCompte() {
-        return etatCompte;
-    }
-
-    public void setEtatCompte(boolean etatCompte) {
-        this.etatCompte = etatCompte;
-    }
-
-    public boolean isEstCertifie() {
-        return estCertifie;
-    }
-
-    public void setEstCertifie(boolean estCertifie) {
-        this.estCertifie = estCertifie;
     }
 
     public Role getRole() {
