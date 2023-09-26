@@ -34,11 +34,11 @@ public class GerantController {
     }
 
     @RequestMapping(value = "/gerants-proprietaire", method = RequestMethod.GET)
-    public List<Gerant> findByGerantsByProprietaire(Principal principal) {
+    public List<Gerant> findGerantsByProprietaire(Principal principal) {
 
         List<Gerant> gerantList = new ArrayList<>();
         try {
-            gerantList = this.gerantService.findByGerantsByProprietaire(principal);
+            gerantList = this.gerantService.findGerantsByProprietaire(principal);
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Erreur " + e.getMessage());

@@ -24,7 +24,7 @@ public interface PersonneService {
 
     public void activerCompte(Long id);
 
-    public void register(RegisterForm registerForm);
+    public Personne register(RegisterForm registerForm);
 
     public void sendPasswordResetEmail(Personne personne);
 

@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -21,13 +23,20 @@ public class PersonneController {
     private final PersonneService personneService;
 
     @RequestMapping(value = "/register", method = RequestMethod.POST, headers = "accept=Application/json")
-    public ResponseEntity<String> savePersonne(@RequestBody RegisterForm registerForm) {
+    public ResponseEntity<?> savePersonne(@RequestBody RegisterForm registerForm) {
         // Vérification de l'existence du nom d'utilisateur
         if (personneService.usernameExists(registerForm.getUsername())) {
             return new ResponseEntity<>("Un utilisateur avec ce nom d'utilisateur existe déjà", HttpStatus.CONFLICT);
         }
-        personneService.register(registerForm);
-        return new ResponseEntity<>("Utilisateur créé avec succès", HttpStatus.OK);
+        Personne personne = personneService.register(registerForm);
+        String message = "Utilisateur créé avec succès";
+
+        // Créer une structure pour la réponse contenant l'objet personne et le message de succès
+        Map<String, Object> response = new HashMap<>();
+        response.put("personne", personne);
+        response.put("message", message);
+
+        return ResponseEntity.ok(response);
     }
 
     @RequestMapping(value = "/modifier/profil/{id}", method = RequestMethod.PUT, headers = "accept=Application/json")
@@ -49,6 +58,18 @@ public class PersonneController {
     public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         RefreshTokenFilter refreshTokenFilter = new RefreshTokenFilter(personneService);
         refreshTokenFilter.processRefreshToken(request, response);
+    }
+
+    @RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
+    public Personne findById(@PathVariable Long id) {
+
+        Personne personne = new Personne();
+        try {
+            personne = this.personneService.findById(id);
+        } catch (Exception e) {
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return personne;
     }
 
     @RequestMapping(value = "/certifier/compte/{id}", method = RequestMethod.GET, headers = "accept=Application/json")

@@ -49,7 +49,6 @@ public class AdministrateurController {
 
     @RequestMapping(value = "/administrateur/ajouter", method = RequestMethod.POST, headers = "accept=Application/json")
     public ResponseEntity<?> ajouterAdministrateur(Principal principal, @RequestBody Administrateur administrateur) {
-        Personne personne = personneService.findByUsername(principal.getName());
         try {
             if (personneService.usernameExists(administrateur.getUsername())) {
                 return new ResponseEntity<>("Un utilisateur avec ce nom d'utilisateur existe déjà", HttpStatus.CONFLICT);

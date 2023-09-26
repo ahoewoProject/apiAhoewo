@@ -10,5 +10,6 @@ public interface DemandeCertificationService {
     public DemandeCertification findById(Long id);
     public List<DemandeCertification> getByUser(Principal principal);
     public DemandeCertification save(DemandeCertification demandeCertification, Principal principal);
-    public void certifierCompte(Long id);
+    public void certifierCompte(Long idPersonne, Long idDemandeCertif);
+    public int countDemandeCertifications();
 }

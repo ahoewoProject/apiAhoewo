@@ -71,7 +71,7 @@ public class DemandeCertificationController {
         return demandeCertificationList;
     }
 
-    @RequestMapping(value = "/demande-certification/ajouter", method = RequestMethod.POST)
+    @RequestMapping(value = "/demande-certification/ajouter", method = RequestMethod.POST, headers = "accept=Application/json")
     public DemandeCertification ajouterDemandeCertification(Principal principal,
                                                             @RequestParam("documentJustificatif") MultipartFile file,
                                                             String demandeCertificationJson) throws JsonProcessingException {
@@ -109,12 +109,16 @@ public class DemandeCertificationController {
         }
     }
 
-    @RequestMapping(value = "/certifier/user/{id}", method = RequestMethod.GET, headers = "accept=Application/json")
-    public void certifierCompte(@PathVariable Long id){
-        this.demandeCertificationService.certifierCompte(id);
+    @RequestMapping(value = "/certifier/user/{idPersonne}/{idDemandeCertif}", method = RequestMethod.GET, headers = "accept=Application/json")
+    public void certifierCompte(@PathVariable Long idPersonne, @PathVariable Long idDemandeCertif){
+        this.demandeCertificationService.certifierCompte(idPersonne, idDemandeCertif);
     }
 
-
+    @RequestMapping(value = "/count/demandes-certifications", method = RequestMethod.GET)
+    public int nombreDemandeCertifications(){
+        int nombres = this.demandeCertificationService.countDemandeCertifications();
+        return nombres;
+    }
 
     /* Fonction pour l'enregistrement du document justificatif de
     la demande de certification */
@@ -184,5 +188,4 @@ public class DemandeCertificationController {
 
         return headers;
     }
-
 }

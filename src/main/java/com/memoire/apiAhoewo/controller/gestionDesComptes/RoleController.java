@@ -49,7 +49,7 @@ public class RoleController {
 
             if (existingRole != null) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body("Un rôle avec le code " + role.getCode() + " existe déjà.");
+                        .body("Un rôle avec ce code " + role.getCode() + " existe déjà.");
             }
 
             role = this.roleService.save(role, principal);
@@ -64,10 +64,11 @@ public class RoleController {
     @RequestMapping(value = "/role/modifier/{id}", method = RequestMethod.PUT, headers = "accept=Application/json")
     public ResponseEntity<?> modifierRole(Principal principal, @RequestBody Role roleModifie, @PathVariable  Long id) {
         Role role = roleService.findById(id);
+        Role existingRole = roleService.findByCode(roleModifie.getCode());
         try {
-            if (role != null) {
+            if (existingRole != null) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body("Un rôle avec le code " + role.getCode() + " existe déjà.");
+                        .body("Un rôle avec le code " + roleModifie.getCode() + " existe déjà.");
             }
             role.setCode(roleModifie.getCode());
             role.setLibelle(roleModifie.getLibelle());

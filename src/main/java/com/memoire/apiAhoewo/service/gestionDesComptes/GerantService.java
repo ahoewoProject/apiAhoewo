@@ -8,7 +8,7 @@ import java.util.List;
 public interface GerantService {
     public List<Gerant> getAll();
 
-    public List<Gerant> findByGerantsByProprietaire(Principal principal);
+    public List<Gerant> findGerantsByProprietaire(Principal principal);
 
     public Gerant findById(Long id);
 

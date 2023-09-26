@@ -30,7 +30,7 @@ public class GerantServiceImpl implements GerantService {
     }
 
     @Override
-    public List<Gerant> findByGerantsByProprietaire(Principal principal) {
+    public List<Gerant> findGerantsByProprietaire(Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
         return gerantRepository.findByCreerPar(personne.getId());
     }

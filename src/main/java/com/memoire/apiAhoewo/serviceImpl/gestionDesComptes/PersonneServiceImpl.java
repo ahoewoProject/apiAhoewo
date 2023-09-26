@@ -103,7 +103,7 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
     }
 
     @Override
-    public void register(RegisterForm registerForm) {
+    public Personne register(RegisterForm registerForm) {
         Role role = registerForm.getRole();
         String roleCode = role.getCode();
 
@@ -142,6 +142,7 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
         personne.setStatut(true);
 
         personneRepository.save(personne);
+        return personne;
     }
 
     @Override
@@ -190,6 +191,7 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
             case "ROLE_ADMINISTRATEUR":
                 Administrateur administrateur = administrateurService.findById(id);
                 personneToUpdate = administrateur;
+                System.out.println(personneToUpdate);
                 break;
 
             case "ROLE_PROPRIETAIRE":

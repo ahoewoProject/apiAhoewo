@@ -48,9 +48,18 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
     }
 
     @Override
-    public void certifierCompte(Long id) {
-        Personne personne = personneRepository.findById(id).orElse(null);
+    public void certifierCompte(Long idPersonne, Long idDemandeCertif) {
+        DemandeCertification demandeCertification = demandeCertificationRepository.findById(idDemandeCertif).orElse(null);
+        demandeCertification.setStatutDemande(1);
+        Personne personne = personneRepository.findById(idPersonne).orElse(null);
         personne.setEstCertifie(true);
+        demandeCertificationRepository.save(demandeCertification);
         personneRepository.save(personne);
     }
+
+    @Override
+    public int countDemandeCertifications() {
+        return (int) demandeCertificationRepository.count();
+    }
+
 }
