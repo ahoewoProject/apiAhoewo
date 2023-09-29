@@ -120,6 +120,18 @@ public class DemandeCertificationController {
         return nombres;
     }
 
+    @RequestMapping(value = "/count/demandes-certifications/validees", method = RequestMethod.GET)
+    public int nombreDemandeCertificationsValidees(){
+        int nombres = this.demandeCertificationService.countDemandeCertifValidees();
+        return nombres;
+    }
+
+    @RequestMapping(value = "/count/demandes-certifications/en-attente", method = RequestMethod.GET)
+    public int nombreDemandeCertificationsEnAttente(){
+        int nombres = this.demandeCertificationService.countDemandeCertifEnAttente();
+        return nombres;
+    }
+
     /* Fonction pour l'enregistrement du document justificatif de
     la demande de certification */
     private String enregistrerDocumentJustificatif(MultipartFile file) {

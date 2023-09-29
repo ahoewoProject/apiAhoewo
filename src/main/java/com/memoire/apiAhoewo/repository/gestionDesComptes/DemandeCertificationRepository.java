@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface DemandeCertificationRepository extends JpaRepository<DemandeCertification, Long> {
     public List<DemandeCertification> findByPersonne(Personne personne);
+    public List<DemandeCertification> findByStatutDemande(Integer statutDemande);
 }

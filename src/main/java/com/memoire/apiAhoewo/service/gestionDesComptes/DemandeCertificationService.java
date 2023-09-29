@@ -12,4 +12,6 @@ public interface DemandeCertificationService {
     public DemandeCertification save(DemandeCertification demandeCertification, Principal principal);
     public void certifierCompte(Long idPersonne, Long idDemandeCertif);
     public int countDemandeCertifications();
+    public int countDemandeCertifValidees();
+    public int countDemandeCertifEnAttente();
 }

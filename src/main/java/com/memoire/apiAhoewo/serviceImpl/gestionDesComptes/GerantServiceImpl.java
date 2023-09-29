@@ -61,4 +61,13 @@ public class GerantServiceImpl implements GerantService {
     public int countGerants() {
         return (int) gerantRepository.count();
     }
+
+    @Override
+    public int countGerantsByProprietaire(Principal principal) {
+        Personne personne = personneService.findByUsername(principal.getName());
+        List<Gerant> gerantList = gerantRepository.findByCreerPar(personne.getId());
+        int count = gerantList.size();
+        return count;
+    }
+
 }

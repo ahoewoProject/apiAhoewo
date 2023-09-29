@@ -17,4 +17,6 @@ public interface GerantService {
     public void deleteById(Long id);
 
     public int countGerants();
+
+    public int countGerantsByProprietaire(Principal principal);
 }

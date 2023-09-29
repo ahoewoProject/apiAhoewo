@@ -84,4 +84,10 @@ public class GerantController {
         int nombres = this.gerantService.countGerants();
         return nombres;
     }
+
+    @RequestMapping(value = "/count/gerants-proprietaire", method = RequestMethod.GET)
+    public int nombreDeGerantsByProprietaire(Principal principal){
+        int nombres = this.gerantService.countGerantsByProprietaire(principal);
+        return nombres;
+    }
 }

@@ -94,20 +94,26 @@ public class PersonneController {
     }
 
     @RequestMapping(value = "/request-reset-password", method = RequestMethod.POST, headers = "accept=Application/json")
-    public ResponseEntity<String> requestPasswordReset(@RequestParam("email") String email) {
+    public ResponseEntity<?> requestPasswordReset(@RequestParam("email") String email) {
         Personne personne = personneService.findByEmail(email);
         if (personne != null) {
             personneService.sendPasswordResetEmail(personne);
-            return ResponseEntity.ok("Email de réinitialisation du mot de passe envoyé.");
+            Map<String, Object> response = new HashMap<>();
+            String message = "Email de réinitialisation du mot de passe envoyé.";
+            response.put("message", message);
+            return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.badRequest().body("Email introuvable.");
         }
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestParam("token") String token, @RequestParam("newPassword") String newPassword) {
+    public ResponseEntity<?> resetPassword(@RequestParam("token") String token, @RequestParam("newPassword") String newPassword) {
         if (personneService.resetPassword(token, newPassword)) {
-            return ResponseEntity.ok("Mot de passe réinitialisé avec succès.");
+            Map<String, Object> response = new HashMap<>();
+            String message = "Mot de passe réinitialisé avec succès.";
+            response.put("message", message);
+            return ResponseEntity.ok(response);
         } else {
             return ResponseEntity.badRequest().body("Token invalide.");
         }

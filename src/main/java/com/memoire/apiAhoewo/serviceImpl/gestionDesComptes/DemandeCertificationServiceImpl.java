@@ -62,4 +62,18 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
         return (int) demandeCertificationRepository.count();
     }
 
+    @Override
+    public int countDemandeCertifValidees() {
+        List<DemandeCertification> demandeCertificationList = demandeCertificationRepository.findByStatutDemande(1);
+        int count = demandeCertificationList.size();
+        return count;
+    }
+
+    @Override
+    public int countDemandeCertifEnAttente() {
+        List<DemandeCertification> demandeCertificationList = demandeCertificationRepository.findByStatutDemande(0);
+        int count = demandeCertificationList.size();
+        return count;
+    }
+
 }

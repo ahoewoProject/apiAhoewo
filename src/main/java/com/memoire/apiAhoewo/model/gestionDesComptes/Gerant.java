@@ -19,4 +19,14 @@ public class Gerant extends Personne {
         super(id, nom, prenom, username, email, motDePasse, telephone, etatCompte, estCertifie, role);
         this.id = id1;
     }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Long id) {
+        this.id = id;
+    }
 }
