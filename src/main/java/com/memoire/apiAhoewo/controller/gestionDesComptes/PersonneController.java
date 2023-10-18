@@ -27,6 +27,8 @@ public class PersonneController {
         // Vérification de l'existence du nom d'utilisateur
         if (personneService.usernameExists(registerForm.getUsername())) {
             return new ResponseEntity<>("Un utilisateur avec ce nom d'utilisateur existe déjà", HttpStatus.CONFLICT);
+        } else if (personneService.emailExists(registerForm.getEmail())) {
+            return new ResponseEntity<>("Un utilisateur avec cette adresse e-mail existe déjà", HttpStatus.CONFLICT);
         }
         Personne personne = personneService.register(registerForm);
         String message = "Utilisateur créé avec succès";

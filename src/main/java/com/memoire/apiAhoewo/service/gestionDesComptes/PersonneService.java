@@ -16,6 +16,8 @@ public interface PersonneService {
 
     public boolean usernameExists(String username);
 
+    public boolean emailExists(String email);
+
     public int countUsers();
 
     public void certifierCompte(Long id);

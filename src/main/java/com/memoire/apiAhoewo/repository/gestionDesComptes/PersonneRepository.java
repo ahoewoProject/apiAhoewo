@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 public interface PersonneRepository extends JpaRepository<Personne, Long> {
     Personne findByUsername(String username);
     boolean existsByUsername(String username);
+    boolean existsByEmail(String email);
     Personne findByEmail(String email);
     Personne findByResetToken(String token);
 }

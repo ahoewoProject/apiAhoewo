@@ -152,4 +152,20 @@ public class Personne extends EntiteDeBase {
         this.role = role;
     }
 
+    @Override
+    public String toString() {
+        return "Personne{" +
+                "id=" + id +
+                ", nom='" + nom + '\'' +
+                ", prenom='" + prenom + '\'' +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", motDePasse='" + motDePasse + '\'' +
+                ", telephone='" + telephone + '\'' +
+                ", etatCompte=" + etatCompte +
+                ", estCertifie=" + estCertifie +
+                ", resetToken='" + resetToken + '\'' +
+                ", role=" + role +
+                '}';
+    }
 }

@@ -26,6 +26,22 @@ public class Notaire extends Personne {
     }
 
     @Override
+    public String toString() {
+        return "Notaire{" +
+                "id=" + id +
+                ", nom='" + nom + '\'' +
+                ", prenom='" + prenom + '\'' +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", motDePasse='" + motDePasse + '\'' +
+                ", telephone='" + telephone + '\'' +
+                ", etatCompte=" + etatCompte +
+                ", estCertifie=" + estCertifie +
+                ", resetToken='" + resetToken + '\'' +
+                '}';
+    }
+
+    @Override
     public void setId(Long id) {
         this.id = id;
     }

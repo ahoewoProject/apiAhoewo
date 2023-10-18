@@ -29,4 +29,20 @@ public class AgentImmobilier extends Personne {
     public void setId(Long id) {
         this.id = id;
     }
+
+    @Override
+    public String toString() {
+        return "AgentImmobilier{" +
+                "id=" + id +
+                ", nom='" + nom + '\'' +
+                ", prenom='" + prenom + '\'' +
+                ", username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                ", motDePasse='" + motDePasse + '\'' +
+                ", telephone='" + telephone + '\'' +
+                ", etatCompte=" + etatCompte +
+                ", estCertifie=" + estCertifie +
+                ", resetToken='" + resetToken + '\'' +
+                '}';
+    }
 }

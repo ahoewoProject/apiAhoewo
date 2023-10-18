@@ -50,4 +50,13 @@ public class Role extends EntiteDeBase {
     public void setLibelle(String libelle) {
         this.libelle = libelle;
     }
+
+    @Override
+    public String toString() {
+        return "Role{" +
+                "id=" + id +
+                ", code='" + code + '\'' +
+                ", libelle='" + libelle + '\'' +
+                '}';
+    }
 }

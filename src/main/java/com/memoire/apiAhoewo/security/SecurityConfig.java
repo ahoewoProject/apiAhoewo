@@ -55,7 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     OutputStream out = response.getOutputStream();
                     ObjectMapper mapper = new ObjectMapper();
                     Map<String, String> errorResponse = new HashMap<>();
-                    errorResponse.put("message", "Accès non autorisé. Veuillez vous connecter.");
+                    errorResponse.put("message", "Accès non autorisé.");
                     mapper.writeValue(out, errorResponse);
                     out.flush();
                 });

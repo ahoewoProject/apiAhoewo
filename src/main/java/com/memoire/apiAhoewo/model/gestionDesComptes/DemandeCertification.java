@@ -79,4 +79,15 @@ public class DemandeCertification extends EntiteDeBase {
     public void setPersonne(Personne personne) {
         this.personne = personne;
     }
+
+    @Override
+    public String toString() {
+        return "DemandeCertification{" +
+                "id=" + id +
+                ", dateDemande=" + dateDemande +
+                ", documentJustificatif='" + documentJustificatif + '\'' +
+                ", statutDemande=" + statutDemande +
+                ", personne=" + personne +
+                '}';
+    }
 }

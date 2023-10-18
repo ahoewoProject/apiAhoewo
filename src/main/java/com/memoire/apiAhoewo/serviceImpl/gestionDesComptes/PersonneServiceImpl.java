@@ -3,17 +3,15 @@ package com.memoire.apiAhoewo.serviceImpl.gestionDesComptes;
 import com.memoire.apiAhoewo.model.gestionDesComptes.*;
 import com.memoire.apiAhoewo.repository.gestionDesComptes.PersonneRepository;
 import com.memoire.apiAhoewo.requestForm.RegisterForm;
+import com.memoire.apiAhoewo.service.EmailSenderService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -42,9 +40,7 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
     @Autowired
     private ProprietaireService proprietaireService;
     @Autowired
-    private Environment env;
-    @Autowired
-    private JavaMailSender mailSender;
+    private EmailSenderService emailSenderService;
 
     public PersonneServiceImpl() {
     }
@@ -153,18 +149,15 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
 
         String resetLink = "http://localhost:4200/reset-password?token=" + token;
 
-        // Envoyer l'email
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(env.getProperty("spring.mail.username"));
-        message.setTo(personne.getEmail());
-        message.setSubject("Réinitialisation du mot de passe");
-        message.setText("Bonjour M/Mlle " + personne.getPrenom() + ",\n\n" +
+        String contenu = "Bonjour M/Mlle " + personne.getPrenom() + ",\n\n" +
                 "Pour réinitialiser votre mot de passe, veuillez cliquer sur le lien ci-dessous :\n" +
                 resetLink + "\n\n" +
                 "Si vous n'avez pas demandé de réinitialisation de mot de passe, veuillez ignorer cet email.\n\n" +
                 "Cordialement,\n" +
-                "\nL'équipe de support technique - ahoewo !");
-        mailSender.send(message);
+                "\nL'équipe de support technique - ahoewo !";
+
+        // Envoyer l'email
+        emailSenderService.sendMail(personne.getEmail(), "Réinitialisation du mot de passe", contenu);
     }
 
     @Override
@@ -239,6 +232,10 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
 
     public boolean usernameExists(String username) {
         return personneRepository.existsByUsername(username);
+    }
+
+    public boolean emailExists(String email) {
+        return personneRepository.existsByEmail(email);
     }
 
     private String generateToken() {

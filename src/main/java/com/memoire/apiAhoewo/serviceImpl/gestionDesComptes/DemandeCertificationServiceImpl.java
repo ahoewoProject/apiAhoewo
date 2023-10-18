@@ -4,6 +4,7 @@ import com.memoire.apiAhoewo.model.gestionDesComptes.DemandeCertification;
 import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
 import com.memoire.apiAhoewo.repository.gestionDesComptes.DemandeCertificationRepository;
 import com.memoire.apiAhoewo.repository.gestionDesComptes.PersonneRepository;
+import com.memoire.apiAhoewo.service.EmailSenderService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.DemandeCertificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,8 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
     private DemandeCertificationRepository demandeCertificationRepository;
     @Autowired
     private PersonneRepository personneRepository;
+    @Autowired
+    private EmailSenderService emailSenderService;
 
     @Override
     public List<DemandeCertification> getAll() {
@@ -55,6 +58,12 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
         personne.setEstCertifie(true);
         demandeCertificationRepository.save(demandeCertification);
         personneRepository.save(personne);
+        String contenu = "Bonjour M/Mlle " + personne.getPrenom() + ",\n\n" +
+                "Nous vous informons que votre compte a été certifié conformément à votre demande de certification.\n" +
+                "\n\n" +
+                "Cordialement,\n" +
+                "\nL'équipe de support technique - ahoewo !";
+        emailSenderService.sendMail(personne.getEmail(), "Certification de compte", contenu);
     }
 
     @Override
