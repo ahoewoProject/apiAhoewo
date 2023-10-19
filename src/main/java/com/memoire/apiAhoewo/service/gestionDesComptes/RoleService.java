@@ -14,7 +14,7 @@ public interface RoleService {
 
     public Role save(Role role, Principal principal);
 
-    public Role update (Role role, Principal principal);
+    public Role update(Role role, Principal principal);
 
     public void deleteById(Long id);
 

@@ -13,8 +13,8 @@ public class Services extends EntiteDeBase {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "nom")
-    private String nom;
+    @Column(name = "nom_service")
+    private String nomService;
 
     @Column(name = "description")
     private String description;
@@ -26,9 +26,9 @@ public class Services extends EntiteDeBase {
     public Services() {
     }
 
-    public Services(Long id, String nom, String description, AgenceImmobiliere agenceImmobiliere) {
+    public Services(Long id, String nomService, String description, AgenceImmobiliere agenceImmobiliere) {
         this.id = id;
-        this.nom = nom;
+        this.nomService = nomService;
         this.description = description;
         this.agenceImmobiliere = agenceImmobiliere;
     }
@@ -43,12 +43,12 @@ public class Services extends EntiteDeBase {
         this.id = id;
     }
 
-    public String getNom() {
-        return nom;
+    public String getNomService() {
+        return nomService;
     }
 
-    public void setNom(String nom) {
-        this.nom = nom;
+    public void setNomService(String nomService) {
+        this.nomService = nomService;
     }
 
     public String getDescription() {
@@ -71,7 +71,7 @@ public class Services extends EntiteDeBase {
     public String toString() {
         return "Services{" +
                 "id=" + id +
-                ", nom='" + nom + '\'' +
+                ", nomService='" + nomService + '\'' +
                 ", description='" + description + '\'' +
                 ", agenceImmobiliere=" + agenceImmobiliere +
                 '}';

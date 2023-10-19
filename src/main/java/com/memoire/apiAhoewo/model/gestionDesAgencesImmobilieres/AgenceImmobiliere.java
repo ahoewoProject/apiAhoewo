@@ -2,7 +2,6 @@ package com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres;
 
 import com.memoire.apiAhoewo.model.EntiteDeBase;
 import com.memoire.apiAhoewo.model.gestionDesComptes.AgentImmobilier;
-import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
 
 import javax.persistence.*;
 
@@ -15,11 +14,17 @@ public class AgenceImmobiliere extends EntiteDeBase {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "nom_agence", nullable = false)
+    private String nomAgence;
+
     @Column(name = "adresse", nullable = false)
     private String adresse;
 
     @Column(name = "telephone", nullable = false)
     private String telephone;
+
+    @Column(name = "adresse_email", nullable = false)
+    private String adresseEmail;
 
     @Column(name = "heure_ouverture", nullable = false)
     private String heureOuverture;
@@ -59,6 +64,14 @@ public class AgenceImmobiliere extends EntiteDeBase {
     @Override
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getNomAgence() {
+        return nomAgence;
+    }
+
+    public void setNomAgence(String nomAgence) {
+        this.nomAgence = nomAgence;
     }
 
     public String getAdresse() {
@@ -117,12 +130,22 @@ public class AgenceImmobiliere extends EntiteDeBase {
         this.agentImmobilier = agentImmobilier;
     }
 
+    public String getAdresseEmail() {
+        return adresseEmail;
+    }
+
+    public void setAdresseEmail(String adresseEmail) {
+        this.adresseEmail = adresseEmail;
+    }
+
     @Override
     public String toString() {
         return "AgenceImmobiliere{" +
                 "id=" + id +
+                ", nomAgence='" + nomAgence + '\'' +
                 ", adresse='" + adresse + '\'' +
                 ", telephone='" + telephone + '\'' +
+                ", adresseEmail='" + adresseEmail + '\'' +
                 ", heureOuverture='" + heureOuverture + '\'' +
                 ", heureFermeture='" + heureFermeture + '\'' +
                 ", estCertifie=" + estCertifie +

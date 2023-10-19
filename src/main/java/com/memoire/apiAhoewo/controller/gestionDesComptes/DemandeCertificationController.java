@@ -71,8 +71,8 @@ public class DemandeCertificationController {
         return demandeCertificationList;
     }
 
-    @RequestMapping(value = "/demande-certification/ajouter", method = RequestMethod.POST, headers = "accept=Application/json")
-    public DemandeCertification ajouterDemandeCertification(Principal principal,
+    @RequestMapping(value = "/compte/demande-certification/ajouter", method = RequestMethod.POST, headers = "accept=Application/json")
+    public DemandeCertification ajouterDemandeCertificationCompte(Principal principal,
                                                             @RequestParam("documentJustificatif") MultipartFile file,
                                                             String demandeCertificationJson) throws JsonProcessingException {
 
@@ -84,7 +84,28 @@ public class DemandeCertificationController {
         demandeCertification.setDocumentJustificatif(nomDocument);
 
         try {
-            demandeCertification = sauvegarderDemandeCertification(demandeCertification, principal);
+            demandeCertification = sauvegarderDemandeCertificationCompte(demandeCertification, principal);
+        } catch (Exception e) {
+            System.out.println("Erreur " + e.getMessage());
+        }
+
+        return demandeCertification;
+    }
+
+    @RequestMapping(value = "/agence/demande-certification/ajouter", method = RequestMethod.POST, headers = "accept=Application/json")
+    public DemandeCertification ajouterDemandeCertificationAgence(Principal principal,
+                                                                  @RequestParam("documentJustificatif") MultipartFile file,
+                                                                  String demandeCertificationJson) throws JsonProcessingException {
+
+        DemandeCertification demandeCertification = new ObjectMapper().readValue(demandeCertificationJson,
+                DemandeCertification.class);
+
+        String nomDocument = enregistrerDocumentJustificatif(file);
+
+        demandeCertification.setDocumentJustificatif(nomDocument);
+
+        try {
+            demandeCertification = sauvegarderDemandeCertificationAgence(demandeCertification, principal);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
         }
@@ -112,6 +133,11 @@ public class DemandeCertificationController {
     @RequestMapping(value = "/certifier/user/{idPersonne}/{idDemandeCertif}", method = RequestMethod.GET, headers = "accept=Application/json")
     public void certifierCompte(@PathVariable Long idPersonne, @PathVariable Long idDemandeCertif){
         this.demandeCertificationService.certifierCompte(idPersonne, idDemandeCertif);
+    }
+
+    @RequestMapping(value = "/certifier/agence/{idAgence}/{idDemandeCertif}", method = RequestMethod.GET, headers = "accept=Application/json")
+    public void certifierAgence(@PathVariable Long idAgence, @PathVariable Long idDemandeCertif){
+        this.demandeCertificationService.certifierAgence(idAgence, idDemandeCertif);
     }
 
     @RequestMapping(value = "/count/demandes-certifications", method = RequestMethod.GET)
@@ -166,11 +192,21 @@ public class DemandeCertificationController {
         return repertoire;
     }
 
-    /* Fonction pour enregistrer la demande de certification en utilsant le service
+    /* Fonction pour enregistrer la demande de certification de compte en utilisant le service
     d'enregistrement de ce dernier */
-    private DemandeCertification sauvegarderDemandeCertification(DemandeCertification demandeCertification, Principal principal) {
+    private DemandeCertification sauvegarderDemandeCertificationCompte(DemandeCertification demandeCertification, Principal principal) {
         try {
-            return this.demandeCertificationService.save(demandeCertification, principal);
+            return this.demandeCertificationService.saveDemandeCertificationCompte(demandeCertification, principal);
+        } catch (Exception e) {
+            throw new RuntimeException("Erreur lors de la sauvegarde de la demande de certification: " + e.getMessage());
+        }
+    }
+
+    /* Fonction pour enregistrer la demande de certification d'une agence en utilisant le service
+    d'enregistrement de ce dernier */
+    private DemandeCertification sauvegarderDemandeCertificationAgence(DemandeCertification demandeCertification, Principal principal) {
+        try {
+            return this.demandeCertificationService.saveDemandeCertificationAgence(demandeCertification, principal);
         } catch (Exception e) {
             throw new RuntimeException("Erreur lors de la sauvegarde de la demande de certification: " + e.getMessage());
         }

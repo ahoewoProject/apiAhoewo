@@ -2,6 +2,7 @@ package com.memoire.apiAhoewo.model.gestionDesComptes;
 
 
 import com.memoire.apiAhoewo.model.EntiteDeBase;
+import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.AgenceImmobiliere;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -27,6 +28,9 @@ public class DemandeCertification extends EntiteDeBase {
     @JoinColumn(name = "personne_id")
     private Personne personne;
 
+    @OneToOne
+    @JoinColumn(name = "agence_immobiliere_id")
+    private AgenceImmobiliere agenceImmobiliere;
 
     public DemandeCertification(Long id, Date dateDemande, String documentJustificatif, Integer statutDemande) {
         this.id = id;
@@ -78,6 +82,14 @@ public class DemandeCertification extends EntiteDeBase {
 
     public void setPersonne(Personne personne) {
         this.personne = personne;
+    }
+
+    public AgenceImmobiliere getAgenceImmobiliere() {
+        return agenceImmobiliere;
+    }
+
+    public void setAgenceImmobiliere(AgenceImmobiliere agenceImmobiliere) {
+        this.agenceImmobiliere = agenceImmobiliere;
     }
 
     @Override
