@@ -59,8 +59,6 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
     public DemandeCertification saveDemandeCertificationAgence(DemandeCertification demandeCertification,
                                                                Principal principal) {
         AgentImmobilier agentImmobilier = (AgentImmobilier) personneRepository.findByUsername(principal.getName());
-        AgenceImmobiliere agenceImmobiliere = agenceImmobiliereRepository.findByCreerPar(agentImmobilier.getId());
-        demandeCertification.setAgenceImmobiliere(agenceImmobiliere);
         demandeCertification.setDateDemande(new Date());
         demandeCertification.setStatutDemande(0);
         demandeCertification.setCreerLe(new Date());
@@ -98,7 +96,7 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
         personneRepository.save(personne);
 
         String contenu1 = "Bonjour " + agenceImmobiliere.getNomAgence() + ",\n\n" +
-                "Nous avons le plaisir de vous informer que votre agence vient d'être certifiée conformément à votre demande de certification.\n" +
+                "Nous avons le plaisir de vous informer que votre agence immobilière vient d'être certifiée conformément à votre demande de certification.\n" +
                 "\n\n" +
                 "Cordialement,\n" +
                 "\nL'équipe de support technique - ahoewo !";

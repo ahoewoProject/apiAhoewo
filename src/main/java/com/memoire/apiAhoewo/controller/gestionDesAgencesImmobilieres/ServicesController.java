@@ -46,15 +46,16 @@ public class ServicesController {
     @RequestMapping(value = "/services/ajouter", method = RequestMethod.POST, headers = "accept=Application/json")
     public ResponseEntity<?> ajouterService(Principal principal, @RequestBody Services services) {
         try {
-            List<Services> existingServices = this.servicesService.getAllByAgence(principal);
+            List<Services> servicesExistants = this.servicesService.getAllByAgence(principal);
 
-            for (Services existingService : existingServices) {
-                if (existingService.getNomService().equals(services.getNomService())) {
+            for (Services serviceExistant : servicesExistants) {
+                if (serviceExistant.getNomService().equals(services.getNomService())) {
                     return ResponseEntity.status(HttpStatus.CONFLICT)
                             .body("Un service avec ce nom " + services.getNomService() + " existe déjà.");
                 }
-                services = servicesService.saveService(services, principal);
+
             }
+            services = servicesService.saveService(services, principal);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -68,23 +69,28 @@ public class ServicesController {
         Services services;
         try {
             services = servicesService.findById(id);
-            List<Services> existingServices = this.servicesService.getAllByAgence(principal);
+            List<Services> servicesExistants = this.servicesService.getAllByAgence(principal);
 
-            for (Services existingService : existingServices) {
-                if (existingService.getNomService().equals(servicesModifie.getNomService())) {
+            for (Services serviceExistant : servicesExistants) {
+                if (serviceExistant.getNomService().equals(servicesModifie.getNomService())) {
                     return ResponseEntity.status(HttpStatus.CONFLICT)
                             .body("Un service avec ce nom " + services.getNomService() + " existe déjà.");
                 }
-                services.setNomService(servicesModifie.getNomService());
-                services.setDescription(servicesModifie.getDescription());
-                services = servicesService.updateService(services, principal);
             }
+            services.setNomService(servicesModifie.getNomService());
+            services.setDescription(servicesModifie.getDescription());
+            services = servicesService.updateService(services, principal);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Une erreur s'est produite lors de l'ajout du service : " + e.getMessage());
         }
         return ResponseEntity.ok(services);
+    }
+
+    @RequestMapping(value = "/services/supprimer/{id}", method = RequestMethod.DELETE, headers = "accept=Application/json")
+    public void supprimerServices(@PathVariable Long id) {
+        this.servicesService.deleteById(id);
     }
 
     @RequestMapping(value = "/count/services", method = RequestMethod.GET)

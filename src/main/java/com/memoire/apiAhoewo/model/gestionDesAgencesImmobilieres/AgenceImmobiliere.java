@@ -14,6 +14,9 @@ public class AgenceImmobiliere extends EntiteDeBase {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "logo_agence")
+    private String logoAgence;
+
     @Column(name = "nom_agence", nullable = false)
     private String nomAgence;
 
@@ -38,17 +41,20 @@ public class AgenceImmobiliere extends EntiteDeBase {
     @Column(name = "etat_agence", nullable = false)
     private Boolean etatAgence;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "agent_immobilier_id")
     private AgentImmobilier agentImmobilier;
 
     public AgenceImmobiliere() {
     }
 
-    public AgenceImmobiliere(Long id, String adresse, String telephone, String heureOuverture, String heureFermeture, Boolean estCertifie, Boolean etatAgence, AgentImmobilier agentImmobilier) {
+    public AgenceImmobiliere(Long id, String logoAgence, String nomAgence, String adresse, String telephone, String adresseEmail, String heureOuverture, String heureFermeture, Boolean estCertifie, Boolean etatAgence, AgentImmobilier agentImmobilier) {
         this.id = id;
+        this.logoAgence = logoAgence;
+        this.nomAgence = nomAgence;
         this.adresse = adresse;
         this.telephone = telephone;
+        this.adresseEmail = adresseEmail;
         this.heureOuverture = heureOuverture;
         this.heureFermeture = heureFermeture;
         this.estCertifie = estCertifie;
@@ -64,6 +70,14 @@ public class AgenceImmobiliere extends EntiteDeBase {
     @Override
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getLogoAgence() {
+        return logoAgence;
+    }
+
+    public void setLogoAgence(String logoAgence) {
+        this.logoAgence = logoAgence;
     }
 
     public String getNomAgence() {

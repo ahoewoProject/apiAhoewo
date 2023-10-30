@@ -61,6 +61,20 @@ public class AgenceImmobiliereServiceImpl implements AgenceImmobiliereService {
     }
 
     @Override
+    public void activerAgence(Long id) {
+        AgenceImmobiliere agenceImmobiliere = agenceImmobiliereRepository.findById(id).orElse(null);
+        agenceImmobiliere.setEtatAgence(true);
+        agenceImmobiliereRepository.save(agenceImmobiliere);
+    }
+
+    @Override
+    public void desactiverAgence(Long id) {
+        AgenceImmobiliere agenceImmobiliere = agenceImmobiliereRepository.findById(id).orElse(null);
+        agenceImmobiliere.setEtatAgence(false);
+        agenceImmobiliereRepository.save(agenceImmobiliere);
+    }
+
+    @Override
     public void deleteById(Long id) {
         agenceImmobiliereRepository.deleteById(id);
     }

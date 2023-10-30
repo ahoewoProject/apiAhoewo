@@ -73,17 +73,16 @@ public class DemandeCertificationController {
 
     @RequestMapping(value = "/compte/demande-certification/ajouter", method = RequestMethod.POST, headers = "accept=Application/json")
     public DemandeCertification ajouterDemandeCertificationCompte(Principal principal,
-                                                            @RequestParam("documentJustificatif") MultipartFile file,
+                                                            @RequestParam(value = "documentJustificatif", required = false) MultipartFile file,
                                                             String demandeCertificationJson) throws JsonProcessingException {
 
-        DemandeCertification demandeCertification = new ObjectMapper().readValue(demandeCertificationJson,
-                DemandeCertification.class);
-
-        String nomDocument = enregistrerDocumentJustificatif(file);
-
-        demandeCertification.setDocumentJustificatif(nomDocument);
-
+        DemandeCertification demandeCertification = new ObjectMapper()
+                .readValue(demandeCertificationJson, DemandeCertification.class);
         try {
+            if (file != null){
+                String nomDocument = enregistrerDocumentJustificatif(file);
+                demandeCertification.setDocumentJustificatif(nomDocument);
+            }
             demandeCertification = sauvegarderDemandeCertificationCompte(demandeCertification, principal);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
@@ -94,17 +93,16 @@ public class DemandeCertificationController {
 
     @RequestMapping(value = "/agence/demande-certification/ajouter", method = RequestMethod.POST, headers = "accept=Application/json")
     public DemandeCertification ajouterDemandeCertificationAgence(Principal principal,
-                                                                  @RequestParam("documentJustificatif") MultipartFile file,
+                                                                  @RequestParam(value = "documentJustificatif", required = false) MultipartFile file,
                                                                   String demandeCertificationJson) throws JsonProcessingException {
 
         DemandeCertification demandeCertification = new ObjectMapper().readValue(demandeCertificationJson,
                 DemandeCertification.class);
-
-        String nomDocument = enregistrerDocumentJustificatif(file);
-
-        demandeCertification.setDocumentJustificatif(nomDocument);
-
         try {
+            if (file != null){
+                String nomDocument = enregistrerDocumentJustificatif(file);
+                demandeCertification.setDocumentJustificatif(nomDocument);
+            }
             demandeCertification = sauvegarderDemandeCertificationAgence(demandeCertification, principal);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
@@ -167,11 +165,11 @@ public class DemandeCertificationController {
             String repertoireImage = "src/main/resources/documentsJustificatifs";
             File repertoire = creerRepertoire(repertoireImage);
 
-            String image = file.getOriginalFilename();
-            nomDocument = FilenameUtils.getBaseName(image) + "." + FilenameUtils.getExtension(image);
-            File ressourceImage = new File(repertoire, nomDocument);
+            String document = file.getOriginalFilename();
+            nomDocument = FilenameUtils.getBaseName(document) + "." + FilenameUtils.getExtension(document);
+            File ressourceDocument = new File(repertoire, nomDocument);
 
-            FileUtils.writeByteArrayToFile(ressourceImage, file.getBytes());
+            FileUtils.writeByteArrayToFile(ressourceDocument, file.getBytes());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -181,8 +179,8 @@ public class DemandeCertificationController {
 
     /* Fonction pour la création du repertoire des documents
     justificatifs de la demande de certification */
-    private File creerRepertoire(String repertoireImage) {
-        File repertoire = new File(repertoireImage);
+    private File creerRepertoire(String repertoireDocument) {
+        File repertoire = new File(repertoireDocument);
         if (!repertoire.exists()) {
             boolean repertoireCree = repertoire.mkdirs();
             if (!repertoireCree) {

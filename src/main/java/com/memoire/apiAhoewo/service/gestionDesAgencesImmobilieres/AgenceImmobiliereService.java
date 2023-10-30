@@ -19,6 +19,10 @@ public interface AgenceImmobiliereService {
 
     public AgenceImmobiliere update(AgenceImmobiliere agenceImmobiliere, Principal principal);
 
+    public void activerAgence(Long id);
+
+    public void desactiverAgence(Long id);
+
     public void deleteById(Long id);
 
     public int countAgencesImmobilieres();

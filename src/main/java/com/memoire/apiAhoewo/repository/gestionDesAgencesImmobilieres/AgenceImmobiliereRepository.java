@@ -10,6 +10,5 @@ import java.util.List;
 @Repository
 public interface AgenceImmobiliereRepository extends JpaRepository<AgenceImmobiliere, Long> {
     List<AgenceImmobiliere> findByAgentImmobilier(AgentImmobilier agentImmobilier);
-    AgenceImmobiliere findByCreerPar(Long id);
     AgenceImmobiliere findByNomAgence(String nomAgence);
 }

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -27,9 +28,18 @@ public class ServicesServiceImpl implements ServicesService {
     @Override
     public List<Services> getAllByAgence(Principal principal) {
         AgentImmobilier agentImmobilier = (AgentImmobilier) personneRepository.findByUsername(principal.getName());
-        AgenceImmobiliere agenceImmobiliere = agenceImmobiliereRepository.findByCreerPar(agentImmobilier.getId());
-        return servicesRepository.findByAgenceImmobiliere(agenceImmobiliere);
+        List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereRepository.findByAgentImmobilier(agentImmobilier);
+
+        List<Services> allServices = new ArrayList<>();
+
+        for (AgenceImmobiliere agenceImmobiliere : agenceImmobilieres) {
+            List<Services> servicesForAgence = servicesRepository.findByAgenceImmobiliere(agenceImmobiliere);
+            allServices.addAll(servicesForAgence);
+        }
+
+        return allServices;
     }
+
 
     @Override
     public Services findById(Long id) {
@@ -39,8 +49,6 @@ public class ServicesServiceImpl implements ServicesService {
     @Override
     public Services saveService(Services services, Principal principal) {
         AgentImmobilier agentImmobilier = (AgentImmobilier) personneRepository.findByUsername(principal.getName());
-        AgenceImmobiliere agenceImmobiliere = agenceImmobiliereRepository.findByCreerPar(agentImmobilier.getId());
-        services.setAgenceImmobiliere(agenceImmobiliere);
         services.setCreerLe(new Date());
         services.setCreerPar(agentImmobilier.getId());
         services.setStatut(true);
@@ -57,15 +65,22 @@ public class ServicesServiceImpl implements ServicesService {
 
     @Override
     public void deleteById(Long id) {
-        servicesRepository.findById(id);
+        servicesRepository.deleteById(id);
     }
 
     @Override
     public int countServicesByAgence(Principal principal) {
         AgentImmobilier agentImmobilier = (AgentImmobilier) personneRepository.findByUsername(principal.getName());
-        AgenceImmobiliere agenceImmobiliere = agenceImmobiliereRepository.findByCreerPar(agentImmobilier.getId());
-        List<Services> servicesList = servicesRepository.findByAgenceImmobiliere(agenceImmobiliere);
-        int count = servicesList.size();
-        return count;
+        List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereRepository.findByAgentImmobilier(agentImmobilier);
+
+        int totalCount = 0; // Initialisation du compteur total
+
+        for (AgenceImmobiliere agenceImmobiliere : agenceImmobilieres) {
+            List<Services> servicesList = servicesRepository.findByAgenceImmobiliere(agenceImmobiliere);
+            int count = servicesList.size(); // Comptage des services pour cette agence
+            totalCount += count; // Ajout du compte de services pour cette agence au total
+        }
+
+        return totalCount;
     }
 }
