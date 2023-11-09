@@ -9,9 +9,13 @@ import com.memoire.apiAhoewo.repository.gestionDesComptes.DemandeCertificationRe
 import com.memoire.apiAhoewo.repository.gestionDesComptes.PersonneRepository;
 import com.memoire.apiAhoewo.service.EmailSenderService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.DemandeCertificationService;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
@@ -128,6 +132,48 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
         List<DemandeCertification> demandeCertificationList = demandeCertificationRepository.findByStatutDemande(0);
         int count = demandeCertificationList.size();
         return count;
+    }
+
+    /* Fonction pour l'enregistrement du document justificatif de
+    la demande de certification */
+    @Override
+    public String enregistrerDocumentJustificatif(MultipartFile file) {
+        String nomDocument = null;
+
+        try {
+            String repertoireImage = "src/main/resources/documentsJustificatifs";
+            File repertoire = creerRepertoire(repertoireImage);
+
+            String document = file.getOriginalFilename();
+            nomDocument = FilenameUtils.getBaseName(document) + "." + FilenameUtils.getExtension(document);
+            File ressourceDocument = new File(repertoire, nomDocument);
+
+            FileUtils.writeByteArrayToFile(ressourceDocument, file.getBytes());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return nomDocument;
+    }
+
+    /* Fonction pour la création du repertoire des documents
+    justificatifs de la demande de certification */
+    private File creerRepertoire(String repertoireDocument) {
+        File repertoire = new File(repertoireDocument);
+        if (!repertoire.exists()) {
+            boolean repertoireCree = repertoire.mkdirs();
+            if (!repertoireCree) {
+                throw new RuntimeException("Impossible de créer ce répertoire.");
+            }
+        }
+        return repertoire;
+    }
+
+    /* Fonction pour construire le chemin vers le document justificatif */
+    @Override
+    public String construireCheminFichier(DemandeCertification demandeCertification) {
+        String repertoireFichier = "src/main/resources/documentsJustificatifs";
+        return repertoireFichier + "/" + demandeCertification.getDocumentJustificatif();
     }
 
 }

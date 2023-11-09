@@ -14,10 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PersonneServiceImpl implements PersonneService, UserDetailsService {
@@ -171,6 +169,17 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
             return true;
         }
         return false;
+    }
+
+    @Override
+    public List<Personne> getAllAgentImmobilierAndDemarcheur() {
+        List<Personne> personnes = this.personneRepository.findAll();
+
+        List<Personne> agentsEtDemarcheurs = personnes.stream()
+                .filter(personne -> personne instanceof AgentImmobilier || personne instanceof Demarcheur)
+                .collect(Collectors.toList());
+
+        return agentsEtDemarcheurs;
     }
 
     @Override

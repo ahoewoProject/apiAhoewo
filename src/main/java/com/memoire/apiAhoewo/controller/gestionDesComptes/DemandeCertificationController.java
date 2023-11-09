@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.memoire.apiAhoewo.exception.UnsupportedFileTypeException;
 import com.memoire.apiAhoewo.fileManager.FileFilter;
 import com.memoire.apiAhoewo.model.gestionDesComptes.DemandeCertification;
+import com.memoire.apiAhoewo.service.FileManagerService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.DemandeCertificationService;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -32,7 +33,8 @@ public class DemandeCertificationController {
     @Autowired
     private DemandeCertificationService demandeCertificationService;
     @Autowired
-    private FileFilter fileFilter;
+    private FileManagerService fileManagerService;
+
     @RequestMapping(value = "/demandes-certifications", method = RequestMethod.GET)
     public List<DemandeCertification> getAll(){
 
@@ -80,7 +82,7 @@ public class DemandeCertificationController {
                 .readValue(demandeCertificationJson, DemandeCertification.class);
         try {
             if (file != null){
-                String nomDocument = enregistrerDocumentJustificatif(file);
+                String nomDocument = demandeCertificationService.enregistrerDocumentJustificatif(file);
                 demandeCertification.setDocumentJustificatif(nomDocument);
             }
             demandeCertification = sauvegarderDemandeCertificationCompte(demandeCertification, principal);
@@ -100,7 +102,7 @@ public class DemandeCertificationController {
                 DemandeCertification.class);
         try {
             if (file != null){
-                String nomDocument = enregistrerDocumentJustificatif(file);
+                String nomDocument = demandeCertificationService.enregistrerDocumentJustificatif(file);
                 demandeCertification.setDocumentJustificatif(nomDocument);
             }
             demandeCertification = sauvegarderDemandeCertificationAgence(demandeCertification, principal);
@@ -116,10 +118,10 @@ public class DemandeCertificationController {
         DemandeCertification demandeCertification = demandeCertificationService.findById(id);
 
         try {
-            String cheminFichier = construireCheminFichier(demandeCertification);
-            byte[] imageBytes = lireFichier(cheminFichier);
+            String cheminFichier = demandeCertificationService.construireCheminFichier(demandeCertification);
+            byte[] imageBytes = fileManagerService.lireFichier(cheminFichier);
 
-            HttpHeaders headers = construireHeaders(cheminFichier, imageBytes.length);
+            HttpHeaders headers = fileManagerService.construireHeaders(cheminFichier, imageBytes.length);
             return new ResponseEntity<>(imageBytes, headers, HttpStatus.OK);
         } catch (IOException e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -156,40 +158,6 @@ public class DemandeCertificationController {
         return nombres;
     }
 
-    /* Fonction pour l'enregistrement du document justificatif de
-    la demande de certification */
-    private String enregistrerDocumentJustificatif(MultipartFile file) {
-        String nomDocument = null;
-
-        try {
-            String repertoireImage = "src/main/resources/documentsJustificatifs";
-            File repertoire = creerRepertoire(repertoireImage);
-
-            String document = file.getOriginalFilename();
-            nomDocument = FilenameUtils.getBaseName(document) + "." + FilenameUtils.getExtension(document);
-            File ressourceDocument = new File(repertoire, nomDocument);
-
-            FileUtils.writeByteArrayToFile(ressourceDocument, file.getBytes());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return nomDocument;
-    }
-
-    /* Fonction pour la création du repertoire des documents
-    justificatifs de la demande de certification */
-    private File creerRepertoire(String repertoireDocument) {
-        File repertoire = new File(repertoireDocument);
-        if (!repertoire.exists()) {
-            boolean repertoireCree = repertoire.mkdirs();
-            if (!repertoireCree) {
-                throw new RuntimeException("Impossible de créer ce répertoire.");
-            }
-        }
-        return repertoire;
-    }
-
     /* Fonction pour enregistrer la demande de certification de compte en utilisant le service
     d'enregistrement de ce dernier */
     private DemandeCertification sauvegarderDemandeCertificationCompte(DemandeCertification demandeCertification, Principal principal) {
@@ -208,30 +176,5 @@ public class DemandeCertificationController {
         } catch (Exception e) {
             throw new RuntimeException("Erreur lors de la sauvegarde de la demande de certification: " + e.getMessage());
         }
-    }
-
-    /* Fonction pour construire le chemin vers le document justificatif */
-    private String construireCheminFichier(DemandeCertification demandeCertification) {
-        String repertoireFichier = "src/main/resources/documentsJustificatifs";
-        return repertoireFichier + "/" + demandeCertification.getDocumentJustificatif();
-    }
-
-    /* Fonction pour lire le document, c'est-à-dire afficher le document en visualisant son
-    contenu */
-    private byte[] lireFichier(String cheminFichier) throws IOException {
-        Path cheminVersFichier = Paths.get(cheminFichier);
-        return Files.readAllBytes(cheminVersFichier);
-    }
-
-    /* Fonction pour l'entête de, c'est-à-dire, de quel type de fichier,
-    s'agit-il, ainsi de suite */
-    private HttpHeaders construireHeaders(String cheminFichier, long contentLength) throws UnsupportedFileTypeException {
-        String contentType = fileFilter.determineContentType(cheminFichier);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType(contentType));
-        headers.setContentLength(contentLength);
-
-        return headers;
     }
 }

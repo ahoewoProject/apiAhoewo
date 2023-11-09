@@ -1,6 +1,7 @@
 package com.memoire.apiAhoewo.service.gestionDesAgencesImmobilieres;
 
 import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.AgenceImmobiliere;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.List;
@@ -28,4 +29,8 @@ public interface AgenceImmobiliereService {
     public int countAgencesImmobilieres();
 
     public int countAgencesByAgentImmobilier(Principal principal);
+
+    public String enregistrerLogo(MultipartFile file);
+
+    public String construireCheminFichier(AgenceImmobiliere agenceImmobiliere);
 }

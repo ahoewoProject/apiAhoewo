@@ -1,0 +1,59 @@
+package com.memoire.apiAhoewo.serviceImpl.gestionDesBiensImmobiliers;
+
+import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.TypeDeBien;
+import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
+import com.memoire.apiAhoewo.repository.gestionDesBiensImmobiliers.TypeDeBienRepository;
+import com.memoire.apiAhoewo.service.gestionDesBiensImmobiliers.TypeDeBienService;
+import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.security.Principal;
+import java.util.Date;
+import java.util.List;
+
+@Service
+public class TypeDeBienServiceImpl implements TypeDeBienService {
+    @Autowired
+    private TypeDeBienRepository typeDeBienRepository;
+
+    @Autowired
+    private PersonneService personneService;
+
+    @Override
+    public List<TypeDeBien> getAll() {
+        return typeDeBienRepository.findAll();
+    }
+
+    @Override
+    public TypeDeBien findById(Long id) {
+        return typeDeBienRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public TypeDeBien findByDesignation(String designation) {
+        return typeDeBienRepository.findByDesignation(designation);
+    }
+
+    @Override
+    public TypeDeBien save(TypeDeBien typeDeBien, Principal principal) {
+        Personne personne = personneService.findByUsername(principal.getName());
+        typeDeBien.setCreerLe(new Date());
+        typeDeBien.setCreerPar(personne.getId());
+        typeDeBien.setStatut(true);
+        return typeDeBienRepository.save(typeDeBien);
+    }
+
+    @Override
+    public TypeDeBien update(TypeDeBien typeDeBien, Principal principal) {
+        Personne personne = personneService.findByUsername(principal.getName());
+        typeDeBien.setModifierLe(new Date());
+        typeDeBien.setModifierPar(personne.getId());
+        return typeDeBienRepository.save(typeDeBien);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        typeDeBienRepository.deleteById(id);
+    }
+}

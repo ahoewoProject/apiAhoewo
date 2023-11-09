@@ -44,7 +44,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/api/login/**", "/api/refresh-token/**",
                 "/api/roles/**", "/api/request-reset-password",
                 "/api/reset-password", "/api/document/demande-certification/{id}/**",
-                "/logo/agence-immobiliere/{id}/**").permitAll();
+                "/api/logo/agence-immobiliere/{id}/**", "/api/image/bien-immobilier/{id}/**",
+                "/api/image-principale/bien-immobilier/{id}/**").permitAll();
         //http.authorizeRequests().antMatchers(GET,"/api/user/**").hasAnyAuthority("ROLE_USER");
         //http.authorizeRequests().antMatchers(POST,"/api/user/save/**").hasAnyAuthority("ROLE_ADMIN");
         http.authorizeRequests().anyRequest().authenticated();

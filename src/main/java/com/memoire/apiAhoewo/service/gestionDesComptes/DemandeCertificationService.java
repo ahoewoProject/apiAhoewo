@@ -1,6 +1,7 @@
 package com.memoire.apiAhoewo.service.gestionDesComptes;
 
 import com.memoire.apiAhoewo.model.gestionDesComptes.DemandeCertification;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.List;
@@ -16,4 +17,6 @@ public interface DemandeCertificationService {
     public int countDemandeCertifications();
     public int countDemandeCertifValidees();
     public int countDemandeCertifEnAttente();
+    public String enregistrerDocumentJustificatif(MultipartFile file);
+    public String construireCheminFichier(DemandeCertification demandeCertification);
 }

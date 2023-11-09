@@ -4,6 +4,7 @@ import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
 import com.memoire.apiAhoewo.requestForm.RegisterForm;
 
 import java.security.Principal;
+import java.util.List;
 
 public interface PersonneService {
     public Personne findByUsername(String username);
@@ -31,4 +32,6 @@ public interface PersonneService {
     public void sendPasswordResetEmail(Personne personne);
 
     public boolean resetPassword(String token, String newPassword);
+
+    public List<Personne> getAllAgentImmobilierAndDemarcheur();
 }

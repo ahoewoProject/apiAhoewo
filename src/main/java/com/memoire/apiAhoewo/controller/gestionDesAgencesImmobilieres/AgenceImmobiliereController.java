@@ -5,22 +5,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.memoire.apiAhoewo.exception.UnsupportedFileTypeException;
 import com.memoire.apiAhoewo.fileManager.FileFilter;
 import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.AgenceImmobiliere;
+import com.memoire.apiAhoewo.service.FileManagerService;
 import com.memoire.apiAhoewo.service.gestionDesAgencesImmobilieres.AgenceImmobiliereService;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +26,7 @@ public class AgenceImmobiliereController {
     @Autowired
     private AgenceImmobiliereService agenceImmobiliereService;
     @Autowired
-    private FileFilter fileFilter;
+    private FileManagerService fileManagerService;
 
     @RequestMapping(value = "/agences-immobilieres", method = RequestMethod.GET)
     public List<AgenceImmobiliere> getAll() {
@@ -108,7 +102,7 @@ public class AgenceImmobiliereController {
             }
 
             if (file != null){
-                String nomLogo = enregistrerLogo(file);
+                String nomLogo = agenceImmobiliereService.enregistrerLogo(file);
                 agenceImmobiliere.setLogoAgence(nomLogo);
             }
 
@@ -140,7 +134,7 @@ public class AgenceImmobiliereController {
             }
 
             if (file != null){
-                String nomLogo = enregistrerLogo(file);
+                String nomLogo = agenceImmobiliereService.enregistrerLogo(file);
                 agenceImmobiliere.setLogoAgence(nomLogo);
             }
             agenceImmobiliere.setNomAgence(agenceImmobiliereModifie.getNomAgence());
@@ -213,72 +207,15 @@ public class AgenceImmobiliereController {
         AgenceImmobiliere agenceImmobiliere = agenceImmobiliereService.findById(id);
 
         try {
-            String cheminFichier = construireCheminFichier(agenceImmobiliere);
-            byte[] imageBytes = lireFichier(cheminFichier);
+            String cheminFichier = agenceImmobiliereService.construireCheminFichier(agenceImmobiliere);
+            byte[] imageBytes = fileManagerService.lireFichier(cheminFichier);
 
-            HttpHeaders headers = construireHeaders(cheminFichier, imageBytes.length);
+            HttpHeaders headers = fileManagerService.construireHeaders(cheminFichier, imageBytes.length);
             return new ResponseEntity<>(imageBytes, headers, HttpStatus.OK);
         } catch (IOException e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (UnsupportedFileTypeException e) {
             return new ResponseEntity<>(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
         }
-    }
-
-    /* Fonction pour l'enregistrement le logo d'une agence immobilière */
-    private String enregistrerLogo(MultipartFile file) {
-        String nomLogo = null;
-
-        try {
-            String repertoireImage = "src/main/resources/logos";
-            File repertoire = creerRepertoire(repertoireImage);
-
-            String logo = file.getOriginalFilename();
-            nomLogo = FilenameUtils.getBaseName(logo) + "." + FilenameUtils.getExtension(logo);
-            File ressourceImage = new File(repertoire, nomLogo);
-
-            FileUtils.writeByteArrayToFile(ressourceImage, file.getBytes());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return nomLogo;
-    }
-
-    /* Fonction pour la création du repertoire des logos des agences immobilières */
-    private File creerRepertoire(String repertoireLogo) {
-        File repertoire = new File(repertoireLogo);
-        if (!repertoire.exists()) {
-            boolean repertoireCree = repertoire.mkdirs();
-            if (!repertoireCree) {
-                throw new RuntimeException("Impossible de créer ce répertoire.");
-            }
-        }
-        return repertoire;
-    }
-
-    /* Fonction pour construire le chemin vers le logo d'une agence immobilière */
-    private String construireCheminFichier(AgenceImmobiliere agenceImmobiliere) {
-        String repertoireFichier = "src/main/resources/logos";
-        return repertoireFichier + "/" + agenceImmobiliere.getLogoAgence();
-    }
-
-    /* Fonction pour lire le logo, c'est-à-dire afficher le l'image en visualisant son
-    contenu */
-    private byte[] lireFichier(String cheminFichier) throws IOException {
-        Path cheminVersFichier = Paths.get(cheminFichier);
-        return Files.readAllBytes(cheminVersFichier);
-    }
-
-    /* Fonction pour l'entête de, c'est-à-dire, de quel type de fichier,
-    s'agit-il, ainsi de suite */
-    private HttpHeaders construireHeaders(String cheminFichier, long contentLength) throws UnsupportedFileTypeException {
-        String contentType = fileFilter.determineContentType(cheminFichier);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.parseMediaType(contentType));
-        headers.setContentLength(contentLength);
-
-        return headers;
     }
 }

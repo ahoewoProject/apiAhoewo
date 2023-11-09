@@ -13,7 +13,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -119,5 +121,17 @@ public class PersonneController {
         } else {
             return ResponseEntity.badRequest().body("Token invalide.");
         }
+    }
+
+    @RequestMapping(value = "/agents-immobiliers/demarcheurs", method = RequestMethod.GET)
+    public List<Personne> listeAgentImmobilierEtDemarcheur() {
+
+        List<Personne> personnes = new ArrayList<>();
+        try {
+            personnes = this.personneService.getAllAgentImmobilierAndDemarcheur();
+        } catch (Exception e) {
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return personnes;
     }
 }
