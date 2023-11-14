@@ -8,6 +8,8 @@ import java.util.List;
 public interface AgentImmobilierService {
     public List<AgentImmobilier> getAll();
 
+    public List<AgentImmobilier> findAgentsImmobiliersByResponsable(Principal principal);
+
     public AgentImmobilier findById(Long id);
 
     public AgentImmobilier save(AgentImmobilier agentImmobilier, Principal principal);
@@ -15,4 +17,6 @@ public interface AgentImmobilierService {
     public void deleteById(Long id);
 
     public int countAgentImmobiliers();
+
+    public int countAgentsImmobiliersByResponsable(Principal principal);
 }

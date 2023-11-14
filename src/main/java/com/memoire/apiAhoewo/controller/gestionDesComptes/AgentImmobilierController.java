@@ -33,6 +33,19 @@ public class AgentImmobilierController {
         return agentImmobilierList;
     }
 
+    @RequestMapping(value = "/agents-immobiliers/responsable-agence-immobiliere", method = RequestMethod.GET)
+    public List<AgentImmobilier> findAgentsImmobiliersByResponsable(Principal principal) {
+
+        List<AgentImmobilier> agentImmobiliers = new ArrayList<>();
+        try {
+            agentImmobiliers = this.agentImmobilierService.findAgentsImmobiliersByResponsable(principal);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return agentImmobiliers;
+    }
+
     @RequestMapping(value = "/agent-immobilier/{id}", method = RequestMethod.GET)
     public AgentImmobilier findById(@PathVariable Long id) {
 
@@ -67,8 +80,14 @@ public class AgentImmobilierController {
     }
 
     @RequestMapping(value = "/count/agents-immobiliers", method = RequestMethod.GET)
-    public int nombreDeAgentsImmobiliers(){
+    public int nombreAgentsImmobiliers(){
         int nombres = this.agentImmobilierService.countAgentImmobiliers();
+        return nombres;
+    }
+
+    @RequestMapping(value = "/count/agents-immobiliers/responsable", method = RequestMethod.GET)
+    public int nombreAgentsImmobiliersByResponsable(Principal principal){
+        int nombres = this.agentImmobilierService.countAgentsImmobiliersByResponsable(principal);
         return nombres;
     }
 }

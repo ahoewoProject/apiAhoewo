@@ -41,12 +41,25 @@ public class AgenceImmobiliereController {
         return agenceImmobilieres;
     }
 
-    @RequestMapping(value = "/agences-immobilieres/agent-immobilier", method = RequestMethod.GET)
-    public List<AgenceImmobiliere> getAllByAgentImmobilier(Principal principal) {
+    @RequestMapping(value = "/agence-immobiliere/responsable-agence-immobiliere", method = RequestMethod.GET)
+    public List<AgenceImmobiliere> getAllByResponsableAgenceImmobiliere(Principal principal) {
 
         List<AgenceImmobiliere> agenceImmobiliereList = new ArrayList<>();
         try {
-            agenceImmobiliereList = this.agenceImmobiliereService.getAllByAgentImmobilier(principal);
+            agenceImmobiliereList = this.agenceImmobiliereService.getAllByResponsableAgenceImmobiliere(principal);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return agenceImmobiliereList;
+    }
+
+    @RequestMapping(value = "/agence-immobiliere/agent-immobilier", method = RequestMethod.GET)
+    public List<AgenceImmobiliere> getAgenceImmobiliereParAgentImmobilier(Principal principal) {
+
+        List<AgenceImmobiliere> agenceImmobiliereList = new ArrayList<>();
+        try {
+            agenceImmobiliereList = this.agenceImmobiliereService.getAgenceImmobiliereParAgentImmobilier(principal);
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Erreur " + e.getMessage());
@@ -196,8 +209,14 @@ public class AgenceImmobiliereController {
         return nombres;
     }
 
+    @RequestMapping(value = "/count/agences-immobilieres/responsable-agence-immobiliere", method = RequestMethod.GET)
+    public int nombreAgenceImmobiliereParResponsable(Principal principal){
+        int nombres = this.agenceImmobiliereService.countAgencesByResponsableAgenceImmobiliere(principal);
+        return nombres;
+    }
+
     @RequestMapping(value = "/count/agences-immobilieres/agent-immobilier", method = RequestMethod.GET)
-    public int nombreAgenceImmobiliere(Principal principal){
+    public int nombreAgencesParAgentImmobilier(Principal principal){
         int nombres = this.agenceImmobiliereService.countAgencesByAgentImmobilier(principal);
         return nombres;
     }

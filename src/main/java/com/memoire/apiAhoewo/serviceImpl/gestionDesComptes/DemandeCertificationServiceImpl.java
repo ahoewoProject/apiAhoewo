@@ -5,6 +5,7 @@ import com.memoire.apiAhoewo.model.gestionDesComptes.AgentImmobilier;
 import com.memoire.apiAhoewo.model.gestionDesComptes.DemandeCertification;
 import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
 import com.memoire.apiAhoewo.repository.gestionDesAgencesImmobilieres.AgenceImmobiliereRepository;
+import com.memoire.apiAhoewo.repository.gestionDesComptes.AgentImmobilierRepository;
 import com.memoire.apiAhoewo.repository.gestionDesComptes.DemandeCertificationRepository;
 import com.memoire.apiAhoewo.repository.gestionDesComptes.PersonneRepository;
 import com.memoire.apiAhoewo.service.EmailSenderService;
@@ -31,6 +32,8 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
     private EmailSenderService emailSenderService;
     @Autowired
     private AgenceImmobiliereRepository agenceImmobiliereRepository;
+    @Autowired
+    private AgentImmobilierRepository agentImmobilierRepository;
 
     @Override
     public List<DemandeCertification> getAll() {
@@ -93,8 +96,9 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
         agenceImmobiliere.setEstCertifie(true);
         DemandeCertification demandeCertification = demandeCertificationRepository.findById(idDemandeCertif).orElse(null);
         demandeCertification.setStatutDemande(1);
-        Personne personne = personneRepository.findById(agenceImmobiliere.getAgentImmobilier().getId()).orElse(null);
+        Personne personne = personneRepository.findById(agenceImmobiliere.getResponsableAgenceImmobiliere().getId()).orElse(null);
         personne.setEstCertifie(true);
+
         agenceImmobiliereRepository.save(agenceImmobiliere);
         demandeCertificationRepository.save(demandeCertification);
         personneRepository.save(personne);
@@ -102,6 +106,8 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
         String contenu1 = "Bonjour " + agenceImmobiliere.getNomAgence() + ",\n\n" +
                 "Nous avons le plaisir de vous informer que votre agence immobilière vient d'être certifiée conformément à votre demande de certification.\n" +
                 "\n\n" +
+                "N'hésitez pas à explorer toutes les fonctionnalités offertes par notre plateforme pour optimiser votre travail et offrir le meilleur service à vos clients.\n\n" +
+                "Si vous avez des questions ou avez besoin d'assistance, n'hésitez pas à nous contacter. Nous sommes là pour vous aider.\n\n" +
                 "Cordialement,\n" +
                 "\nL'équipe de support technique - ahoewo !";
         emailSenderService.sendMail(agenceImmobiliere.getAdresseEmail(), "Certification d'une agence", contenu1);
@@ -109,10 +115,28 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
         String contenu2 = "Bonjour M/Mlle " + personne.getPrenom() + ",\n\n" +
                 "Nous avons le plaisir de vous informer que votre compte vient d'être certifié conformément à la demande de certification de votre agence.\n" +
                 "\n\n" +
+                "N'hésitez pas à explorer toutes les fonctionnalités offertes par notre plateforme pour optimiser votre travail et offrir le meilleur service à vos clients.\n\n" +
+                "Si vous avez des questions ou avez besoin d'assistance, n'hésitez pas à nous contacter. Nous sommes là pour vous aider.\n\n" +
                 "Cordialement,\n" +
                 "\nL'équipe de support technique - ahoewo !";
         emailSenderService.sendMail(personne.getEmail(), "Certification de compte", contenu2);
 
+        List<AgentImmobilier> agentImmobiliers = agentImmobilierRepository.findByCreerPar(personne.getId());
+        if (!agentImmobiliers.isEmpty()) {
+            for (AgentImmobilier agent : agentImmobiliers) {
+                agent.setEstCertifie(true);
+                agentImmobilierRepository.save(agent);
+
+                String contenu3 = "Bonjour M/Mlle " + agent.getPrenom() + ",\n\n" +
+                        "Nous avons le plaisir de vous informer que votre compte vient d'être certifié conformément à la demande de certification soumise par l'agence immobilière chez laquelle vous travaillez.\n" +
+                        "\n\n" +
+                        "N'hésitez pas à explorer toutes les fonctionnalités offertes par notre plateforme pour optimiser votre travail et offrir le meilleur service à vos clients.\n\n" +
+                        "Si vous avez des questions ou avez besoin d'assistance, n'hésitez pas à nous contacter. Nous sommes là pour vous aider.\n\n" +
+                        "Cordialement,\n" +
+                        "\nL'équipe de support technique - ahoewo !";
+                emailSenderService.sendMail(agent.getEmail(), "Certification de compte", contenu3);
+            }
+        }
     }
 
     @Override
@@ -175,5 +199,4 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
         String repertoireFichier = "src/main/resources/documentsJustificatifs";
         return repertoireFichier + "/" + demandeCertification.getDocumentJustificatif();
     }
-
 }

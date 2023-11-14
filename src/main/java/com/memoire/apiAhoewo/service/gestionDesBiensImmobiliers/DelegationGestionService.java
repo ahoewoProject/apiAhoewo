@@ -9,6 +9,8 @@ public interface DelegationGestionService {
 
     List<DelegationGestion> getAllByProprietaire(Principal principal);
 
+    List<DelegationGestion> getDelegationsGestionsByAgentImmobilier(Principal principal);
+
     List<DelegationGestion> getAllByGestionnaire(Principal principal);
 
     DelegationGestion findById(Long id);
@@ -22,4 +24,6 @@ public interface DelegationGestionService {
     int countDelegationGestionProprietaire(Principal principal);
 
     int countDelegationGestionGestionnaire(Principal principal);
+
+    int countDelegationGestionAgentImmobilier(Principal principal);
 }

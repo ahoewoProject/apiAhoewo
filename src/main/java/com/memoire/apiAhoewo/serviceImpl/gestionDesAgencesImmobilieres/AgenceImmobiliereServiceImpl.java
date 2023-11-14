@@ -2,9 +2,14 @@ package com.memoire.apiAhoewo.serviceImpl.gestionDesAgencesImmobilieres;
 
 import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.AgenceImmobiliere;
 import com.memoire.apiAhoewo.model.gestionDesComptes.AgentImmobilier;
+import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
+import com.memoire.apiAhoewo.model.gestionDesComptes.ResponsableAgenceImmobiliere;
 import com.memoire.apiAhoewo.repository.gestionDesAgencesImmobilieres.AgenceImmobiliereRepository;
+import com.memoire.apiAhoewo.repository.gestionDesComptes.AgentImmobilierRepository;
 import com.memoire.apiAhoewo.repository.gestionDesComptes.PersonneRepository;
+import com.memoire.apiAhoewo.repository.gestionDesComptes.ResponsableAgenceImmobiliereRepository;
 import com.memoire.apiAhoewo.service.gestionDesAgencesImmobilieres.AgenceImmobiliereService;
+import com.memoire.apiAhoewo.service.gestionDesComptes.ResponsableAgenceImmobiliereService;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +28,15 @@ public class AgenceImmobiliereServiceImpl implements AgenceImmobiliereService {
     private AgenceImmobiliereRepository agenceImmobiliereRepository;
 
     @Autowired
+    private ResponsableAgenceImmobiliereService responsableAgenceImmobiliereService;
+
+    @Autowired
+    private ResponsableAgenceImmobiliereRepository responsableAgenceImmobiliereRepository;
+
+    @Autowired
+    private AgentImmobilierRepository agentImmobilierRepository;
+
+    @Autowired
     private PersonneRepository personneRepository;
 
     @Override
@@ -31,9 +45,16 @@ public class AgenceImmobiliereServiceImpl implements AgenceImmobiliereService {
     }
 
     @Override
-    public List<AgenceImmobiliere> getAllByAgentImmobilier(Principal principal) {
+    public List<AgenceImmobiliere> getAllByResponsableAgenceImmobiliere(Principal principal) {
+        ResponsableAgenceImmobiliere responsableAgenceImmobiliere = (ResponsableAgenceImmobiliere) personneRepository.findByUsername(principal.getName());
+        return agenceImmobiliereRepository.findByResponsableAgenceImmobiliere(responsableAgenceImmobiliere);
+    }
+
+    @Override
+    public List<AgenceImmobiliere> getAgenceImmobiliereParAgentImmobilier(Principal principal) {
         AgentImmobilier agentImmobilier = (AgentImmobilier) personneRepository.findByUsername(principal.getName());
-        return agenceImmobiliereRepository.findByAgentImmobilier(agentImmobilier);
+        ResponsableAgenceImmobiliere responsableAgenceImmobiliere = responsableAgenceImmobiliereService.findById(agentImmobilier.getCreerPar());
+        return agenceImmobiliereRepository.findByResponsableAgenceImmobiliere(responsableAgenceImmobiliere);
     }
 
     @Override
@@ -48,19 +69,19 @@ public class AgenceImmobiliereServiceImpl implements AgenceImmobiliereService {
 
     @Override
     public AgenceImmobiliere save(AgenceImmobiliere agenceImmobiliere, Principal principal) {
-        AgentImmobilier agentImmobilier = (AgentImmobilier) personneRepository.findByUsername(principal.getName());
-        agenceImmobiliere.setAgentImmobilier(agentImmobilier);
+        ResponsableAgenceImmobiliere responsableAgenceImmobiliere = (ResponsableAgenceImmobiliere) personneRepository.findByUsername(principal.getName());
+        agenceImmobiliere.setResponsableAgenceImmobiliere(responsableAgenceImmobiliere);
         agenceImmobiliere.setCreerLe(new Date());
-        agenceImmobiliere.setCreerPar(agentImmobilier.getId());
+        agenceImmobiliere.setCreerPar(responsableAgenceImmobiliere.getId());
         agenceImmobiliere.setStatut(true);
         return agenceImmobiliereRepository.save(agenceImmobiliere);
     }
 
     @Override
     public AgenceImmobiliere update(AgenceImmobiliere agenceImmobiliere, Principal principal) {
-        AgentImmobilier agentImmobilier = (AgentImmobilier) personneRepository.findByUsername(principal.getName());
+        ResponsableAgenceImmobiliere responsableAgenceImmobiliere = (ResponsableAgenceImmobiliere) personneRepository.findByUsername(principal.getName());
         agenceImmobiliere.setModifierLe(new Date());
-        agenceImmobiliere.setModifierPar(agentImmobilier.getId());
+        agenceImmobiliere.setModifierPar(responsableAgenceImmobiliere.getId());
         return agenceImmobiliereRepository.save(agenceImmobiliere);
     }
 
@@ -68,6 +89,16 @@ public class AgenceImmobiliereServiceImpl implements AgenceImmobiliereService {
     public void activerAgence(Long id) {
         AgenceImmobiliere agenceImmobiliere = agenceImmobiliereRepository.findById(id).orElse(null);
         agenceImmobiliere.setEtatAgence(true);
+        ResponsableAgenceImmobiliere responsableAgenceImmobiliere = responsableAgenceImmobiliereService.findById(agenceImmobiliere.getResponsableAgenceImmobiliere().getId());
+        responsableAgenceImmobiliere.setEtatCompte(true);
+        responsableAgenceImmobiliereRepository.save(responsableAgenceImmobiliere);
+        List<AgentImmobilier> agentImmobiliers = agentImmobilierRepository.findByCreerPar(agenceImmobiliere.getResponsableAgenceImmobiliere().getId());
+        if(!agentImmobiliers.isEmpty()) {
+            for (AgentImmobilier agent : agentImmobiliers) {
+                agent.setEtatCompte(true);
+                agentImmobilierRepository.save(agent);
+            }
+        }
         agenceImmobiliereRepository.save(agenceImmobiliere);
     }
 
@@ -75,6 +106,16 @@ public class AgenceImmobiliereServiceImpl implements AgenceImmobiliereService {
     public void desactiverAgence(Long id) {
         AgenceImmobiliere agenceImmobiliere = agenceImmobiliereRepository.findById(id).orElse(null);
         agenceImmobiliere.setEtatAgence(false);
+        ResponsableAgenceImmobiliere responsableAgenceImmobiliere = responsableAgenceImmobiliereService.findById(agenceImmobiliere.getResponsableAgenceImmobiliere().getId());
+        responsableAgenceImmobiliere.setEtatCompte(false);
+        responsableAgenceImmobiliereRepository.save(responsableAgenceImmobiliere);
+        List<AgentImmobilier> agentImmobiliers = agentImmobilierRepository.findByCreerPar(agenceImmobiliere.getResponsableAgenceImmobiliere().getId());
+        if(!agentImmobiliers.isEmpty()) {
+            agentImmobiliers.forEach(agent -> {
+                agent.setEtatCompte(false);
+                agentImmobilierRepository.save(agent);
+            });
+        }
         agenceImmobiliereRepository.save(agenceImmobiliere);
     }
 
@@ -91,9 +132,18 @@ public class AgenceImmobiliereServiceImpl implements AgenceImmobiliereService {
     }
 
     @Override
+    public int countAgencesByResponsableAgenceImmobiliere(Principal principal) {
+        ResponsableAgenceImmobiliere responsableAgenceImmobiliere = (ResponsableAgenceImmobiliere) personneRepository.findByUsername(principal.getName());
+        List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereRepository.findByResponsableAgenceImmobiliere(responsableAgenceImmobiliere);
+        int count = agenceImmobilieres.size();
+        return count;
+    }
+
+    @Override
     public int countAgencesByAgentImmobilier(Principal principal) {
         AgentImmobilier agentImmobilier = (AgentImmobilier) personneRepository.findByUsername(principal.getName());
-        List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereRepository.findByAgentImmobilier(agentImmobilier);
+        ResponsableAgenceImmobiliere responsableAgenceImmobiliere = responsableAgenceImmobiliereService.findById(agentImmobilier.getCreerPar());
+        List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereRepository.findByResponsableAgenceImmobiliere(responsableAgenceImmobiliere);
         int count = agenceImmobilieres.size();
         return count;
     }

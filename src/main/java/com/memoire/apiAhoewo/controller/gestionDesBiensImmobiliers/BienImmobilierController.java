@@ -29,9 +29,6 @@ public class BienImmobilierController {
     @Autowired
     private ImagesBienImmobilierService imagesBienImmobilierService;
 
-    @Autowired
-    private FileManagerService fileManagerService;
-
     @RequestMapping(value = "/biens-immobiliers", method = RequestMethod.GET)
     public List<BienImmobilier> getAll() {
 
@@ -51,6 +48,19 @@ public class BienImmobilierController {
         List<BienImmobilier> bienImmobiliers = new ArrayList<>();
         try {
             bienImmobiliers = this.bienImmobilierService.getAllByProprietaire(principal);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return bienImmobiliers;
+    }
+
+    @RequestMapping(value = "/biens-immobiliers/agent-immobilier", method = RequestMethod.GET)
+    public List<BienImmobilier> findBiensImmobiliersParAgentImmobilier(Principal principal) {
+
+        List<BienImmobilier> bienImmobiliers = new ArrayList<>();
+        try {
+            bienImmobiliers = this.bienImmobilierService.findBiensImmobiliersByAgentImmobilier(principal);
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Erreur " + e.getMessage());
@@ -86,7 +96,6 @@ public class BienImmobilierController {
 
     @RequestMapping(value = "/bien-immobilier/ajouter", method = RequestMethod.POST, headers = "accept=Application/json")
     public ResponseEntity<?> ajouterBienImmobilier(Principal principal,
-                                                   @RequestParam(value = "imagePrincipale", required = false) MultipartFile file,
                                                    @RequestParam(value = "imagesBienImmobilier", required = false) List<MultipartFile> files,
                                                    String bienImmobilierJson) throws JsonProcessingException {
 
@@ -94,11 +103,6 @@ public class BienImmobilierController {
                 .readValue(bienImmobilierJson, BienImmobilier.class);
 
         try {
-
-            if (file != null){
-                String nomImagePrincipaleDuBien = bienImmobilierService.enregistrerImagePrincipaleDuBien(file);
-                bienImmobilier.setImagePrincipale(nomImagePrincipaleDuBien);
-            }
 
             bienImmobilier = this.bienImmobilierService.save(bienImmobilier, principal);
 
@@ -122,7 +126,6 @@ public class BienImmobilierController {
 
     @RequestMapping(value = "/bien-immobilier/modifier/{id}", method = RequestMethod.PUT, headers = "accept=Application/json")
     public ResponseEntity<?> modifierBienImmobilier(@PathVariable Long id, Principal principal,
-                                                   @RequestParam(value = "imagePrincipale", required = false) MultipartFile file,
                                                    @RequestParam(value = "imagesBienImmobilier", required = false) List<MultipartFile> files,
                                                    String bienImmobilierJson) throws JsonProcessingException {
 
@@ -132,10 +135,6 @@ public class BienImmobilierController {
         BienImmobilier bienImmobilier = bienImmobilierService.findById(id);
         try {
 
-            if (file != null){
-                String nomImagePrincipaleDuBien = bienImmobilierService.enregistrerImagePrincipaleDuBien(file);
-                bienImmobilier.setImagePrincipale(nomImagePrincipaleDuBien);
-            }
             bienImmobilier.setDescription(bienImmobilierModifie.getDescription());
             bienImmobilier.setAdresse(bienImmobilierModifie.getAdresse());
             bienImmobilier.setVille(bienImmobilierModifie.getVille());
@@ -168,6 +167,12 @@ public class BienImmobilierController {
         return nombres;
     }
 
+    @RequestMapping(value = "/count/biens-immobiliers/agent-immobilier", method = RequestMethod.GET)
+    public int nombreBienImmobilierParAgentImmobilier(Principal principal){
+        int nombres = this.bienImmobilierService.countBienImmobilierByAgentImmobilier(principal);
+        return nombres;
+    }
+
     @RequestMapping(value = "/count/biens-immobiliers/gerant", method = RequestMethod.GET)
     public int nombreBienImmobilierParGerant(Principal principal){
         int nombres = this.bienImmobilierService.countBienImmobilierByGerant(principal);
@@ -182,22 +187,5 @@ public class BienImmobilierController {
     @RequestMapping(value = "/desactiver/bien-immobilier/{id}", method = RequestMethod.GET, headers = "accept=Application/json")
     public void desactiverBienImmobilier(@PathVariable Long id){
         this.bienImmobilierService.desactiverBienImmobilier(id);
-    }
-
-    @RequestMapping(value = "/image-principale/bien-immobilier/{id}", method = RequestMethod.GET)
-    public ResponseEntity<byte[]> getImagePrincipaleBienImmobilier(@PathVariable Long id) {
-        BienImmobilier bienImmobilier = bienImmobilierService.findById(id);
-
-        try {
-            String cheminFichier = bienImmobilierService.construireCheminFichier(bienImmobilier);
-            byte[] imageBytes = fileManagerService.lireFichier(cheminFichier);
-
-            HttpHeaders headers = fileManagerService.construireHeaders(cheminFichier, imageBytes.length);
-            return new ResponseEntity<>(imageBytes, headers, HttpStatus.OK);
-        } catch (IOException e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (UnsupportedFileTypeException e) {
-            return new ResponseEntity<>(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
-        }
     }
 }

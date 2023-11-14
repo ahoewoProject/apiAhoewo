@@ -43,6 +43,19 @@ public class DelegationGestionController {
         return delegationGestions;
     }
 
+    @RequestMapping(value = "/delegations-gestions/gestionnaire/agent-immobilier", method = RequestMethod.GET)
+    public List<DelegationGestion> getDelegationsGestionsByAgentImmobilier(Principal principal) {
+
+        List<DelegationGestion> delegationGestions = new ArrayList<>();
+        try {
+            delegationGestions = this.delegationGestionService.getDelegationsGestionsByAgentImmobilier(principal);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return delegationGestions;
+    }
+
     @RequestMapping(value = "/delegation-gestion/{id}", method = RequestMethod.GET)
     public DelegationGestion findById(@PathVariable Long id) {
 
@@ -88,4 +101,11 @@ public class DelegationGestionController {
         int nombres = this.delegationGestionService.countDelegationGestionGestionnaire(principal);
         return nombres;
     }
+
+    @RequestMapping(value = "/count/delegations-gestions/gestionnaire/agent-immobilier", method = RequestMethod.GET)
+    public int nombreDelegationGestionAgentImmobilier(Principal principal) {
+        int nombres = this.delegationGestionService.countDelegationGestionAgentImmobilier(principal);
+        return nombres;
+    }
+
 }

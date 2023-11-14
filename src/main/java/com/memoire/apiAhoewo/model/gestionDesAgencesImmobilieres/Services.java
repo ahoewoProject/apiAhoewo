@@ -23,6 +23,9 @@ public class Services extends EntiteDeBase {
     @JoinColumn(name="agence_immobiliere_id")
     private AgenceImmobiliere agenceImmobiliere;
 
+    @Column(name = "etat")
+    protected Boolean etat;
+
     public Services() {
     }
 
@@ -65,6 +68,14 @@ public class Services extends EntiteDeBase {
 
     public void setAgenceImmobiliere(AgenceImmobiliere agenceImmobiliere) {
         this.agenceImmobiliere = agenceImmobiliere;
+    }
+
+    public Boolean getEtat() {
+        return etat;
+    }
+
+    public void setEtat(Boolean etat) {
+        this.etat = etat;
     }
 
     @Override

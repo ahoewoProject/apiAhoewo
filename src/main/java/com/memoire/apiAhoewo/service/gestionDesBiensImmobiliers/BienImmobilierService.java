@@ -1,11 +1,9 @@
 package com.memoire.apiAhoewo.service.gestionDesBiensImmobiliers;
 
 import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.BienImmobilier;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
+import com.memoire.apiAhoewo.model.gestionDesComptes.Gerant;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.security.Principal;
 import java.util.List;
 
@@ -14,6 +12,8 @@ public interface BienImmobilierService {
     public List<BienImmobilier> getAll();
 
     public List<BienImmobilier> getAllByProprietaire(Principal principal);
+
+    public List<BienImmobilier> findBiensImmobiliersByAgentImmobilier(Principal principal);
 
     public List<BienImmobilier> getAllByGerant(Principal principal);
 
@@ -31,9 +31,7 @@ public interface BienImmobilierService {
 
     public int countBienImmobilierByProprietaire(Principal principal);
 
+    public int countBienImmobilierByAgentImmobilier(Principal principal);
+
     public int countBienImmobilierByGerant(Principal principal);
-
-    public String enregistrerImagePrincipaleDuBien(MultipartFile file);
-
-    public String construireCheminFichier(BienImmobilier bienImmobilier);
 }

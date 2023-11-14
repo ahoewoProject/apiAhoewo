@@ -31,6 +31,19 @@ public class ServicesController {
         return servicesList;
     }
 
+    @RequestMapping(value = "/services/agence/agent-immobilier", method = RequestMethod.GET)
+    public List<Services> getServicesAgenceAgentImmobilier(Principal principal) {
+
+        List<Services> servicesList = new ArrayList<>();
+        try {
+            servicesList = this.servicesService.getServicesAgenceAgentImmobilier(principal);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return servicesList;
+    }
+
     @RequestMapping(value = "/services/{id}", method = RequestMethod.GET)
     public Services findById(@PathVariable Long id) {
 
@@ -88,6 +101,16 @@ public class ServicesController {
         return ResponseEntity.ok(services);
     }
 
+    @RequestMapping(value = "/activer/service/{id}", method = RequestMethod.GET, headers = "accept=Application/json")
+    public void activerService(@PathVariable Long id){
+        this.servicesService.activerService(id);
+    }
+
+    @RequestMapping(value = "/desactiver/service/{id}", method = RequestMethod.GET, headers = "accept=Application/json")
+    public void desactiverService(@PathVariable Long id){
+        this.servicesService.desactiverService(id);
+    }
+
     @RequestMapping(value = "/services/supprimer/{id}", method = RequestMethod.DELETE, headers = "accept=Application/json")
     public void supprimerServices(@PathVariable Long id) {
         this.servicesService.deleteById(id);
@@ -96,6 +119,12 @@ public class ServicesController {
     @RequestMapping(value = "/count/services", method = RequestMethod.GET)
     public int nombreServices(Principal principal){
         int nombres = this.servicesService.countServicesByAgence(principal);
+        return nombres;
+    }
+
+    @RequestMapping(value = "/count/services/agent-immobilier", method = RequestMethod.GET)
+    public int nombreServicesAgentImmobilier(Principal principal){
+        int nombres = this.servicesService.countServicesByAgentImmobilier(principal);
         return nombres;
     }
 }

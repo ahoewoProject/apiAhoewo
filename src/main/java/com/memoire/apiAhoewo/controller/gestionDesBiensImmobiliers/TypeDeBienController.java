@@ -1,6 +1,8 @@
 package com.memoire.apiAhoewo.controller.gestionDesBiensImmobiliers;
 
+import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.BienImmobilier;
 import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.TypeDeBien;
+import com.memoire.apiAhoewo.repository.gestionDesBiensImmobiliers.BienImmobilierRepository;
 import com.memoire.apiAhoewo.service.gestionDesBiensImmobiliers.TypeDeBienService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,12 +20,28 @@ public class TypeDeBienController {
     @Autowired
     private TypeDeBienService typeDeBienService;
 
+    @Autowired
+    private BienImmobilierRepository bienImmobilierRepository;
+
     @RequestMapping(value = "/types-de-bien", method = RequestMethod.GET)
     public List<TypeDeBien> getAll() {
 
         List<TypeDeBien> typeDeBiens = new ArrayList<>();
         try {
             typeDeBiens = this.typeDeBienService.getAll();
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return typeDeBiens;
+    }
+
+    @RequestMapping(value = "/types-de-bien/actifs", method = RequestMethod.GET)
+    public List<TypeDeBien> getTypeDeBienActifs() {
+
+        List<TypeDeBien> typeDeBiens = new ArrayList<>();
+        try {
+            typeDeBiens = this.typeDeBienService.findTypeDeBienActifs();
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Erreur " + e.getMessage());
@@ -79,8 +97,28 @@ public class TypeDeBienController {
         return ResponseEntity.ok(typeDeBien);
     }
 
-    @RequestMapping(value = "/type-de-bien/supprimer/{id}", method = RequestMethod.DELETE, headers = "accept=Application/json")
-    public void supprimerTypeDeBien(@PathVariable Long id) {
-        this.typeDeBienService.deleteById(id);
+    @RequestMapping(value = "/activer/type-de-bien/{id}", method = RequestMethod.GET, headers = "accept=Application/json")
+    public void activerTypeDeBien(@PathVariable Long id){
+        this.typeDeBienService.activerTypeDeBien(id);
+    }
+
+    @RequestMapping(value = "/desactiver/type-de-bien/{id}", method = RequestMethod.GET, headers = "accept=Application/json")
+    public void desactiverTypeDeBien(@PathVariable Long id){
+        this.typeDeBienService.desactiverTypeDeBien(id);
+    }
+
+    @RequestMapping(value = "/type-de-bien/supprimer/{id}", method = RequestMethod.DELETE, headers = "Accept=application/json")
+    public ResponseEntity<?> supprimerTypeDeBien(@PathVariable Long id) {
+        TypeDeBien typeDeBien = typeDeBienService.findById(id);
+        List<BienImmobilier> biensAssocies = bienImmobilierRepository.findByTypeDeBien(typeDeBien);
+
+        if (!biensAssocies.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Des biens sont liés à ce type de bien. Suppression impossible.");
+        } else {
+            typeDeBienService.deleteById(typeDeBien.getId());
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body("Type de bien supprimé avec succès");
+        }
     }
 }

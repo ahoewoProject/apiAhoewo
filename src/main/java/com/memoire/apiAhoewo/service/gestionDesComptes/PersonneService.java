@@ -33,5 +33,5 @@ public interface PersonneService {
 
     public boolean resetPassword(String token, String newPassword);
 
-    public List<Personne> getAllAgentImmobilierAndDemarcheur();
+    public List<Personne> getAllResponsablesAndDemarcheurs();
 }

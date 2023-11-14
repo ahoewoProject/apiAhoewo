@@ -46,6 +46,27 @@ public class ImagesBienImmobilierController {
         return imagesBienImmobilierList;
     }
 
+    @RequestMapping(value = "/premiere-image/bien-immobilier/{id}", method = RequestMethod.GET)
+    public ResponseEntity<byte[]> getPremiereImageBienImmobilier(@PathVariable Long id) {
+
+        BienImmobilier bienImmobilier = bienImmobilierService.findById(id);
+        List<ImagesBienImmobilier> imagesBienImmobilierList = this.imagesBienImmobilierService.findByBienImmobilier(bienImmobilier);
+        ImagesBienImmobilier premiereImageBienImmobilier = imagesBienImmobilierList.get(0);
+        ImagesBienImmobilier imagesBienImmobilier = imagesBienImmobilierService.findById(premiereImageBienImmobilier.getId());
+
+        try {
+            String cheminFichier = imagesBienImmobilierService.construireCheminFichier(imagesBienImmobilier);
+            byte[] imageBytes = fileManagerService.lireFichier(cheminFichier);
+
+            HttpHeaders headers = fileManagerService.construireHeaders(cheminFichier, imageBytes.length);
+            return new ResponseEntity<>(imageBytes, headers, HttpStatus.OK);
+        } catch (IOException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (UnsupportedFileTypeException e) {
+            return new ResponseEntity<>(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+        }
+    }
+
     @RequestMapping(value = "/image/bien-immobilier/{id}", method = RequestMethod.GET)
     public ResponseEntity<byte[]> getImageBienImmobilier(@PathVariable Long id) {
         ImagesBienImmobilier imagesBienImmobilier = imagesBienImmobilierService.findById(id);

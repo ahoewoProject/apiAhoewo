@@ -1,11 +1,14 @@
 package com.memoire.apiAhoewo.serviceImpl.gestionDesBiensImmobiliers;
 
 import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.DelegationGestion;
+import com.memoire.apiAhoewo.model.gestionDesComptes.AgentImmobilier;
 import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
+import com.memoire.apiAhoewo.model.gestionDesComptes.ResponsableAgenceImmobiliere;
 import com.memoire.apiAhoewo.repository.gestionDesBiensImmobiliers.DelegationGestionRepository;
 import com.memoire.apiAhoewo.service.EmailSenderService;
 import com.memoire.apiAhoewo.service.gestionDesBiensImmobiliers.DelegationGestionService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
+import com.memoire.apiAhoewo.service.gestionDesComptes.ResponsableAgenceImmobiliereService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +26,9 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
     private PersonneService personneService;
 
     @Autowired
+    private ResponsableAgenceImmobiliereService responsableAgenceImmobiliereService;
+
+    @Autowired
     private EmailSenderService emailSenderService;
 
     @Override
@@ -35,6 +41,13 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
     public List<DelegationGestion> getAllByGestionnaire(Principal principal) {
         Personne gestionnaire = personneService.findByUsername(principal.getName());
         return delegationGestionRepository.findDelegationGestionByGestionnaire(gestionnaire);
+    }
+
+    @Override
+    public List<DelegationGestion> getDelegationsGestionsByAgentImmobilier(Principal principal) {
+        AgentImmobilier agentImmobilier = (AgentImmobilier) personneService.findByUsername(principal.getName());
+        Personne responsableAgenceImmobiliere = responsableAgenceImmobiliereService.findById(agentImmobilier.getCreerPar());
+        return delegationGestionRepository.findDelegationGestionByGestionnaire(responsableAgenceImmobiliere);
     }
 
     @Override
@@ -108,6 +121,15 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
     public int countDelegationGestionGestionnaire(Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
         List<DelegationGestion> delegationGestions = delegationGestionRepository.findDelegationGestionByGestionnaire(personne);
+        int count = delegationGestions.size();
+        return count;
+    }
+
+    @Override
+    public int countDelegationGestionAgentImmobilier(Principal principal) {
+        AgentImmobilier agentImmobilier = (AgentImmobilier) personneService.findByUsername(principal.getName());
+        Personne responsableAgenceImmobiliere = responsableAgenceImmobiliereService.findById(agentImmobilier.getCreerPar());
+        List<DelegationGestion> delegationGestions = delegationGestionRepository.findDelegationGestionByGestionnaire(responsableAgenceImmobiliere);
         int count = delegationGestions.size();
         return count;
     }

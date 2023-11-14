@@ -4,6 +4,7 @@ import com.memoire.apiAhoewo.model.EntiteDeBase;
 import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "biens_immobiliers")
@@ -36,8 +37,8 @@ public class BienImmobilier extends EntiteDeBase {
     @JoinColumn(name = "type_de_bien_id")
     private TypeDeBien typeDeBien;
 
-    @Column(name = "image_principale")
-    private String imagePrincipale;
+    @OneToMany(mappedBy = "bienImmobilier", cascade = CascadeType.ALL)
+    private List<ImagesBienImmobilier> images;
 
     @Column(name = "statut_bien", nullable = false)
     private String statutBien;
@@ -49,7 +50,7 @@ public class BienImmobilier extends EntiteDeBase {
     }
 
     public BienImmobilier(Long id, String numeroIdentifiant, String description, String adresse,
-                          String ville, Integer surface, Personne personne, TypeDeBien typeDeBien, String imagePrincipale,
+                          String ville, Integer surface, Personne personne, TypeDeBien typeDeBien,
                           String statutBien, Boolean etatBien) {
         this.id = id;
         this.numeroIdentifiant = numeroIdentifiant;
@@ -59,7 +60,6 @@ public class BienImmobilier extends EntiteDeBase {
         this.surface = surface;
         this.personne = personne;
         this.typeDeBien = typeDeBien;
-        this.imagePrincipale = imagePrincipale;
         this.statutBien = statutBien;
         this.etatBien = etatBien;
     }
@@ -130,14 +130,6 @@ public class BienImmobilier extends EntiteDeBase {
         this.typeDeBien = typeDeBien;
     }
 
-    public String getImagePrincipale() {
-        return imagePrincipale;
-    }
-
-    public void setImagePrincipale(String imagePrincipale) {
-        this.imagePrincipale = imagePrincipale;
-    }
-
     public String getStatutBien() {
         return statutBien;
     }
@@ -154,6 +146,14 @@ public class BienImmobilier extends EntiteDeBase {
         this.etatBien = etatBien;
     }
 
+    public List<ImagesBienImmobilier> getImages() {
+        return images;
+    }
+
+    public void setImages(List<ImagesBienImmobilier> images) {
+        this.images = images;
+    }
+
     @Override
     public String toString() {
         return "BienImmobilier{" +
@@ -165,7 +165,6 @@ public class BienImmobilier extends EntiteDeBase {
                 ", surface=" + surface +
                 ", personne=" + personne +
                 ", typeDeBien=" + typeDeBien +
-                ", imagePrincipale='" + imagePrincipale + '\'' +
                 ", statutBien='" + statutBien + '\'' +
                 ", etatBien=" + etatBien +
                 '}';

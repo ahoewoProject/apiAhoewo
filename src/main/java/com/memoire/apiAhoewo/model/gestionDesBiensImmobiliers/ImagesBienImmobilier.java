@@ -15,7 +15,7 @@ public class ImagesBienImmobilier extends EntiteDeBase {
     @Column(name = "nom_image", nullable = false)
     private String nomImage;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bien_immobilier_id")
     private BienImmobilier bienImmobilier;
 

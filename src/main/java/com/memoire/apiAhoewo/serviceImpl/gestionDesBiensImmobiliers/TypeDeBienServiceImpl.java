@@ -26,6 +26,11 @@ public class TypeDeBienServiceImpl implements TypeDeBienService {
     }
 
     @Override
+    public List<TypeDeBien> findTypeDeBienActifs() {
+        return typeDeBienRepository.findByEtat(true);
+    }
+
+    @Override
     public TypeDeBien findById(Long id) {
         return typeDeBienRepository.findById(id).orElse(null);
     }
@@ -38,6 +43,7 @@ public class TypeDeBienServiceImpl implements TypeDeBienService {
     @Override
     public TypeDeBien save(TypeDeBien typeDeBien, Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
+        typeDeBien.setEtat(true);
         typeDeBien.setCreerLe(new Date());
         typeDeBien.setCreerPar(personne.getId());
         typeDeBien.setStatut(true);
@@ -50,6 +56,20 @@ public class TypeDeBienServiceImpl implements TypeDeBienService {
         typeDeBien.setModifierLe(new Date());
         typeDeBien.setModifierPar(personne.getId());
         return typeDeBienRepository.save(typeDeBien);
+    }
+
+    @Override
+    public void activerTypeDeBien(Long id) {
+        TypeDeBien typeDeBien = typeDeBienRepository.findById(id).orElse(null);
+        typeDeBien.setEtat(true);
+        typeDeBienRepository.save(typeDeBien);
+    }
+
+    @Override
+    public void desactiverTypeDeBien(Long id) {
+        TypeDeBien typeDeBien = typeDeBienRepository.findById(id).orElse(null);
+        typeDeBien.setEtat(false);
+        typeDeBienRepository.save(typeDeBien);
     }
 
     @Override

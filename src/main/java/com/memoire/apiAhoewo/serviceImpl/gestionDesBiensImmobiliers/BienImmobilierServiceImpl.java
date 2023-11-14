@@ -1,6 +1,7 @@
 package com.memoire.apiAhoewo.serviceImpl.gestionDesBiensImmobiliers;
 
 import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.BienImmobilier;
+import com.memoire.apiAhoewo.model.gestionDesComptes.AgentImmobilier;
 import com.memoire.apiAhoewo.model.gestionDesComptes.Gerant;
 import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
 import com.memoire.apiAhoewo.repository.gestionDesBiensImmobiliers.BienImmobilierRepository;
@@ -33,6 +34,13 @@ public class BienImmobilierServiceImpl implements BienImmobilierService {
     @Override
     public List<BienImmobilier> getAllByProprietaire(Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
+        return bienImmobilierRepository.findByPersonne(personne);
+    }
+
+    @Override
+    public List<BienImmobilier> findBiensImmobiliersByAgentImmobilier(Principal principal) {
+        AgentImmobilier agentImmobilier = (AgentImmobilier) personneService.findByUsername(principal.getName());
+        Personne personne = personneService.findById(agentImmobilier.getCreerPar());
         return bienImmobilierRepository.findByPersonne(personne);
     }
 
@@ -98,53 +106,20 @@ public class BienImmobilierServiceImpl implements BienImmobilierService {
     }
 
     @Override
+    public int countBienImmobilierByAgentImmobilier(Principal principal) {
+        AgentImmobilier agentImmobilier = (AgentImmobilier) personneService.findByUsername(principal.getName());
+        Personne personne = personneService.findById(agentImmobilier.getCreerPar());
+        List<BienImmobilier> bienImmobiliers = bienImmobilierRepository.findByPersonne(personne);
+        int count = bienImmobiliers.size();
+        return count;
+    }
+
+    @Override
     public int countBienImmobilierByGerant(Principal principal) {
         Gerant gerant = (Gerant) personneService.findByUsername(principal.getName());
         Personne personne = personneService.findById(gerant.getCreerPar());
         List<BienImmobilier> bienImmobiliers = bienImmobilierRepository.findByPersonne(personne);
         int count = bienImmobiliers.size();
         return count;
-    }
-
-    /* Fonction pour l'enregistrement de l'image principale d'un bien immobilier */
-    @Override
-    public String enregistrerImagePrincipaleDuBien(MultipartFile file) {
-        String nomImagePrincipaleDuBien = null;
-
-        try {
-            String repertoireImage = "src/main/resources/imagesBienImmobilier";
-            File repertoire = creerRepertoire(repertoireImage);
-
-            String imagePrincipaleDuBien = file.getOriginalFilename();
-            nomImagePrincipaleDuBien = FilenameUtils.
-                    getBaseName(imagePrincipaleDuBien) + "." + FilenameUtils.getExtension(imagePrincipaleDuBien);
-
-            File ressourceImage = new File(repertoire, nomImagePrincipaleDuBien);
-
-            FileUtils.writeByteArrayToFile(ressourceImage, file.getBytes());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return nomImagePrincipaleDuBien;
-    }
-
-    /* Fonction pour la création du repertoire de l'image principale des biens immobiliers */
-    private File creerRepertoire(String repertoireImagePrincipaleBien) {
-        File repertoire = new File(repertoireImagePrincipaleBien);
-        if (!repertoire.exists()) {
-            boolean repertoireCree = repertoire.mkdirs();
-            if (!repertoireCree) {
-                throw new RuntimeException("Impossible de créer ce répertoire.");
-            }
-        }
-        return repertoire;
-    }
-
-    /* Fonction pour construire le chemin vers l'image principale d'un bien immobilier */
-    @Override
-    public String construireCheminFichier(BienImmobilier bienImmobilier) {
-        String repertoireFichier = "src/main/resources/imagesBienImmobilier";
-        return repertoireFichier + "/" + bienImmobilier.getImagePrincipale();
     }
 }

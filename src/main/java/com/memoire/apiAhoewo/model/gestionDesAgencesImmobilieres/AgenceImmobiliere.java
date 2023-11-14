@@ -1,7 +1,7 @@
 package com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres;
 
 import com.memoire.apiAhoewo.model.EntiteDeBase;
-import com.memoire.apiAhoewo.model.gestionDesComptes.AgentImmobilier;
+import com.memoire.apiAhoewo.model.gestionDesComptes.ResponsableAgenceImmobiliere;
 
 import javax.persistence.*;
 
@@ -42,13 +42,13 @@ public class AgenceImmobiliere extends EntiteDeBase {
     private Boolean etatAgence;
 
     @ManyToOne
-    @JoinColumn(name = "agent_immobilier_id")
-    private AgentImmobilier agentImmobilier;
+    @JoinColumn(name = "responsable_agence_immobiliere_id")
+    private ResponsableAgenceImmobiliere responsableAgenceImmobiliere;
 
     public AgenceImmobiliere() {
     }
 
-    public AgenceImmobiliere(Long id, String logoAgence, String nomAgence, String adresse, String telephone, String adresseEmail, String heureOuverture, String heureFermeture, Boolean estCertifie, Boolean etatAgence, AgentImmobilier agentImmobilier) {
+    public AgenceImmobiliere(Long id, String logoAgence, String nomAgence, String adresse, String telephone, String adresseEmail, String heureOuverture, String heureFermeture, Boolean estCertifie, Boolean etatAgence, ResponsableAgenceImmobiliere responsableAgenceImmobiliere) {
         this.id = id;
         this.logoAgence = logoAgence;
         this.nomAgence = nomAgence;
@@ -59,7 +59,7 @@ public class AgenceImmobiliere extends EntiteDeBase {
         this.heureFermeture = heureFermeture;
         this.estCertifie = estCertifie;
         this.etatAgence = etatAgence;
-        this.agentImmobilier = agentImmobilier;
+        this.responsableAgenceImmobiliere = responsableAgenceImmobiliere;
     }
 
     @Override
@@ -136,12 +136,12 @@ public class AgenceImmobiliere extends EntiteDeBase {
         this.etatAgence = etatAgence;
     }
 
-    public AgentImmobilier getAgentImmobilier() {
-        return agentImmobilier;
+    public ResponsableAgenceImmobiliere getResponsableAgenceImmobiliere() {
+        return responsableAgenceImmobiliere;
     }
 
-    public void setAgentImmobilier(AgentImmobilier agentImmobilier) {
-        this.agentImmobilier = agentImmobilier;
+    public void setResponsableAgenceImmobiliere(ResponsableAgenceImmobiliere responsableAgenceImmobiliere) {
+        this.responsableAgenceImmobiliere = responsableAgenceImmobiliere;
     }
 
     public String getAdresseEmail() {
@@ -156,6 +156,7 @@ public class AgenceImmobiliere extends EntiteDeBase {
     public String toString() {
         return "AgenceImmobiliere{" +
                 "id=" + id +
+                ", logoAgence='" + logoAgence + '\'' +
                 ", nomAgence='" + nomAgence + '\'' +
                 ", adresse='" + adresse + '\'' +
                 ", telephone='" + telephone + '\'' +
@@ -164,7 +165,7 @@ public class AgenceImmobiliere extends EntiteDeBase {
                 ", heureFermeture='" + heureFermeture + '\'' +
                 ", estCertifie=" + estCertifie +
                 ", etatAgence=" + etatAgence +
-                ", agentImmobilier=" + agentImmobilier +
+                ", responsableAgenceImmobiliere=" + responsableAgenceImmobiliere +
                 '}';
     }
 }

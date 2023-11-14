@@ -10,7 +10,9 @@ public interface AgenceImmobiliereService {
 
     public List<AgenceImmobiliere> getAll();
 
-    public List<AgenceImmobiliere> getAllByAgentImmobilier(Principal principal);
+    public List<AgenceImmobiliere> getAllByResponsableAgenceImmobiliere(Principal principal);
+
+    public List<AgenceImmobiliere> getAgenceImmobiliereParAgentImmobilier(Principal principal);
 
     public AgenceImmobiliere findById(Long id);
 
@@ -27,6 +29,8 @@ public interface AgenceImmobiliereService {
     public void deleteById(Long id);
 
     public int countAgencesImmobilieres();
+
+    public int countAgencesByResponsableAgenceImmobiliere(Principal principal);
 
     public int countAgencesByAgentImmobilier(Principal principal);
 

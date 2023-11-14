@@ -22,7 +22,7 @@ public class EntiteDeBase {
     protected Date modifierLe;
 
     @Column(name = "statut")
-    protected boolean statut;
+    protected Boolean statut;
 
     public Long getId() {
         return id;

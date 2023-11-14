@@ -16,6 +16,9 @@ public class TypeDeBien extends EntiteDeBase {
     @Column(name = "designation", unique = true, nullable = false)
     private String designation;
 
+    @Column(name = "etat")
+    protected Boolean etat;
+
     public TypeDeBien() {
     }
 
@@ -42,11 +45,20 @@ public class TypeDeBien extends EntiteDeBase {
         this.designation = designation;
     }
 
+    public Boolean getEtat() {
+        return etat;
+    }
+
+    public void setEtat(Boolean etat) {
+        this.etat = etat;
+    }
+
     @Override
     public String toString() {
         return "TypeDeBien{" +
                 "id=" + id +
                 ", designation='" + designation + '\'' +
+                ", etat=" + etat +
                 '}';
     }
 }

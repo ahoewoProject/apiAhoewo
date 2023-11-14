@@ -110,8 +110,8 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
             case "ROLE_PROPRIETAIRE":
                 personne = new Proprietaire();
                 break;
-            case "ROLE_AGENTIMMOBILIER":
-                personne = new AgentImmobilier();
+            case "ROLE_RESPONSABLE_AGENCEIMMOBILIERE":
+                personne = new ResponsableAgenceImmobiliere();
                 break;
             case "ROLE_DEMARCHEUR":
                 personne = new Demarcheur();
@@ -172,14 +172,14 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
     }
 
     @Override
-    public List<Personne> getAllAgentImmobilierAndDemarcheur() {
+    public List<Personne> getAllResponsablesAndDemarcheurs() {
         List<Personne> personnes = this.personneRepository.findAll();
 
-        List<Personne> agentsEtDemarcheurs = personnes.stream()
-                .filter(personne -> personne instanceof AgentImmobilier || personne instanceof Demarcheur)
+        List<Personne> responsablesEtDemarcheurs = personnes.stream()
+                .filter(personne -> personne instanceof ResponsableAgenceImmobiliere || personne instanceof Demarcheur)
                 .collect(Collectors.toList());
 
-        return agentsEtDemarcheurs;
+        return responsablesEtDemarcheurs;
     }
 
     @Override

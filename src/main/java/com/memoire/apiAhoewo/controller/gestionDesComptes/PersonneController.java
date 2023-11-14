@@ -123,12 +123,12 @@ public class PersonneController {
         }
     }
 
-    @RequestMapping(value = "/agents-immobiliers/demarcheurs", method = RequestMethod.GET)
-    public List<Personne> listeAgentImmobilierEtDemarcheur() {
+    @RequestMapping(value = "/responsables/demarcheurs", method = RequestMethod.GET)
+    public List<Personne> listeResponsablesEtDemarcheurs() {
 
         List<Personne> personnes = new ArrayList<>();
         try {
-            personnes = this.personneService.getAllAgentImmobilierAndDemarcheur();
+            personnes = this.personneService.getAllResponsablesAndDemarcheurs();
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
         }
