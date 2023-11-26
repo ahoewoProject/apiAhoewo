@@ -18,5 +18,5 @@ public interface DemandeCertificationService {
     public int countDemandeCertifValidees();
     public int countDemandeCertifEnAttente();
     public String enregistrerDocumentJustificatif(MultipartFile file);
-    public String construireCheminFichier(DemandeCertification demandeCertification);
+    public String construireCheminFichier(String nomFichier);
 }

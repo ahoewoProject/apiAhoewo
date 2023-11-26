@@ -7,23 +7,19 @@ import java.util.List;
 
 public interface ServicesService {
 
-    public List<Services> getAllByAgence(Principal principal);
+    public List<Services> getAll();
 
-    public List<Services> getServicesAgenceAgentImmobilier(Principal principal);
+    public List<Services> servicesActifs();
 
     public Services findById(Long id);
 
-    public Services saveService(Services services, Principal principal);
+    public Services findByNomService(String nomService);
 
-    public Services updateService(Services services, Principal principal);
+    public Services save(Services services, Principal principal);
 
-    public void activerService(Long id);
+    public Services update(Services services, Principal principal);
 
-    public void desactiverService(Long id);
+    public void activerServices(Long id);
 
-    public void deleteById(Long id);
-
-    public int countServicesByAgence(Principal principal);
-
-    public int countServicesByAgentImmobilier(Principal principal);
+    public void desactiverServices(Long id);
 }

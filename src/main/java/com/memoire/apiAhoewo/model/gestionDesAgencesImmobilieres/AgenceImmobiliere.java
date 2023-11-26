@@ -17,17 +17,20 @@ public class AgenceImmobiliere extends EntiteDeBase {
     @Column(name = "logo_agence")
     private String logoAgence;
 
+    @Column(name = "code_agence")
+    private String codeAgence;
+
     @Column(name = "nom_agence", nullable = false)
     private String nomAgence;
 
     @Column(name = "adresse", nullable = false)
     private String adresse;
 
-    @Column(name = "telephone", nullable = false)
-    private String telephone;
-
     @Column(name = "adresse_email", nullable = false)
     private String adresseEmail;
+
+    @Column(name = "telephone", nullable = false)
+    private String telephone;
 
     @Column(name = "heure_ouverture", nullable = false)
     private String heureOuverture;
@@ -40,27 +43,6 @@ public class AgenceImmobiliere extends EntiteDeBase {
 
     @Column(name = "etat_agence", nullable = false)
     private Boolean etatAgence;
-
-    @ManyToOne
-    @JoinColumn(name = "responsable_agence_immobiliere_id")
-    private ResponsableAgenceImmobiliere responsableAgenceImmobiliere;
-
-    public AgenceImmobiliere() {
-    }
-
-    public AgenceImmobiliere(Long id, String logoAgence, String nomAgence, String adresse, String telephone, String adresseEmail, String heureOuverture, String heureFermeture, Boolean estCertifie, Boolean etatAgence, ResponsableAgenceImmobiliere responsableAgenceImmobiliere) {
-        this.id = id;
-        this.logoAgence = logoAgence;
-        this.nomAgence = nomAgence;
-        this.adresse = adresse;
-        this.telephone = telephone;
-        this.adresseEmail = adresseEmail;
-        this.heureOuverture = heureOuverture;
-        this.heureFermeture = heureFermeture;
-        this.estCertifie = estCertifie;
-        this.etatAgence = etatAgence;
-        this.responsableAgenceImmobiliere = responsableAgenceImmobiliere;
-    }
 
     @Override
     public Long getId() {
@@ -80,6 +62,14 @@ public class AgenceImmobiliere extends EntiteDeBase {
         this.logoAgence = logoAgence;
     }
 
+    public String getCodeAgence() {
+        return codeAgence;
+    }
+
+    public void setCodeAgence(String codeAgence) {
+        this.codeAgence = codeAgence;
+    }
+
     public String getNomAgence() {
         return nomAgence;
     }
@@ -94,6 +84,14 @@ public class AgenceImmobiliere extends EntiteDeBase {
 
     public void setAdresse(String adresse) {
         this.adresse = adresse;
+    }
+
+    public String getAdresseEmail() {
+        return adresseEmail;
+    }
+
+    public void setAdresseEmail(String adresseEmail) {
+        this.adresseEmail = adresseEmail;
     }
 
     public String getTelephone() {
@@ -134,38 +132,5 @@ public class AgenceImmobiliere extends EntiteDeBase {
 
     public void setEtatAgence(Boolean etatAgence) {
         this.etatAgence = etatAgence;
-    }
-
-    public ResponsableAgenceImmobiliere getResponsableAgenceImmobiliere() {
-        return responsableAgenceImmobiliere;
-    }
-
-    public void setResponsableAgenceImmobiliere(ResponsableAgenceImmobiliere responsableAgenceImmobiliere) {
-        this.responsableAgenceImmobiliere = responsableAgenceImmobiliere;
-    }
-
-    public String getAdresseEmail() {
-        return adresseEmail;
-    }
-
-    public void setAdresseEmail(String adresseEmail) {
-        this.adresseEmail = adresseEmail;
-    }
-
-    @Override
-    public String toString() {
-        return "AgenceImmobiliere{" +
-                "id=" + id +
-                ", logoAgence='" + logoAgence + '\'' +
-                ", nomAgence='" + nomAgence + '\'' +
-                ", adresse='" + adresse + '\'' +
-                ", telephone='" + telephone + '\'' +
-                ", adresseEmail='" + adresseEmail + '\'' +
-                ", heureOuverture='" + heureOuverture + '\'' +
-                ", heureFermeture='" + heureFermeture + '\'' +
-                ", estCertifie=" + estCertifie +
-                ", etatAgence=" + etatAgence +
-                ", responsableAgenceImmobiliere=" + responsableAgenceImmobiliere +
-                '}';
     }
 }

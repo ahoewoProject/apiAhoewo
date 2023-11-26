@@ -3,9 +3,10 @@ package com.memoire.apiAhoewo.controller.gestionDesAgencesImmobilieres;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.memoire.apiAhoewo.exception.UnsupportedFileTypeException;
-import com.memoire.apiAhoewo.fileManager.FileFilter;
+import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.AffectationResponsableAgence;
 import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.AgenceImmobiliere;
 import com.memoire.apiAhoewo.service.FileManagerService;
+import com.memoire.apiAhoewo.service.gestionDesAgencesImmobilieres.AffectationResponsableAgenceService;
 import com.memoire.apiAhoewo.service.gestionDesAgencesImmobilieres.AgenceImmobiliereService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -26,14 +27,29 @@ public class AgenceImmobiliereController {
     @Autowired
     private AgenceImmobiliereService agenceImmobiliereService;
     @Autowired
+    private AffectationResponsableAgenceService affectationResponsableAgenceService;
+    @Autowired
     private FileManagerService fileManagerService;
 
     @RequestMapping(value = "/agences-immobilieres", method = RequestMethod.GET)
-    public List<AgenceImmobiliere> getAll() {
+    public List<AffectationResponsableAgence> getAll() {
+
+        List<AffectationResponsableAgence> affectationResponsableAgences = new ArrayList<>();
+        try {
+            affectationResponsableAgences = this.affectationResponsableAgenceService.getAll();
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return affectationResponsableAgences;
+    }
+
+    @RequestMapping(value = "/agences-immobilieres/responsable", method = RequestMethod.GET)
+    public List<AgenceImmobiliere> findAgenceByResponsable(Principal principal) {
 
         List<AgenceImmobiliere> agenceImmobilieres = new ArrayList<>();
         try {
-            agenceImmobilieres = this.agenceImmobiliereService.getAll();
+            agenceImmobilieres = this.agenceImmobiliereService.getAgencesByResponsable(principal);
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Erreur " + e.getMessage());
@@ -41,30 +57,16 @@ public class AgenceImmobiliereController {
         return agenceImmobilieres;
     }
 
-    @RequestMapping(value = "/agence-immobiliere/responsable-agence-immobiliere", method = RequestMethod.GET)
-    public List<AgenceImmobiliere> getAllByResponsableAgenceImmobiliere(Principal principal) {
+    @RequestMapping(value = "/affectation-responsable-agence/{id}", method = RequestMethod.GET)
+    public AffectationResponsableAgence detailAffectation(@PathVariable Long id) {
 
-        List<AgenceImmobiliere> agenceImmobiliereList = new ArrayList<>();
+        AffectationResponsableAgence affectationResponsableAgence = new AffectationResponsableAgence();
         try {
-            agenceImmobiliereList = this.agenceImmobiliereService.getAllByResponsableAgenceImmobiliere(principal);
+            affectationResponsableAgence = this.affectationResponsableAgenceService.findById(id);
         } catch (Exception e) {
-            // TODO: handle exception
             System.out.println("Erreur " + e.getMessage());
         }
-        return agenceImmobiliereList;
-    }
-
-    @RequestMapping(value = "/agence-immobiliere/agent-immobilier", method = RequestMethod.GET)
-    public List<AgenceImmobiliere> getAgenceImmobiliereParAgentImmobilier(Principal principal) {
-
-        List<AgenceImmobiliere> agenceImmobiliereList = new ArrayList<>();
-        try {
-            agenceImmobiliereList = this.agenceImmobiliereService.getAgenceImmobiliereParAgentImmobilier(principal);
-        } catch (Exception e) {
-            // TODO: handle exception
-            System.out.println("Erreur " + e.getMessage());
-        }
-        return agenceImmobiliereList;
+        return affectationResponsableAgence;
     }
 
     @RequestMapping(value = "/agence-immobiliere/{id}", method = RequestMethod.GET)
@@ -78,25 +80,6 @@ public class AgenceImmobiliereController {
         }
         return agenceImmobiliere;
     }
-
-    /*@RequestMapping(value = "/agence-immobiliere/ajouter", method = RequestMethod.POST, headers = "accept=Application/json")
-    public ResponseEntity<?> ajouterAgenceImmobiliere(Principal principal, @RequestBody AgenceImmobiliere agenceImmobiliere) {
-        try {
-            AgenceImmobiliere existingAgenceImmobiliere = agenceImmobiliereService.findByNomAgence(agenceImmobiliere.getNomAgence());
-
-            if (existingAgenceImmobiliere != null) {
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body("Une agence immobilière avec ce nom " + agenceImmobiliere.getNomAgence() + " existe déjà.");
-            }
-
-            agenceImmobiliere = this.agenceImmobiliereService.save(agenceImmobiliere, principal);
-        } catch (Exception e) {
-            System.out.println("Erreur " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Une erreur s'est produite lors de l'ajout du rôle : " + e.getMessage());
-        }
-        return ResponseEntity.ok(agenceImmobiliere);
-    }*/
 
     @RequestMapping(value = "/agence-immobiliere/ajouter", method = RequestMethod.POST, headers = "accept=Application/json")
     public ResponseEntity<?> ajouterAgenceImmobiliere(Principal principal,
@@ -164,61 +147,6 @@ public class AgenceImmobiliereController {
                     .body("Une erreur s'est produite lors de la modification de l'agence immobilière : " + e.getMessage());
         }
         return ResponseEntity.ok(agenceImmobiliere);
-    }
-
-    /*@RequestMapping(value = "/agence-immobiliere/modifier/{id}", method = RequestMethod.PUT, headers = "accept=Application/json")
-    public ResponseEntity<?> modifierAgenceImmobiliere(Principal principal, @RequestBody AgenceImmobiliere agenceImmobiliereModifie, @PathVariable  Long id) {
-        AgenceImmobiliere agenceImmobiliere = agenceImmobiliereService.findById(id);
-        AgenceImmobiliere existingAgenceImmobiliere = agenceImmobiliereService.findByNomAgence(agenceImmobiliere.getNomAgence());
-        try {
-            if (existingAgenceImmobiliere != null) {
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body("Une agence immobilière avec ce nom " + agenceImmobiliere.getNomAgence() + " existe déjà.");
-            }
-            agenceImmobiliere.setNomAgence(agenceImmobiliereModifie.getNomAgence());
-            agenceImmobiliere.setAdresse(agenceImmobiliereModifie.getAdresse());
-            agenceImmobiliere.setTelephone(agenceImmobiliereModifie.getTelephone());
-            agenceImmobiliere.setAdresseEmail(agenceImmobiliereModifie.getAdresseEmail());
-            agenceImmobiliere.setHeureOuverture(agenceImmobiliereModifie.getHeureOuverture());
-            agenceImmobiliere.setHeureFermeture(agenceImmobiliereModifie.getHeureFermeture());
-            agenceImmobiliere = this.agenceImmobiliereService.update(agenceImmobiliere, principal);
-        } catch (Exception e) {
-            System.out.println("Erreur " + e.getMessage());
-        }
-        return ResponseEntity.ok(agenceImmobiliere);
-    }*/
-
-    @RequestMapping(value = "/activer/agence-immobiliere/{id}", method = RequestMethod.GET, headers = "accept=Application/json")
-    public void activerAgenceImmobiliere(@PathVariable Long id){
-        this.agenceImmobiliereService.activerAgence(id);
-    }
-
-    @RequestMapping(value = "/desactiver/agence-immobiliere/{id}", method = RequestMethod.GET, headers = "accept=Application/json")
-    public void desactiverAgenceImmobiliere(@PathVariable Long id){
-        this.agenceImmobiliereService.desactiverAgence(id);
-    }
-
-    @RequestMapping(value = "/agence-immobiliere/supprimer/{id}", method = RequestMethod.DELETE, headers = "accept=Application/json")
-    public void supprimerAgenceImmobiliere(@PathVariable Long id) {
-        this.agenceImmobiliereService.deleteById(id);
-    }
-
-    @RequestMapping(value = "/count/agences-immobilieres", method = RequestMethod.GET)
-    public int nombreAgencesImmobilieres(){
-        int nombres = this.agenceImmobiliereService.countAgencesImmobilieres();
-        return nombres;
-    }
-
-    @RequestMapping(value = "/count/agences-immobilieres/responsable-agence-immobiliere", method = RequestMethod.GET)
-    public int nombreAgenceImmobiliereParResponsable(Principal principal){
-        int nombres = this.agenceImmobiliereService.countAgencesByResponsableAgenceImmobiliere(principal);
-        return nombres;
-    }
-
-    @RequestMapping(value = "/count/agences-immobilieres/agent-immobilier", method = RequestMethod.GET)
-    public int nombreAgencesParAgentImmobilier(Principal principal){
-        int nombres = this.agenceImmobiliereService.countAgencesByAgentImmobilier(principal);
-        return nombres;
     }
 
     @RequestMapping(value = "/logo/agence-immobiliere/{id}", method = RequestMethod.GET)

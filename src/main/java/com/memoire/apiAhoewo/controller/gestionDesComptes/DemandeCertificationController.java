@@ -75,7 +75,7 @@ public class DemandeCertificationController {
 
     @RequestMapping(value = "/compte/demande-certification/ajouter", method = RequestMethod.POST, headers = "accept=Application/json")
     public DemandeCertification ajouterDemandeCertificationCompte(Principal principal,
-                                                            @RequestParam(value = "documentJustificatif", required = false) MultipartFile file,
+                                                            @RequestParam(value = "cni", required = false) MultipartFile file,
                                                             String demandeCertificationJson) throws JsonProcessingException {
 
         DemandeCertification demandeCertification = new ObjectMapper()
@@ -95,7 +95,8 @@ public class DemandeCertificationController {
 
     @RequestMapping(value = "/agence/demande-certification/ajouter", method = RequestMethod.POST, headers = "accept=Application/json")
     public DemandeCertification ajouterDemandeCertificationAgence(Principal principal,
-                                                                  @RequestParam(value = "documentJustificatif", required = false) MultipartFile file,
+                                                                  @RequestParam(value = "cni", required = false) MultipartFile file,
+                                                                  @RequestParam(value = "carteCfe", required = false) MultipartFile file2,
                                                                   String demandeCertificationJson) throws JsonProcessingException {
 
         DemandeCertification demandeCertification = new ObjectMapper().readValue(demandeCertificationJson,
@@ -105,6 +106,10 @@ public class DemandeCertificationController {
                 String nomDocument = demandeCertificationService.enregistrerDocumentJustificatif(file);
                 demandeCertification.setDocumentJustificatif(nomDocument);
             }
+            if (file2 != null) {
+                String nomCarteCfe = demandeCertificationService.enregistrerDocumentJustificatif(file2);
+                demandeCertification.setCarteCfe(nomCarteCfe);
+            }
             demandeCertification = sauvegarderDemandeCertificationAgence(demandeCertification, principal);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
@@ -113,12 +118,29 @@ public class DemandeCertificationController {
         return demandeCertification;
     }
 
-    @RequestMapping(value = "/document/demande-certification/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/cni/demande-certification/{id}", method = RequestMethod.GET)
     public ResponseEntity<byte[]> getDocumentJustificatif(@PathVariable Long id) {
         DemandeCertification demandeCertification = demandeCertificationService.findById(id);
 
         try {
-            String cheminFichier = demandeCertificationService.construireCheminFichier(demandeCertification);
+            String cheminFichier = demandeCertificationService.construireCheminFichier(demandeCertification.getDocumentJustificatif());
+            byte[] imageBytes = fileManagerService.lireFichier(cheminFichier);
+
+            HttpHeaders headers = fileManagerService.construireHeaders(cheminFichier, imageBytes.length);
+            return new ResponseEntity<>(imageBytes, headers, HttpStatus.OK);
+        } catch (IOException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (UnsupportedFileTypeException e) {
+            return new ResponseEntity<>(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
+        }
+    }
+
+    @RequestMapping(value = "/carte-cfe/demande-certification/{id}", method = RequestMethod.GET)
+    public ResponseEntity<byte[]> getCarteCfe(@PathVariable Long id) {
+        DemandeCertification demandeCertification = demandeCertificationService.findById(id);
+
+        try {
+            String cheminFichier = demandeCertificationService.construireCheminFichier(demandeCertification.getCarteCfe());
             byte[] imageBytes = fileManagerService.lireFichier(cheminFichier);
 
             HttpHeaders headers = fileManagerService.construireHeaders(cheminFichier, imageBytes.length);

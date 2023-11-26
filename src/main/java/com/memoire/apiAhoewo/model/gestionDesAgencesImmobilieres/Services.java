@@ -13,15 +13,14 @@ public class Services extends EntiteDeBase {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "code_service", nullable = false, unique = true)
+    private String codeService;
+
     @Column(name = "nom_service")
     private String nomService;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "TEXT", nullable = false)
     private String description;
-
-    @ManyToOne()
-    @JoinColumn(name="agence_immobiliere_id")
-    private AgenceImmobiliere agenceImmobiliere;
 
     @Column(name = "etat")
     protected Boolean etat;
@@ -29,11 +28,12 @@ public class Services extends EntiteDeBase {
     public Services() {
     }
 
-    public Services(Long id, String nomService, String description, AgenceImmobiliere agenceImmobiliere) {
+    public Services(Long id, String codeService, String nomService, String description, Boolean etat) {
         this.id = id;
+        this.codeService = codeService;
         this.nomService = nomService;
         this.description = description;
-        this.agenceImmobiliere = agenceImmobiliere;
+        this.etat = etat;
     }
 
     @Override
@@ -44,6 +44,14 @@ public class Services extends EntiteDeBase {
     @Override
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getCodeService() {
+        return codeService;
+    }
+
+    public void setCodeService(String codeService) {
+        this.codeService = codeService;
     }
 
     public String getNomService() {
@@ -62,29 +70,11 @@ public class Services extends EntiteDeBase {
         this.description = description;
     }
 
-    public AgenceImmobiliere getAgenceImmobiliere() {
-        return agenceImmobiliere;
-    }
-
-    public void setAgenceImmobiliere(AgenceImmobiliere agenceImmobiliere) {
-        this.agenceImmobiliere = agenceImmobiliere;
-    }
-
     public Boolean getEtat() {
         return etat;
     }
 
     public void setEtat(Boolean etat) {
         this.etat = etat;
-    }
-
-    @Override
-    public String toString() {
-        return "Services{" +
-                "id=" + id +
-                ", nomService='" + nomService + '\'' +
-                ", description='" + description + '\'' +
-                ", agenceImmobiliere=" + agenceImmobiliere +
-                '}';
     }
 }

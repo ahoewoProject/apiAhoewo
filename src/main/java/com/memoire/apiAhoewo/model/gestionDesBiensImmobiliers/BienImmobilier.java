@@ -37,8 +37,8 @@ public class BienImmobilier extends EntiteDeBase {
     @JoinColumn(name = "type_de_bien_id")
     private TypeDeBien typeDeBien;
 
-    @OneToMany(mappedBy = "bienImmobilier", cascade = CascadeType.ALL)
-    private List<ImagesBienImmobilier> images;
+    /*@OneToMany(mappedBy = "bienImmobilier", cascade = CascadeType.ALL)
+    private List<ImagesBienImmobilier> images;*/
 
     @Column(name = "statut_bien", nullable = false)
     private String statutBien;
@@ -146,13 +146,13 @@ public class BienImmobilier extends EntiteDeBase {
         this.etatBien = etatBien;
     }
 
-    public List<ImagesBienImmobilier> getImages() {
+    /*public List<ImagesBienImmobilier> getImages() {
         return images;
     }
 
     public void setImages(List<ImagesBienImmobilier> images) {
         this.images = images;
-    }
+    }*/
 
     @Override
     public String toString() {

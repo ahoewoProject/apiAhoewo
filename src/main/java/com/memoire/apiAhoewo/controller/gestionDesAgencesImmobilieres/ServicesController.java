@@ -18,12 +18,12 @@ public class ServicesController {
     @Autowired
     private ServicesService servicesService;
 
-    @RequestMapping(value = "/services/agence-immobiliere", method = RequestMethod.GET)
-    public List<Services> getAllByAgenceImmobiliere(Principal principal) {
+    @RequestMapping(value = "/services", method = RequestMethod.GET)
+    public List<Services> getAll() {
 
         List<Services> servicesList = new ArrayList<>();
         try {
-            servicesList = this.servicesService.getAllByAgence(principal);
+            servicesList = this.servicesService.getAll();
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Erreur " + e.getMessage());
@@ -31,12 +31,12 @@ public class ServicesController {
         return servicesList;
     }
 
-    @RequestMapping(value = "/services/agence/agent-immobilier", method = RequestMethod.GET)
-    public List<Services> getServicesAgenceAgentImmobilier(Principal principal) {
+    @RequestMapping(value = "/services/actifs", method = RequestMethod.GET)
+    public List<Services> getServicesActifs() {
 
         List<Services> servicesList = new ArrayList<>();
         try {
-            servicesList = this.servicesService.getServicesAgenceAgentImmobilier(principal);
+            servicesList = this.servicesService.servicesActifs();
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Erreur " + e.getMessage());
@@ -57,18 +57,16 @@ public class ServicesController {
     }
 
     @RequestMapping(value = "/services/ajouter", method = RequestMethod.POST, headers = "accept=Application/json")
-    public ResponseEntity<?> ajouterService(Principal principal, @RequestBody Services services) {
+    public ResponseEntity<?> ajouterServices(Principal principal, @RequestBody Services services) {
         try {
-            List<Services> servicesExistants = this.servicesService.getAllByAgence(principal);
+            Services servicesExistant = servicesService.findByNomService(services.getNomService());
 
-            for (Services serviceExistant : servicesExistants) {
-                if (serviceExistant.getNomService().equals(services.getNomService())) {
-                    return ResponseEntity.status(HttpStatus.CONFLICT)
-                            .body("Un service avec ce nom " + services.getNomService() + " existe déjà.");
-                }
-
+            if (servicesExistant != null) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body("Un service avec ce nom " + services.getNomService() + " existe déjà.");
             }
-            services = servicesService.saveService(services, principal);
+
+            services = this.servicesService.save(services, principal);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -77,54 +75,30 @@ public class ServicesController {
         return ResponseEntity.ok(services);
     }
 
-    @RequestMapping(value = "/services/modifier/{id}", method = RequestMethod.POST, headers = "accept=Application/json")
-    public ResponseEntity<?> modifierService(Principal principal, @RequestBody Services servicesModifie, @PathVariable Long id) {
-        Services services;
+    @RequestMapping(value = "/services/modifier/{id}", method = RequestMethod.PUT, headers = "accept=Application/json")
+    public ResponseEntity<?> modifierServices(Principal principal, @RequestBody Services servicesModifie, @PathVariable  Long id) {
+        Services services = servicesService.findById(id);
+        Services servicesExistant = servicesService.findByNomService(servicesModifie.getNomService());
         try {
-            services = servicesService.findById(id);
-            List<Services> servicesExistants = this.servicesService.getAllByAgence(principal);
-
-            for (Services serviceExistant : servicesExistants) {
-                if (serviceExistant.getNomService().equals(servicesModifie.getNomService())) {
-                    return ResponseEntity.status(HttpStatus.CONFLICT)
-                            .body("Un service avec ce nom " + services.getNomService() + " existe déjà.");
-                }
+            if (servicesExistant != null) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body("Un type de bien avec cette désignation " + servicesExistant.getNomService() + " existe déjà.");
             }
             services.setNomService(servicesModifie.getNomService());
-            services.setDescription(servicesModifie.getDescription());
-            services = servicesService.updateService(services, principal);
+            services = this.servicesService.update(services, principal);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Une erreur s'est produite lors de l'ajout du service : " + e.getMessage());
         }
         return ResponseEntity.ok(services);
     }
 
-    @RequestMapping(value = "/activer/service/{id}", method = RequestMethod.GET, headers = "accept=Application/json")
-    public void activerService(@PathVariable Long id){
-        this.servicesService.activerService(id);
+    @RequestMapping(value = "/activer/services/{id}", method = RequestMethod.GET, headers = "accept=Application/json")
+    public void activerServices(@PathVariable Long id){
+        this.servicesService.activerServices(id);
     }
 
-    @RequestMapping(value = "/desactiver/service/{id}", method = RequestMethod.GET, headers = "accept=Application/json")
-    public void desactiverService(@PathVariable Long id){
-        this.servicesService.desactiverService(id);
-    }
-
-    @RequestMapping(value = "/services/supprimer/{id}", method = RequestMethod.DELETE, headers = "accept=Application/json")
-    public void supprimerServices(@PathVariable Long id) {
-        this.servicesService.deleteById(id);
-    }
-
-    @RequestMapping(value = "/count/services", method = RequestMethod.GET)
-    public int nombreServices(Principal principal){
-        int nombres = this.servicesService.countServicesByAgence(principal);
-        return nombres;
-    }
-
-    @RequestMapping(value = "/count/services/agent-immobilier", method = RequestMethod.GET)
-    public int nombreServicesAgentImmobilier(Principal principal){
-        int nombres = this.servicesService.countServicesByAgentImmobilier(principal);
-        return nombres;
+    @RequestMapping(value = "/desactiver/services/{id}", method = RequestMethod.GET, headers = "accept=Application/json")
+    public void desactiverServices(@PathVariable Long id){
+        this.servicesService.desactiverServices(id);
     }
 }

@@ -15,6 +15,8 @@ public interface PersonneService {
 
     public Personne modifierProfil(RegisterForm registerForm, Principal principal, Long id);
 
+    public String genererUniqueUsername(String prenoms);
+
     public boolean usernameExists(String username);
 
     public boolean emailExists(String email);
@@ -32,6 +34,4 @@ public interface PersonneService {
     public void sendPasswordResetEmail(Personne personne);
 
     public boolean resetPassword(String token, String newPassword);
-
-    public List<Personne> getAllResponsablesAndDemarcheurs();
 }

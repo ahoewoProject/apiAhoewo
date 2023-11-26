@@ -50,16 +50,16 @@ public class AdministrateurController {
     @RequestMapping(value = "/administrateur/ajouter", method = RequestMethod.POST, headers = "accept=Application/json")
     public ResponseEntity<?> ajouterAdministrateur(Principal principal, @RequestBody Administrateur administrateur) {
         try {
-            if (personneService.usernameExists(administrateur.getUsername())) {
-                return new ResponseEntity<>("Un utilisateur avec ce nom d'utilisateur existe déjà", HttpStatus.CONFLICT);
+            if (personneService.emailExists(administrateur.getEmail())) {
+                new ResponseEntity<>("Un administrateur avec cette adresse e-mail existe déjà", HttpStatus.CONFLICT);
             }
             administrateur = this.administrateurService.save(administrateur, principal);
+            return ResponseEntity.ok(administrateur);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Une erreur s'est produite lors de l'ajout de l'administrateur : " + e.getMessage());
         }
-        return ResponseEntity.ok(administrateur);
     }
 
     @RequestMapping(value = "/administrateur/supprimer/{id}", method = RequestMethod.DELETE, headers = "accept=Application/json")

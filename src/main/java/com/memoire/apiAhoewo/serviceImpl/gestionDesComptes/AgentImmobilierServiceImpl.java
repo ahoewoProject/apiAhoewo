@@ -6,6 +6,9 @@ import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
 import com.memoire.apiAhoewo.model.gestionDesComptes.ResponsableAgenceImmobiliere;
 import com.memoire.apiAhoewo.repository.gestionDesAgencesImmobilieres.AgenceImmobiliereRepository;
 import com.memoire.apiAhoewo.repository.gestionDesComptes.AgentImmobilierRepository;
+import com.memoire.apiAhoewo.service.EmailSenderService;
+import com.memoire.apiAhoewo.service.GenererMotDePasseService;
+import com.memoire.apiAhoewo.service.GenererUsernameService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.AgentImmobilierService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,30 +18,25 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class AgentImmobilierServiceImpl implements AgentImmobilierService {
     @Autowired
     private AgentImmobilierRepository agentImmobilierRepository;
-
-    @Autowired
-    private AgenceImmobiliereRepository agenceImmobiliereRepository;
-
     @Autowired
     private PersonneService personneService;
-
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private GenererMotDePasseService genererMotDePasseService;
+    @Autowired
+    private EmailSenderService emailSenderService;
 
     @Override
     public List<AgentImmobilier> getAll() {
-        return agentImmobilierRepository.findAll();
-    }
-
-    @Override
-    public List<AgentImmobilier> findAgentsImmobiliersByResponsable(Principal principal) {
-        Personne personne = personneService.findByUsername(principal.getName());
-        return agentImmobilierRepository.findByCreerPar(personne.getId());
+        return this.agentImmobilierRepository.findAll();
     }
 
     @Override
@@ -47,44 +45,50 @@ public class AgentImmobilierServiceImpl implements AgentImmobilierService {
     }
 
     @Override
+    public AgentImmobilier findByMatricule(String matricule) {
+        return agentImmobilierRepository.findByMatricule(matricule);
+    }
+
+    @Override
     public AgentImmobilier save(AgentImmobilier agentImmobilier, Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
-        List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereRepository.findByResponsableAgenceImmobiliere((ResponsableAgenceImmobiliere) personne);
-
-        boolean estCertifieAgentImmobilier = false;
-
-        // Vérifiez si au moins une agence immobilière est certifiée
-        for (AgenceImmobiliere agence : agenceImmobilieres) {
-            if (agence.getEstCertifie()) {
-                estCertifieAgentImmobilier = true;
-                break; // Si une agence est certifiée, pas besoin de continuer la boucle
-            }
-        }
-
+        String username = personneService.genererUniqueUsername(agentImmobilier.getPrenom());
+        String motDePasse = genererMotDePasseService.genererMotDePasse(8);
+        agentImmobilier.setMatricule("AGENT" + UUID.randomUUID());
+        agentImmobilier.setUsername(username);
+        agentImmobilier.setMotDePasse(passwordEncoder.encode(motDePasse));
         agentImmobilier.setEtatCompte(true);
-        agentImmobilier.setEstCertifie(estCertifieAgentImmobilier);
+        if (personne.getEstCertifie()) {
+            agentImmobilier.setEstCertifie(true);
+        } else {
+            agentImmobilier.setEstCertifie(false);
+        }
+        agentImmobilier.setAutorisation(false);
         agentImmobilier.setCreerLe(new Date());
         agentImmobilier.setCreerPar(personne.getId());
         agentImmobilier.setStatut(true);
-        agentImmobilier.setMotDePasse(passwordEncoder.encode(agentImmobilier.getMotDePasse()));
-        return agentImmobilierRepository.save(agentImmobilier);
+        AgentImmobilier savedAgent = agentImmobilierRepository.save(agentImmobilier);
+        savedAgent.setMatricule("AGENT00" + savedAgent.getId());
+        AgentImmobilier newAgent = agentImmobilierRepository.save(savedAgent);
+
+        String contenu = "Bonjour " + agentImmobilier.getPrenom() + ",\n\n" +
+                "Votre compte a été créé avec succès suite à l'enregistrement de vos informations auprès de l'agence immobilière pour laquelle vous travaillez.\n" +
+                "Voici vos identifiants de connexion :\n" +
+                "Nom d'utilisateur : " + username + "\n" +
+                "Mot de passe : " + motDePasse + "\n\n" +
+                "Vous pouvez maintenant vous connecter à votre compte.\n\n" +
+                "Cordialement,\n" +
+                "\nL'équipe de support technique - ahoewo !";
+        CompletableFuture.runAsync(() -> {
+            emailSenderService.sendMail(agentImmobilier.getEmail(), "Informations de connexion", contenu);
+        });
+
+
+        return newAgent;
     }
 
     @Override
-    public void deleteById(Long id) {
-        agentImmobilierRepository.deleteById(id);
-    }
-
-    @Override
-    public int countAgentImmobiliers() {
-        return (int) agentImmobilierRepository.count();
-    }
-
-    @Override
-    public int countAgentsImmobiliersByResponsable(Principal principal) {
-        Personne personne = personneService.findByUsername(principal.getName());
-        List<AgentImmobilier> agentImmobiliers = agentImmobilierRepository.findByCreerPar(personne.getId());
-        int count = agentImmobiliers.size();
-        return count;
+    public boolean matriculeExists(String matricule) {
+        return agentImmobilierRepository.existsByMatricule(matricule);
     }
 }

@@ -15,8 +15,11 @@ public class AgentImmobilier extends Personne {
     public AgentImmobilier() {
     }
 
-    public AgentImmobilier(Long id, String nom, String prenom, String username, String email, String motDePasse, String telephone, Boolean etatCompte, Boolean estCertifie, Role role, Long id1) {
-        super(id, nom, prenom, username, email, motDePasse, telephone, etatCompte, estCertifie, role);
+    public AgentImmobilier(Long id, String nom, String prenom, String matricule,
+                           String username, String motDePasse, String email, String telephone,
+                           String resetToken, Boolean etatCompte, Boolean estCertifie, Boolean autorisation, Role role, Long id1) {
+        super(id, nom, prenom, matricule, username, motDePasse, email, telephone, resetToken, etatCompte, estCertifie,
+                autorisation, role);
         this.id = id1;
     }
 
@@ -36,13 +39,15 @@ public class AgentImmobilier extends Personne {
                 "id=" + id +
                 ", nom='" + nom + '\'' +
                 ", prenom='" + prenom + '\'' +
+                ", matricule='" + matricule + '\'' +
                 ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
                 ", motDePasse='" + motDePasse + '\'' +
+                ", email='" + email + '\'' +
                 ", telephone='" + telephone + '\'' +
+                ", resetToken='" + resetToken + '\'' +
                 ", etatCompte=" + etatCompte +
                 ", estCertifie=" + estCertifie +
-                ", resetToken='" + resetToken + '\'' +
+                ", autorisation=" + autorisation +
                 '}';
     }
 }

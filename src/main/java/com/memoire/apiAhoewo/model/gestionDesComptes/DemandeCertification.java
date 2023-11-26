@@ -1,6 +1,5 @@
 package com.memoire.apiAhoewo.model.gestionDesComptes;
 
-
 import com.memoire.apiAhoewo.model.EntiteDeBase;
 import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.AgenceImmobiliere;
 
@@ -20,6 +19,9 @@ public class DemandeCertification extends EntiteDeBase {
 
     @Column(name = "document_justificatif", nullable = false)
     private String documentJustificatif;
+
+    @Column(name = "carte_cfe")
+    private String carteCfe;
 
     @Column(name = "statut_certification", nullable = false)
     private Integer statutDemande;
@@ -66,6 +68,14 @@ public class DemandeCertification extends EntiteDeBase {
 
     public void setDocumentJustificatif(String documentJustificatif) {
         this.documentJustificatif = documentJustificatif;
+    }
+
+    public String getCarteCfe() {
+        return carteCfe;
+    }
+
+    public void setCarteCfe(String carteCfe) {
+        this.carteCfe = carteCfe;
     }
 
     public Integer getStatutDemande() {

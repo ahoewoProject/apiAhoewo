@@ -9,6 +9,5 @@ import java.util.List;
 
 @Repository
 public interface AgenceImmobiliereRepository extends JpaRepository<AgenceImmobiliere, Long> {
-    List<AgenceImmobiliere> findByResponsableAgenceImmobiliere(ResponsableAgenceImmobiliere responsableAgenceImmobiliere);
     AgenceImmobiliere findByNomAgence(String nomAgence);
 }

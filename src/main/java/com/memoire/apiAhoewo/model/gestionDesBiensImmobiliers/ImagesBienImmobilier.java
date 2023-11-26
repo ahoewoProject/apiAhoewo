@@ -5,7 +5,7 @@ import com.memoire.apiAhoewo.model.EntiteDeBase;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "images_bien_immobilier")
+@Table(name = "images_biens_immobiliers")
 public class ImagesBienImmobilier extends EntiteDeBase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

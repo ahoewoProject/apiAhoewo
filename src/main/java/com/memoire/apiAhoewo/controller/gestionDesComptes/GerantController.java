@@ -61,17 +61,16 @@ public class GerantController {
     @RequestMapping(value = "/gerant/ajouter", method = RequestMethod.POST, headers = "accept=Application/json")
     public ResponseEntity<?> ajouterGerant(Principal principal, @RequestBody Gerant gerant) {
         try {
-            if (personneService.usernameExists(gerant.getUsername())) {
-                return new ResponseEntity<>("Un utilisateur avec ce d'utilisateur existe déjà", HttpStatus.CONFLICT);
+            if (personneService.emailExists(gerant.getEmail())) {
+                new ResponseEntity<>("Un gérant avec cette adresse e-mail existe déjà", HttpStatus.CONFLICT);
             }
-
             gerant = this.gerantService.save(gerant, principal);
+            return ResponseEntity.ok(gerant);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Une erreur s'est produite lors de l'ajout du gérant : " + e.getMessage());
         }
-        return ResponseEntity.ok(gerant);
     }
 
     @RequestMapping(value = "/gerant/supprimer/{id}", method = RequestMethod.DELETE, headers = "accept=Application/json")

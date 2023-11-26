@@ -122,16 +122,4 @@ public class PersonneController {
             return ResponseEntity.badRequest().body("Token invalide.");
         }
     }
-
-    @RequestMapping(value = "/responsables/demarcheurs", method = RequestMethod.GET)
-    public List<Personne> listeResponsablesEtDemarcheurs() {
-
-        List<Personne> personnes = new ArrayList<>();
-        try {
-            personnes = this.personneService.getAllResponsablesAndDemarcheurs();
-        } catch (Exception e) {
-            System.out.println("Erreur " + e.getMessage());
-        }
-        return personnes;
-    }
 }

@@ -4,6 +4,7 @@ import com.memoire.apiAhoewo.model.gestionDesComptes.*;
 import com.memoire.apiAhoewo.repository.gestionDesComptes.PersonneRepository;
 import com.memoire.apiAhoewo.requestForm.RegisterForm;
 import com.memoire.apiAhoewo.service.EmailSenderService;
+import com.memoire.apiAhoewo.service.GenererUsernameService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -30,7 +31,7 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
     @Autowired
     private ClientService clientService;
     @Autowired
-    private AgentImmobilierService agentImmobilierService;
+    private ResponsableAgenceImmobiliereService responsableAgenceImmobiliereService;
     @Autowired
     private DemarcheurService demarcheurService;
     @Autowired
@@ -38,7 +39,11 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
     @Autowired
     private ProprietaireService proprietaireService;
     @Autowired
+    private AgentImmobilierService agentImmobilierService;
+    @Autowired
     private EmailSenderService emailSenderService;
+    @Autowired
+    private GenererUsernameService genererUsernameService;
 
     public PersonneServiceImpl() {
     }
@@ -96,6 +101,21 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
         return new org.springframework.security.core.userdetails.User(personne.getUsername(), personne.getMotDePasse(), authorities );
     }
 
+    private String genererMatricule(String roleCode, Long id) {
+        switch (roleCode) {
+            case "ROLE_ADMINISTRATEUR":
+                return "ADMIN00" + id;
+            case "ROLE_PROPRIETAIRE":
+                return "PROPR00" + id;
+            case "ROLE_RESPONSABLE":
+                return "RESPO00" + id;
+            case "ROLE_DEMARCHEUR":
+                return "DEMAR00" + id;
+            default:
+                return "CLIEN00" + id;
+        }
+    }
+
     @Override
     public Personne register(RegisterForm registerForm) {
         Role role = registerForm.getRole();
@@ -110,7 +130,7 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
             case "ROLE_PROPRIETAIRE":
                 personne = new Proprietaire();
                 break;
-            case "ROLE_RESPONSABLE_AGENCEIMMOBILIERE":
+            case "ROLE_RESPONSABLE":
                 personne = new ResponsableAgenceImmobiliere();
                 break;
             case "ROLE_DEMARCHEUR":
@@ -129,14 +149,18 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
         personne.setTelephone(registerForm.getTelephone());
         personne.setEtatCompte(true);
         personne.setEstCertifie(false);
+        personne.setAutorisation(true);
         personne.setRole(role);
         personne.setId(personne.getId());
+        personne.setMatricule(genererMatricule(roleCode, personne.getId()));
         personne.setCreerPar(1L);
         personne.setCreerLe(new Date());
         personne.setStatut(true);
 
-        personneRepository.save(personne);
-        return personne;
+        Personne personneInseree = personneRepository.save(personne);
+        personneInseree.setMatricule(genererMatricule(roleCode, personneInseree.getId()));
+        Personne newPersonne = personneRepository.save(personneInseree);
+        return newPersonne;
     }
 
     @Override
@@ -145,7 +169,7 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
         personne.setResetToken(token);
         personneRepository.save(personne);
 
-        String resetLink = "http://localhost:4200/reset-password?token=" + token;
+        String resetLink = "http://localhost:4200/#/reset-password?token=" + token;
 
         String contenu = "Bonjour M/Mlle " + personne.getPrenom() + ",\n\n" +
                 "Pour réinitialiser votre mot de passe, veuillez cliquer sur le lien ci-dessous :\n" +
@@ -165,21 +189,15 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
             // Réinitialiser le mot de passe et effacer le token
             personne.setMotDePasse(passwordEncoder.encode(newPassword));
             personne.setResetToken(null);
-            personneRepository.save(personne);
+            if (!personne.getAutorisation()) {
+                personne.setAutorisation(true);
+                personneRepository.save(personne);
+            } else {
+                personneRepository.save(personne);
+            }
             return true;
         }
         return false;
-    }
-
-    @Override
-    public List<Personne> getAllResponsablesAndDemarcheurs() {
-        List<Personne> personnes = this.personneRepository.findAll();
-
-        List<Personne> responsablesEtDemarcheurs = personnes.stream()
-                .filter(personne -> personne instanceof ResponsableAgenceImmobiliere || personne instanceof Demarcheur)
-                .collect(Collectors.toList());
-
-        return responsablesEtDemarcheurs;
     }
 
     @Override
@@ -193,17 +211,22 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
             case "ROLE_ADMINISTRATEUR":
                 Administrateur administrateur = administrateurService.findById(id);
                 personneToUpdate = administrateur;
-                System.out.println(personneToUpdate);
                 break;
 
-            case "ROLE_PROPRIETAIRE":
-                Proprietaire proprietaire = proprietaireService.findById(id);
-                personneToUpdate = proprietaire;
+            case "ROLE_RESPONSABLE":
+                ResponsableAgenceImmobiliere responsableAgenceImmobiliere = responsableAgenceImmobiliereService.findById(id);
+                personneToUpdate = responsableAgenceImmobiliere;
                 break;
 
             case "ROLE_AGENTIMMOBILIER":
                 AgentImmobilier agentImmobilier = agentImmobilierService.findById(id);
                 personneToUpdate = agentImmobilier;
+                break;
+
+
+            case "ROLE_PROPRIETAIRE":
+                Proprietaire proprietaire = proprietaireService.findById(id);
+                personneToUpdate = proprietaire;
                 break;
 
             case "ROLE_DEMARCHEUR":
@@ -232,11 +255,25 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
         personneToUpdate.setUsername(registerForm.getUsername());
         personneToUpdate.setMotDePasse(passwordEncoder.encode(registerForm.getMotDePasse()));
         personneToUpdate.setTelephone(registerForm.getTelephone());
-        personneToUpdate.setId(id);
         personneToUpdate.setModifierLe(new Date());
         personneToUpdate.setModifierPar(personne.getId());
 
         return personneRepository.save(personneToUpdate);
+    }
+
+    @Override
+    public String genererUniqueUsername(String prenoms) {
+        String baseUsername = genererUsernameService.genererUsername(prenoms);
+        String username = baseUsername;
+        int suffix = 1;
+
+        while (usernameExists(username)) {
+            username = baseUsername + suffix;
+            suffix++;
+        }
+
+        return username;
+
     }
 
     public boolean usernameExists(String username) {

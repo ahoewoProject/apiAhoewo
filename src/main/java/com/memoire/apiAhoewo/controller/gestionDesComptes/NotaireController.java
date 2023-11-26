@@ -48,17 +48,16 @@ public class NotaireController {
     @RequestMapping(value = "/notaire/ajouter", method = RequestMethod.POST, headers = "accept=Application/json")
     public ResponseEntity<?> ajouterNotaire(Principal principal, @RequestBody Notaire notaire) {
         try {
-            if (personneService.usernameExists(notaire.getUsername())) {
-                return new ResponseEntity<>("Un utilisateur avec ce nom d'utilisateur existe déjà", HttpStatus.CONFLICT);
+            if (personneService.emailExists(notaire.getEmail())) {
+                new ResponseEntity<>("Un notaire avec cette adresse e-mail existe déjà", HttpStatus.CONFLICT);
             }
-
             notaire = this.notaireService.save(notaire, principal);
+            return ResponseEntity.ok(notaire);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Une erreur s'est produite lors de l'ajout du notaire : " + e.getMessage());
         }
-        return ResponseEntity.ok(notaire);
     }
 
     @RequestMapping(value = "/notaire/supprimer/{id}", method = RequestMethod.DELETE, headers = "accept=Application/json")

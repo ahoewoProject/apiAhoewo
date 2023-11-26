@@ -9,5 +9,6 @@ import java.util.List;
 
 @Repository
 public interface ServicesRepository extends JpaRepository<Services, Long> {
-    List<Services> findByAgenceImmobiliere(AgenceImmobiliere agenceImmobiliere);
+    Services findByNomService(String nomService);
+    List<Services> findByEtat(Boolean etat);
 }

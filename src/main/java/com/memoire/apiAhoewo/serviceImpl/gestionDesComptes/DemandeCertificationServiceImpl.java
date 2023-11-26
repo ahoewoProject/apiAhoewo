@@ -1,14 +1,18 @@
 package com.memoire.apiAhoewo.serviceImpl.gestionDesComptes;
 
+import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.AffectationAgentAgence;
+import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.AffectationResponsableAgence;
 import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.AgenceImmobiliere;
 import com.memoire.apiAhoewo.model.gestionDesComptes.AgentImmobilier;
 import com.memoire.apiAhoewo.model.gestionDesComptes.DemandeCertification;
 import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
+import com.memoire.apiAhoewo.repository.gestionDesAgencesImmobilieres.AffectationAgentAgenceRepository;
 import com.memoire.apiAhoewo.repository.gestionDesAgencesImmobilieres.AgenceImmobiliereRepository;
 import com.memoire.apiAhoewo.repository.gestionDesComptes.AgentImmobilierRepository;
 import com.memoire.apiAhoewo.repository.gestionDesComptes.DemandeCertificationRepository;
 import com.memoire.apiAhoewo.repository.gestionDesComptes.PersonneRepository;
 import com.memoire.apiAhoewo.service.EmailSenderService;
+import com.memoire.apiAhoewo.service.gestionDesAgencesImmobilieres.AffectationAgentAgenceService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.DemandeCertificationService;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -20,10 +24,11 @@ import java.io.File;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Service
 public class DemandeCertificationServiceImpl implements DemandeCertificationService {
-
     @Autowired
     private DemandeCertificationRepository demandeCertificationRepository;
     @Autowired
@@ -34,6 +39,8 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
     private AgenceImmobiliereRepository agenceImmobiliereRepository;
     @Autowired
     private AgentImmobilierRepository agentImmobilierRepository;
+    @Autowired
+    private AffectationAgentAgenceRepository affectationAgentAgenceRepository;
 
     @Override
     public List<DemandeCertification> getAll() {
@@ -65,11 +72,11 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
     @Override
     public DemandeCertification saveDemandeCertificationAgence(DemandeCertification demandeCertification,
                                                                Principal principal) {
-        AgentImmobilier agentImmobilier = (AgentImmobilier) personneRepository.findByUsername(principal.getName());
+        Personne personne = personneRepository.findByUsername(principal.getName());
         demandeCertification.setDateDemande(new Date());
         demandeCertification.setStatutDemande(0);
         demandeCertification.setCreerLe(new Date());
-        demandeCertification.setCreerPar(agentImmobilier.getId());
+        demandeCertification.setCreerPar(personne.getId());
         demandeCertification.setStatut(true);
         return demandeCertificationRepository.save(demandeCertification);
     }
@@ -87,7 +94,11 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
                 "\n\n" +
                 "Cordialement,\n" +
                 "\nL'équipe de support technique - ahoewo !";
-        emailSenderService.sendMail(personne.getEmail(), "Certification de compte", contenu);
+
+        CompletableFuture.runAsync(() -> {
+            emailSenderService.sendMail(personne.getEmail(), "Certification de compte", contenu);
+        });
+
     }
 
     @Override
@@ -96,7 +107,7 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
         agenceImmobiliere.setEstCertifie(true);
         DemandeCertification demandeCertification = demandeCertificationRepository.findById(idDemandeCertif).orElse(null);
         demandeCertification.setStatutDemande(1);
-        Personne personne = personneRepository.findById(agenceImmobiliere.getResponsableAgenceImmobiliere().getId()).orElse(null);
+        Personne personne = personneRepository.findById(demandeCertification.getPersonne().getId()).orElse(null);
         personne.setEstCertifie(true);
 
         agenceImmobiliereRepository.save(agenceImmobiliere);
@@ -110,7 +121,10 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
                 "Si vous avez des questions ou avez besoin d'assistance, n'hésitez pas à nous contacter. Nous sommes là pour vous aider.\n\n" +
                 "Cordialement,\n" +
                 "\nL'équipe de support technique - ahoewo !";
-        emailSenderService.sendMail(agenceImmobiliere.getAdresseEmail(), "Certification d'une agence", contenu1);
+        CompletableFuture.runAsync(() -> {
+            emailSenderService.sendMail(agenceImmobiliere.getAdresseEmail(), "Certification d'une agence", contenu1);
+        });
+
 
         String contenu2 = "Bonjour M/Mlle " + personne.getPrenom() + ",\n\n" +
                 "Nous avons le plaisir de vous informer que votre compte vient d'être certifié conformément à la demande de certification de votre agence.\n" +
@@ -119,9 +133,11 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
                 "Si vous avez des questions ou avez besoin d'assistance, n'hésitez pas à nous contacter. Nous sommes là pour vous aider.\n\n" +
                 "Cordialement,\n" +
                 "\nL'équipe de support technique - ahoewo !";
-        emailSenderService.sendMail(personne.getEmail(), "Certification de compte", contenu2);
+        CompletableFuture.runAsync(() -> {
+            emailSenderService.sendMail(personne.getEmail(), "Certification de compte", contenu2);
+        });
 
-        List<AgentImmobilier> agentImmobiliers = agentImmobilierRepository.findByCreerPar(personne.getId());
+        /*List<AgentImmobilier> agentImmobiliers = agentImmobilierRepository.findByCreerPar(personne.getId());
         if (!agentImmobiliers.isEmpty()) {
             for (AgentImmobilier agent : agentImmobiliers) {
                 agent.setEstCertifie(true);
@@ -135,6 +151,28 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
                         "Cordialement,\n" +
                         "\nL'équipe de support technique - ahoewo !";
                 emailSenderService.sendMail(agent.getEmail(), "Certification de compte", contenu3);
+            }
+        }*/
+        List<AffectationAgentAgence> affectationAgentAgenceList = affectationAgentAgenceRepository.findByAgenceImmobiliere(agenceImmobiliere);
+        List<AgentImmobilier> agentImmobiliers = affectationAgentAgenceList.stream()
+                .map(AffectationAgentAgence::getAgentImmobilier)
+                .collect(Collectors.toList());
+
+        if (!agentImmobiliers.isEmpty()) {
+            for (AgentImmobilier agent : agentImmobiliers) {
+                agent.setEstCertifie(true);
+                agentImmobilierRepository.save(agent);
+
+                String contenu3 = "Bonjour M/Mlle " + agent.getPrenom() + ",\n\n" +
+                        "Nous avons le plaisir de vous informer que votre compte vient d'être certifié conformément à la demande de certification soumise par l'agence immobilière chez laquelle vous travaillez.\n" +
+                        "\n\n" +
+                        "N'hésitez pas à explorer toutes les fonctionnalités offertes par notre plateforme pour optimiser votre travail et offrir le meilleur service à vos clients.\n\n" +
+                        "Si vous avez des questions ou avez besoin d'assistance, n'hésitez pas à nous contacter. Nous sommes là pour vous aider.\n\n" +
+                        "Cordialement,\n" +
+                        "\nL'équipe de support technique - ahoewo !";
+                CompletableFuture.runAsync(() -> {
+                    emailSenderService.sendMail(agent.getEmail(), "Certification de compte", contenu3);
+                });
             }
         }
     }
@@ -195,8 +233,8 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
 
     /* Fonction pour construire le chemin vers le document justificatif */
     @Override
-    public String construireCheminFichier(DemandeCertification demandeCertification) {
+    public String construireCheminFichier(String nomFichier) {
         String repertoireFichier = "src/main/resources/documentsJustificatifs";
-        return repertoireFichier + "/" + demandeCertification.getDocumentJustificatif();
+        return repertoireFichier + "/" + nomFichier;
     }
 }

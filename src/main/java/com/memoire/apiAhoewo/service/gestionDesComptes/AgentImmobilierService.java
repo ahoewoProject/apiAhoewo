@@ -7,16 +7,8 @@ import java.util.List;
 
 public interface AgentImmobilierService {
     public List<AgentImmobilier> getAll();
-
-    public List<AgentImmobilier> findAgentsImmobiliersByResponsable(Principal principal);
-
     public AgentImmobilier findById(Long id);
-
+    public AgentImmobilier findByMatricule(String matricule);
     public AgentImmobilier save(AgentImmobilier agentImmobilier, Principal principal);
-
-    public void deleteById(Long id);
-
-    public int countAgentImmobiliers();
-
-    public int countAgentsImmobiliersByResponsable(Principal principal);
+    boolean matriculeExists(String matricule);
 }

@@ -8,5 +8,6 @@ import java.util.List;
 
 @Repository
 public interface AgentImmobilierRepository extends JpaRepository<AgentImmobilier, Long> {
-    public List<AgentImmobilier> findByCreerPar(Long id);
+    AgentImmobilier findByMatricule(String matricule);
+    boolean existsByMatricule(String matricule);
 }
