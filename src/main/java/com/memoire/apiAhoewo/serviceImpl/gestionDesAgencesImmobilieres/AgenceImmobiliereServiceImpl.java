@@ -1,11 +1,15 @@
 package com.memoire.apiAhoewo.serviceImpl.gestionDesAgencesImmobilieres;
 
+import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.AffectationAgentAgence;
 import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.AffectationResponsableAgence;
 import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.AgenceImmobiliere;
-import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
+import com.memoire.apiAhoewo.model.gestionDesComptes.AgentImmobilier;
 import com.memoire.apiAhoewo.model.gestionDesComptes.ResponsableAgenceImmobiliere;
+import com.memoire.apiAhoewo.repository.gestionDesAgencesImmobilieres.AffectationAgentAgenceRepository;
 import com.memoire.apiAhoewo.repository.gestionDesAgencesImmobilieres.AffectationResponsableAgenceRepository;
 import com.memoire.apiAhoewo.repository.gestionDesAgencesImmobilieres.AgenceImmobiliereRepository;
+import com.memoire.apiAhoewo.repository.gestionDesComptes.AgentImmobilierRepository;
+import com.memoire.apiAhoewo.repository.gestionDesComptes.ResponsableAgenceImmobiliereRepository;
 import com.memoire.apiAhoewo.service.gestionDesAgencesImmobilieres.AffectationResponsableAgenceService;
 import com.memoire.apiAhoewo.service.gestionDesAgencesImmobilieres.AgenceImmobiliereService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
@@ -20,6 +24,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AgenceImmobiliereServiceImpl implements AgenceImmobiliereService {
@@ -30,7 +35,13 @@ public class AgenceImmobiliereServiceImpl implements AgenceImmobiliereService {
     @Autowired
     private AffectationResponsableAgenceService affectationResponsableAgenceService;
     @Autowired
+    private AffectationAgentAgenceRepository affectationAgentAgenceRepository;
+    @Autowired
     private PersonneService personneService;
+    @Autowired
+    private AgentImmobilierRepository agentImmobilierRepository;
+    @Autowired
+    private ResponsableAgenceImmobiliereRepository responsableRepository;
 
 
     @Override
@@ -46,6 +57,19 @@ public class AgenceImmobiliereServiceImpl implements AgenceImmobiliereService {
         for (AffectationResponsableAgence affectation: affectationResponsableAgences) {
             agenceImmobilieres.add(affectation.getAgenceImmobiliere());
         }
+        return agenceImmobilieres;
+    }
+
+    @Override
+    public List<AgenceImmobiliere> getAgencesByAgent(Principal principal) {
+        AgentImmobilier agentImmobilier = (AgentImmobilier) personneService.findByUsername(principal.getName());
+
+        List<AffectationAgentAgence> agentAgences =  affectationAgentAgenceRepository.findByAgentImmobilier(agentImmobilier);
+
+        List<AgenceImmobiliere> agenceImmobilieres = agentAgences.stream()
+                .map(AffectationAgentAgence::getAgenceImmobiliere)
+                .collect(Collectors.toList());
+
         return agenceImmobilieres;
     }
 
@@ -82,6 +106,82 @@ public class AgenceImmobiliereServiceImpl implements AgenceImmobiliereService {
         agenceImmobiliere.setModifierPar(responsableAgenceImmobiliere.getId());
         agenceImmobiliere = agenceImmobiliereRepository.save(agenceImmobiliere);
         return agenceImmobiliere;
+    }
+
+    @Override
+    public void activerAgence(Long id) {
+        AgenceImmobiliere agenceImmobiliere = agenceImmobiliereRepository.findById(id).orElse(null);
+        agenceImmobiliere.setEtatAgence(true);
+        agenceImmobiliereRepository.save(agenceImmobiliere);
+        List<AffectationResponsableAgence> affectationResponsableAgences = affectationResponsableAgenceRepository
+                .findByAgenceImmobiliere(agenceImmobiliere);
+
+        List<AffectationAgentAgence> affectationAgentAgences = affectationAgentAgenceRepository
+                .findByAgenceImmobiliere(agenceImmobiliere);
+
+        List<AgentImmobilier> agentImmobiliers = new ArrayList<>();
+
+        List<ResponsableAgenceImmobiliere> responsables = new ArrayList<>();
+
+        for (AffectationResponsableAgence affectation: affectationResponsableAgences) {
+            responsables.add(affectation.getResponsableAgenceImmobiliere());
+        }
+
+        for (AffectationAgentAgence affectation: affectationAgentAgences) {
+            agentImmobiliers.add(affectation.getAgentImmobilier());
+        }
+
+        for (ResponsableAgenceImmobiliere responsable: responsables) {
+            if (!responsable.getEtatCompte()) {
+                responsable.setEtatCompte(true);
+                responsableRepository.save(responsable);
+            }
+        }
+
+        for (AgentImmobilier agentImmobilier: agentImmobiliers) {
+            if (!agentImmobilier.getEtatCompte()) {
+                agentImmobilier.setEtatCompte(true);
+                agentImmobilierRepository.save(agentImmobilier);
+            }
+        }
+    }
+
+    @Override
+    public void desactiverAgence(Long id) {
+        AgenceImmobiliere agenceImmobiliere = agenceImmobiliereRepository.findById(id).orElse(null);
+        agenceImmobiliere.setEtatAgence(false);
+        agenceImmobiliereRepository.save(agenceImmobiliere);
+        List<AffectationResponsableAgence> affectationResponsableAgences = affectationResponsableAgenceRepository
+                .findByAgenceImmobiliere(agenceImmobiliere);
+
+        List<AffectationAgentAgence> affectationAgentAgences = affectationAgentAgenceRepository
+                .findByAgenceImmobiliere(agenceImmobiliere);
+
+        List<AgentImmobilier> agentImmobiliers = new ArrayList<>();
+
+        List<ResponsableAgenceImmobiliere> responsables = new ArrayList<>();
+
+        for (AffectationResponsableAgence affectation: affectationResponsableAgences) {
+            responsables.add(affectation.getResponsableAgenceImmobiliere());
+        }
+
+        for (AffectationAgentAgence affectation: affectationAgentAgences) {
+            agentImmobiliers.add(affectation.getAgentImmobilier());
+        }
+
+        for (ResponsableAgenceImmobiliere responsable: responsables) {
+            if (responsable.getEtatCompte()) {
+                responsable.setEtatCompte(false);
+                responsableRepository.save(responsable);
+            }
+        }
+
+        for (AgentImmobilier agentImmobilier: agentImmobiliers) {
+            if (agentImmobilier.getEtatCompte()) {
+                agentImmobilier.setEtatCompte(false);
+                agentImmobilierRepository.save(agentImmobilier);
+            }
+        }
     }
 
     /* Fonction pour l'enregistrement le logo d'une agence immobilière */

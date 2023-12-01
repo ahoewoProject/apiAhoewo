@@ -13,9 +13,9 @@ public interface BienImmobilierService {
 
     public List<BienImmobilier> getAllByProprietaire(Principal principal);
 
-    public List<BienImmobilier> findBiensImmobiliersByAgentImmobilier(Principal principal);
+    public List<BienImmobilier> getBiensOfAgencesByResponsable(Principal principal);
 
-    public List<BienImmobilier> getAllByGerant(Principal principal);
+    public List<BienImmobilier> getBiensOfAgencesByAgent(Principal principal);
 
     public BienImmobilier findById(Long id);
 
@@ -28,10 +28,4 @@ public interface BienImmobilierService {
     public void desactiverBienImmobilier(Long id);
 
     public void deleteById(Long id);
-
-    public int countBienImmobilierByProprietaire(Principal principal);
-
-    public int countBienImmobilierByAgentImmobilier(Principal principal);
-
-    public int countBienImmobilierByGerant(Principal principal);
 }

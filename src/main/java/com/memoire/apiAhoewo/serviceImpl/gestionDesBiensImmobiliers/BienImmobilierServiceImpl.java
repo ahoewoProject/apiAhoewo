@@ -1,19 +1,17 @@
 package com.memoire.apiAhoewo.serviceImpl.gestionDesBiensImmobiliers;
 
+import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.AgenceImmobiliere;
 import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.BienImmobilier;
 import com.memoire.apiAhoewo.model.gestionDesComptes.AgentImmobilier;
 import com.memoire.apiAhoewo.model.gestionDesComptes.Gerant;
 import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
 import com.memoire.apiAhoewo.repository.gestionDesBiensImmobiliers.BienImmobilierRepository;
+import com.memoire.apiAhoewo.service.gestionDesAgencesImmobilieres.AgenceImmobiliereService;
 import com.memoire.apiAhoewo.service.gestionDesBiensImmobiliers.BienImmobilierService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
@@ -22,9 +20,10 @@ import java.util.List;
 public class BienImmobilierServiceImpl implements BienImmobilierService {
     @Autowired
     private BienImmobilierRepository bienImmobilierRepository;
-
     @Autowired
     private PersonneService personneService;
+    @Autowired
+    private AgenceImmobiliereService agenceImmobiliereService;
 
     @Override
     public List<BienImmobilier> getAll() {
@@ -38,17 +37,18 @@ public class BienImmobilierServiceImpl implements BienImmobilierService {
     }
 
     @Override
-    public List<BienImmobilier> findBiensImmobiliersByAgentImmobilier(Principal principal) {
-        AgentImmobilier agentImmobilier = (AgentImmobilier) personneService.findByUsername(principal.getName());
-        Personne personne = personneService.findById(agentImmobilier.getCreerPar());
-        return bienImmobilierRepository.findByPersonne(personne);
+    public List<BienImmobilier> getBiensOfAgencesByResponsable(Principal principal) {
+
+        List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereService.getAgencesByResponsable(principal);
+
+        return bienImmobilierRepository.findByAgenceImmobiliereIn(agenceImmobilieres);
     }
 
     @Override
-    public List<BienImmobilier> getAllByGerant(Principal principal) {
-        Gerant gerant = (Gerant) personneService.findByUsername(principal.getName());
-        Personne personne = personneService.findById(gerant.getCreerPar());
-        return bienImmobilierRepository.findByPersonne(personne);
+    public List<BienImmobilier> getBiensOfAgencesByAgent(Principal principal) {
+        List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereService.getAgencesByAgent(principal);
+
+        return bienImmobilierRepository.findByAgenceImmobiliereIn(agenceImmobilieres);
     }
 
     @Override
@@ -95,31 +95,5 @@ public class BienImmobilierServiceImpl implements BienImmobilierService {
     @Override
     public void deleteById(Long id) {
         bienImmobilierRepository.deleteById(id);
-    }
-
-    @Override
-    public int countBienImmobilierByProprietaire(Principal principal) {
-        Personne personne = personneService.findByUsername(principal.getName());
-        List<BienImmobilier> bienImmobiliers = bienImmobilierRepository.findByPersonne(personne);
-        int count = bienImmobiliers.size();
-        return count;
-    }
-
-    @Override
-    public int countBienImmobilierByAgentImmobilier(Principal principal) {
-        AgentImmobilier agentImmobilier = (AgentImmobilier) personneService.findByUsername(principal.getName());
-        Personne personne = personneService.findById(agentImmobilier.getCreerPar());
-        List<BienImmobilier> bienImmobiliers = bienImmobilierRepository.findByPersonne(personne);
-        int count = bienImmobiliers.size();
-        return count;
-    }
-
-    @Override
-    public int countBienImmobilierByGerant(Principal principal) {
-        Gerant gerant = (Gerant) personneService.findByUsername(principal.getName());
-        Personne personne = personneService.findById(gerant.getCreerPar());
-        List<BienImmobilier> bienImmobiliers = bienImmobilierRepository.findByPersonne(personne);
-        int count = bienImmobiliers.size();
-        return count;
     }
 }

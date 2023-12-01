@@ -45,7 +45,20 @@ public class AgenceImmobiliereController {
     }
 
     @RequestMapping(value = "/agences-immobilieres/responsable", method = RequestMethod.GET)
-    public List<AgenceImmobiliere> findAgenceByResponsable(Principal principal) {
+    public List<AgenceImmobiliere> findAgencesByResponsable(Principal principal) {
+
+        List<AgenceImmobiliere> agenceImmobilieres = new ArrayList<>();
+        try {
+            agenceImmobilieres = this.agenceImmobiliereService.getAgencesByResponsable(principal);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return agenceImmobilieres;
+    }
+
+    @RequestMapping(value = "/agences-immobilieres/agent", method = RequestMethod.GET)
+    public List<AgenceImmobiliere> findAgencesByAgent(Principal principal) {
 
         List<AgenceImmobiliere> agenceImmobilieres = new ArrayList<>();
         try {
@@ -147,6 +160,16 @@ public class AgenceImmobiliereController {
                     .body("Une erreur s'est produite lors de la modification de l'agence immobilière : " + e.getMessage());
         }
         return ResponseEntity.ok(agenceImmobiliere);
+    }
+
+    @RequestMapping(value = "/activer/agence-immobiliere/{id}", method = RequestMethod.GET, headers = "accept=Application/json")
+    public void activerAgence(@PathVariable Long id){
+        this.agenceImmobiliereService.activerAgence(id);
+    }
+
+    @RequestMapping(value = "/desactiver/agence-immobiliere/{id}", method = RequestMethod.GET, headers = "accept=Application/json")
+    public void desactiverAgence(@PathVariable Long id){
+        this.agenceImmobiliereService.desactiverAgence(id);
     }
 
     @RequestMapping(value = "/logo/agence-immobiliere/{id}", method = RequestMethod.GET)

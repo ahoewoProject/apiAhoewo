@@ -118,7 +118,7 @@ public class AffectationAgentAgenceController {
                 AffectationAgentAgence affectationAgentAgence = this.affectationAgentAgenceService.save(agentImmobilier, agenceImmobiliere, principal);
                 return ResponseEntity.ok(affectationAgentAgence);
             } else {
-                return new ResponseEntity<>("L'agent immobilier est introuvable", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("La matricule de l'agent immobilier est introuvable", HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());

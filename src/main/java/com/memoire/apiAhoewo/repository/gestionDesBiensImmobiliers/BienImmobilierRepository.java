@@ -1,5 +1,6 @@
 package com.memoire.apiAhoewo.repository.gestionDesBiensImmobiliers;
 
+import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.AgenceImmobiliere;
 import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.BienImmobilier;
 import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.TypeDeBien;
 import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
@@ -13,4 +14,5 @@ public interface BienImmobilierRepository extends JpaRepository<BienImmobilier, 
 
     List<BienImmobilier> findByPersonne(Personne personne);
     List<BienImmobilier> findByTypeDeBien(TypeDeBien typeDeBien);
+    List<BienImmobilier> findByAgenceImmobiliereIn(List<AgenceImmobiliere> agenceImmobilieres);
 }

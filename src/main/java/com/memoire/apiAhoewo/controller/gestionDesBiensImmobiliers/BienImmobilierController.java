@@ -3,11 +3,9 @@ package com.memoire.apiAhoewo.controller.gestionDesBiensImmobiliers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.memoire.apiAhoewo.exception.UnsupportedFileTypeException;
-import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.BienImmobilier;
-import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.ImagesBienImmobilier;
+import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.*;
 import com.memoire.apiAhoewo.service.FileManagerService;
-import com.memoire.apiAhoewo.service.gestionDesBiensImmobiliers.BienImmobilierService;
-import com.memoire.apiAhoewo.service.gestionDesBiensImmobiliers.ImagesBienImmobilierService;
+import com.memoire.apiAhoewo.service.gestionDesBiensImmobiliers.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -25,9 +23,14 @@ import java.util.List;
 public class BienImmobilierController {
     @Autowired
     private BienImmobilierService bienImmobilierService;
-
     @Autowired
     private ImagesBienImmobilierService imagesBienImmobilierService;
+    @Autowired
+    private ConfortService confortService;
+    @Autowired
+    private DivertissementService divertissementService;
+    @Autowired
+    private UtilitaireService utilitaireService;
 
     @RequestMapping(value = "/biens-immobiliers", method = RequestMethod.GET)
     public List<BienImmobilier> getAll() {
@@ -55,12 +58,12 @@ public class BienImmobilierController {
         return bienImmobiliers;
     }
 
-    @RequestMapping(value = "/biens-immobiliers/agent-immobilier", method = RequestMethod.GET)
-    public List<BienImmobilier> findBiensImmobiliersParAgentImmobilier(Principal principal) {
+    @RequestMapping(value = "/biens-immobiliers/agences/responsable", method = RequestMethod.GET)
+    public List<BienImmobilier> getBiensOfAgencesByResponsable(Principal principal) {
 
         List<BienImmobilier> bienImmobiliers = new ArrayList<>();
         try {
-            bienImmobiliers = this.bienImmobilierService.findBiensImmobiliersByAgentImmobilier(principal);
+            bienImmobiliers = this.bienImmobilierService.getBiensOfAgencesByResponsable(principal);
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Erreur " + e.getMessage());
@@ -68,12 +71,12 @@ public class BienImmobilierController {
         return bienImmobiliers;
     }
 
-    @RequestMapping(value = "/biens-immobiliers/gerant", method = RequestMethod.GET)
-    public List<BienImmobilier> getAllByGerant(Principal principal) {
+    @RequestMapping(value = "/biens-immobiliers/agences/agent", method = RequestMethod.GET)
+    public List<BienImmobilier> getBiensOfAgencesByAgent(Principal principal) {
 
         List<BienImmobilier> bienImmobiliers = new ArrayList<>();
         try {
-            bienImmobiliers = this.bienImmobilierService.getAllByGerant(principal);
+            bienImmobiliers = this.bienImmobilierService.getBiensOfAgencesByAgent(principal);
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Erreur " + e.getMessage());
@@ -96,87 +99,130 @@ public class BienImmobilierController {
 
     @RequestMapping(value = "/bien-immobilier/ajouter", method = RequestMethod.POST, headers = "accept=Application/json")
     public ResponseEntity<?> ajouterBienImmobilier(Principal principal,
-                                                   @RequestParam(value = "imagesBienImmobilier", required = false) List<MultipartFile> files,
-                                                   String bienImmobilierJson) throws JsonProcessingException {
-
-        BienImmobilier bienImmobilier = new ObjectMapper()
-                .readValue(bienImmobilierJson, BienImmobilier.class);
+               @RequestParam(value = "images", required = false) List<MultipartFile> files,
+               String bienImmobilierJson,
+               @RequestParam(value = "confortJson", required = false) String confortJson,
+               @RequestParam(value = "utilitaireJson", required = false) String utilitaireJson,
+               @RequestParam(value = "divertissementJson", required = false) String divertissementJson) {
 
         try {
 
+            BienImmobilier bienImmobilier = new BienImmobilier();
+            Confort confort = new Confort();
+            Utilitaire utilitaire = new Utilitaire();
+            Divertissement divertissement = new Divertissement();
+
+            if (bienImmobilierJson != null && !bienImmobilierJson.isEmpty()) {
+                bienImmobilier = new ObjectMapper().readValue(bienImmobilierJson, BienImmobilier.class);
+            }
+
+            if (confortJson != null && !confortJson.isEmpty()) {
+                confort = new ObjectMapper().readValue(confortJson, Confort.class);
+            }
+
+            if (utilitaireJson != null && !utilitaireJson.isEmpty()) {
+                utilitaire = new ObjectMapper().readValue(utilitaireJson, Utilitaire.class);
+            }
+
+            if (divertissementJson != null && !divertissementJson.isEmpty()) {
+                divertissement = new ObjectMapper().readValue(divertissementJson, Divertissement.class);
+            }
+
             bienImmobilier = this.bienImmobilierService.save(bienImmobilier, principal);
 
-            if (files != null){
-                for(MultipartFile imagesBienImmobilier: files){
-                    ImagesBienImmobilier imagesBienImmobilierEnregistre = new ImagesBienImmobilier();
-                    String nomImageDuBien = imagesBienImmobilierService.enregistrerImageDuBien(imagesBienImmobilier);
-                    imagesBienImmobilierEnregistre.setNomImage(nomImageDuBien);
-                    imagesBienImmobilierEnregistre.setBienImmobilier(bienImmobilier);
-                    imagesBienImmobilierService.save(imagesBienImmobilierEnregistre, principal);
+            if (files != null) {
+                for(MultipartFile images: files){
+                    ImagesBienImmobilier imagesBienImmobilier = new ImagesBienImmobilier();
+                    String nomImageDuBien = imagesBienImmobilierService.enregistrerImageDuBien(images);
+                    imagesBienImmobilier.setNomImage(nomImageDuBien);
+                    imagesBienImmobilier.setBienImmobilier(bienImmobilier);
+                    imagesBienImmobilierService.save(imagesBienImmobilier, principal);
                 }
             }
 
+            if (bienImmobilier.getTypeDeBien().getDesignation() != "Terrains") {
+                if (confort != null) {
+                    confortService.save(bienImmobilier, confort, principal);
+                }
+                if (utilitaire != null) {
+                    utilitaireService.save(bienImmobilier, utilitaire, principal);
+                }
+                if (divertissement != null) {
+                    divertissementService.save(bienImmobilier, divertissement, principal);
+                }
+            }
+
+            return ResponseEntity.ok(bienImmobilier);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Une erreur s'est produite lors de l'ajout du bien immobilier : " + e.getMessage());
         }
-        return ResponseEntity.ok(bienImmobilier);
     }
 
     @RequestMapping(value = "/bien-immobilier/modifier/{id}", method = RequestMethod.PUT, headers = "accept=Application/json")
-    public ResponseEntity<?> modifierBienImmobilier(@PathVariable Long id, Principal principal,
-                                                   @RequestParam(value = "imagesBienImmobilier", required = false) List<MultipartFile> files,
-                                                   String bienImmobilierJson) throws JsonProcessingException {
+    public ResponseEntity<?> modifierBienImmobilier(@PathVariable Long id,
+                                                    Principal principal,
+                                    @RequestParam(value = "images", required = false) List<MultipartFile> files,
+                                    String bienImmobilierJson,
+                                    @RequestParam(value = "confortJson", required = false) String confortJson,
+                                    @RequestParam(value = "utilitaireJson", required = false) String utilitaireJson,
+                                    @RequestParam(value = "divertissementJson", required = false) String divertissementJson) {
 
-        BienImmobilier bienImmobilierModifie = new ObjectMapper()
-                .readValue(bienImmobilierJson, BienImmobilier.class);
-
-        BienImmobilier bienImmobilier = bienImmobilierService.findById(id);
         try {
+            BienImmobilier bienImmobilier = bienImmobilierService.findById(id);
 
-            bienImmobilier.setDescription(bienImmobilierModifie.getDescription());
-            bienImmobilier.setAdresse(bienImmobilierModifie.getAdresse());
-            bienImmobilier.setVille(bienImmobilierModifie.getVille());
-            bienImmobilier.setSurface(bienImmobilierModifie.getSurface());
+            BienImmobilier bienImmobilierUpdate = new ObjectMapper().readValue(bienImmobilierJson, BienImmobilier.class);
+            bienImmobilier.setDescription(bienImmobilierUpdate.getDescription());
+            bienImmobilier.setAdresse(bienImmobilierUpdate.getAdresse());
+            bienImmobilier.setVille(bienImmobilierUpdate.getVille());
+            bienImmobilier.setSurface(bienImmobilierUpdate.getSurface());
 
-            bienImmobilier = this.bienImmobilierService.update(bienImmobilier, principal);
+            // Enregistrer la mise à jour du bien immobilier dans la base de données
+            bienImmobilier = bienImmobilierService.update(bienImmobilier, principal);
 
-            if (files != null){
-                for(MultipartFile imagesBienImmobilier: files){
-                    ImagesBienImmobilier imagesBienImmobilierModifie = new ImagesBienImmobilier();
-                    String nomImageDuBien = imagesBienImmobilierService.enregistrerImageDuBien(imagesBienImmobilier);
-                    imagesBienImmobilierModifie.setNomImage(nomImageDuBien);
-                    imagesBienImmobilierModifie.setBienImmobilier(bienImmobilier);
-                    imagesBienImmobilierService.save(imagesBienImmobilierModifie, principal);
+            // Gérer Confort, Utilitaire et Divertissement si ce n'est pas un terrain
+            if (!bienImmobilier.getTypeDeBien().getDesignation().equals("Terrains")) {
+                Confort confort = confortService.getByBienImmobilier(id);
+                Utilitaire utilitaire = utilitaireService.getByBienImmobilier(id);
+                Divertissement divertissement = divertissementService.getByBienImmobilier(id);
+
+                if (confort != null && confortJson != null && !confortJson.isEmpty()) {
+                    Confort confortUpdate = new ObjectMapper().readValue(confortJson, Confort.class);
+                    confortUpdate.setBienImmobilier(confort.getBienImmobilier());
+                    confortService.update(bienImmobilier, confortUpdate, principal);
+                }
+
+                if (utilitaire != null && utilitaireJson != null && !utilitaireJson.isEmpty()) {
+                    Utilitaire utilitaireUpdate = new ObjectMapper().readValue(utilitaireJson, Utilitaire.class);
+                    utilitaireUpdate.setBienImmobilier(utilitaire.getBienImmobilier());
+                    utilitaireService.update(bienImmobilier, utilitaireUpdate, principal);
+                }
+
+                if (divertissement != null && divertissementJson != null && !divertissementJson.isEmpty()) {
+                    Divertissement divertissementUpdate = new ObjectMapper().readValue(divertissementJson, Divertissement.class);
+                    divertissementUpdate.setBienImmobilier(divertissement.getBienImmobilier());
+                    divertissementService.update(bienImmobilier, divertissementUpdate, principal);
                 }
             }
 
+            // Enregistrer de nouvelles images si elles sont fournies
+            if (files != null) {
+                for (MultipartFile image : files) {
+                    ImagesBienImmobilier imagesBienImmobilier = new ImagesBienImmobilier();
+                    String nomImageDuBien = imagesBienImmobilierService.enregistrerImageDuBien(image);
+                    imagesBienImmobilier.setNomImage(nomImageDuBien);
+                    imagesBienImmobilier.setBienImmobilier(bienImmobilier);
+                    imagesBienImmobilierService.save(imagesBienImmobilier, principal);
+                }
+            }
+
+            return ResponseEntity.ok(bienImmobilier);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Une erreur s'est produite lors de la modification du bien immobilier : " + e.getMessage());
         }
-        return ResponseEntity.ok(bienImmobilier);
-    }
-
-
-    @RequestMapping(value = "/count/biens-immobiliers/proprietaire", method = RequestMethod.GET)
-    public int nombreBienImmobilierParProprietaire(Principal principal){
-        int nombres = this.bienImmobilierService.countBienImmobilierByProprietaire(principal);
-        return nombres;
-    }
-
-    @RequestMapping(value = "/count/biens-immobiliers/agent-immobilier", method = RequestMethod.GET)
-    public int nombreBienImmobilierParAgentImmobilier(Principal principal){
-        int nombres = this.bienImmobilierService.countBienImmobilierByAgentImmobilier(principal);
-        return nombres;
-    }
-
-    @RequestMapping(value = "/count/biens-immobiliers/gerant", method = RequestMethod.GET)
-    public int nombreBienImmobilierParGerant(Principal principal){
-        int nombres = this.bienImmobilierService.countBienImmobilierByGerant(principal);
-        return nombres;
     }
 
     @RequestMapping(value = "/activer/bien-immobilier/{id}", method = RequestMethod.GET, headers = "accept=Application/json")

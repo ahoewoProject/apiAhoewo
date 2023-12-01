@@ -51,7 +51,7 @@ public class RegionServiceImpl implements RegionService {
 
     @Override
     public Region update(Region region, Principal principal) {
-       Personne personne = personneService.findByUsername(principal.getName());
+        Personne personne = personneService.findByUsername(principal.getName());
         region.setModifierLe(new Date());
         region.setModifierPar(personne.getId());
         return regionRepository.save(region);
