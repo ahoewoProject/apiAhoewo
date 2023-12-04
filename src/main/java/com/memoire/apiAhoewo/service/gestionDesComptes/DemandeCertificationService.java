@@ -6,7 +6,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.security.Principal;
 import java.util.List;
 public interface DemandeCertificationService {
-
     public List<DemandeCertification> getAll();
     public DemandeCertification findById(Long id);
     public List<DemandeCertification> getByUser(Principal principal);

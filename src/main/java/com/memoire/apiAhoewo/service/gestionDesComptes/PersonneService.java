@@ -9,6 +9,8 @@ import java.util.List;
 public interface PersonneService {
     public Personne findByUsername(String username);
 
+    public Personne findByMatricule(String matricule);
+
     public Personne findByEmail(String email);
 
     public Personne findById(Long id);
@@ -18,6 +20,8 @@ public interface PersonneService {
     public String genererUniqueUsername(String prenoms);
 
     public boolean usernameExists(String username);
+
+    public boolean matriculeExists(String matricule);
 
     public boolean emailExists(String email);
 

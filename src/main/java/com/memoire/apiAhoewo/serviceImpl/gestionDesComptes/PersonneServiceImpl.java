@@ -53,6 +53,11 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
     }
 
     @Override
+    public Personne findByMatricule(String matricule) {
+        return this.personneRepository.findByMatricule(matricule);
+    }
+
+    @Override
     public Personne findByEmail(String email) {
         return personneRepository.findByEmail(email);
     }
@@ -278,6 +283,11 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
 
     public boolean usernameExists(String username) {
         return personneRepository.existsByUsername(username);
+    }
+
+    @Override
+    public boolean matriculeExists(String matricule) {
+        return personneRepository.existsByMatricule(matricule);
     }
 
     public boolean emailExists(String email) {

@@ -126,7 +126,7 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
         });
 
 
-        String contenu2 = "Bonjour M/Mlle " + personne.getPrenom() + ",\n\n" +
+        String contenu2 = "Bonjour M/Mlle " + personne.getPrenom() + personne.getNom() + ",\n\n" +
                 "Nous avons le plaisir de vous informer que votre compte vient d'être certifié conformément à la demande de certification de votre agence.\n" +
                 "\n\n" +
                 "N'hésitez pas à explorer toutes les fonctionnalités offertes par notre plateforme pour optimiser votre travail et offrir le meilleur service à vos clients.\n\n" +
@@ -163,7 +163,7 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
                 agent.setEstCertifie(true);
                 agentImmobilierRepository.save(agent);
 
-                String contenu3 = "Bonjour M/Mlle " + agent.getPrenom() + ",\n\n" +
+                String contenu3 = "Bonjour M/Mlle " + agent.getPrenom() + agent.getNom() + ",\n\n" +
                         "Nous avons le plaisir de vous informer que votre compte vient d'être certifié conformément à la demande de certification soumise par l'agence immobilière chez laquelle vous travaillez.\n" +
                         "\n\n" +
                         "N'hésitez pas à explorer toutes les fonctionnalités offertes par notre plateforme pour optimiser votre travail et offrir le meilleur service à vos clients.\n\n" +

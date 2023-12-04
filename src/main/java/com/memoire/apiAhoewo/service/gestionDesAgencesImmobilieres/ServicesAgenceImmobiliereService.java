@@ -6,7 +6,6 @@ import java.security.Principal;
 import java.util.List;
 
 public interface ServicesAgenceImmobiliereService {
-
     public List<ServicesAgenceImmobiliere> getServicesOfAgence(Principal principal);
 
     public List<ServicesAgenceImmobiliere> getServicesOfAgence(Long id);

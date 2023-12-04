@@ -84,6 +84,11 @@ public class AgenceImmobiliereServiceImpl implements AgenceImmobiliereService {
     }
 
     @Override
+    public AgenceImmobiliere findByCodeAgence(String codeAgence) {
+        return agenceImmobiliereRepository.findByCodeAgence(codeAgence);
+    }
+
+    @Override
     public AgenceImmobiliere save(AgenceImmobiliere agenceImmobiliere, Principal principal) {
         ResponsableAgenceImmobiliere responsableAgenceImmobiliere = (ResponsableAgenceImmobiliere) personneService.findByUsername(principal.getName());
         agenceImmobiliere.setCodeAgence("AGENCE00");
@@ -182,6 +187,11 @@ public class AgenceImmobiliereServiceImpl implements AgenceImmobiliereService {
                 agentImmobilierRepository.save(agentImmobilier);
             }
         }
+    }
+
+    @Override
+    public boolean codeAgenceExists(String codeAgence) {
+        return agenceImmobiliereRepository.existsByCodeAgence(codeAgence);
     }
 
     /* Fonction pour l'enregistrement le logo d'une agence immobilière */

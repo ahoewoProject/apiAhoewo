@@ -9,7 +9,6 @@ import java.security.Principal;
 import java.util.List;
 
 public interface AffectationAgentAgenceService {
-
     List<AffectationAgentAgence> getAll();
 
     List<AffectationAgentAgence> getAgentsByAgences(Principal principal);
@@ -21,7 +20,7 @@ public interface AffectationAgentAgenceService {
     AffectationAgentAgence save(AgentImmobilier agentImmobilier,
                                 AgenceImmobiliere agenceImmobiliere, Principal principal);
 
-    boolean agenceImmobiliereAndAgentImmobiliereExists(AgenceImmobiliere agenceImmobiliere, AgentImmobilier agentImmobilier);
+    boolean agenceAndAgentExists(AgenceImmobiliere agenceImmobiliere, AgentImmobilier agentImmobilier);
 
-    boolean agenceImmobiliereAndMatriculeAgentImmobilier(AgenceImmobiliere agenceImmobiliere, String matricule);
+    boolean agenceAndMatriculeAgentExists(AgenceImmobiliere agenceImmobiliere, String matricule);
 }

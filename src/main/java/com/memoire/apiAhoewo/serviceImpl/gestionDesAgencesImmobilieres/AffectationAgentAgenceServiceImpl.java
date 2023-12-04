@@ -84,12 +84,12 @@ public class AffectationAgentAgenceServiceImpl implements AffectationAgentAgence
     }
 
     @Override
-    public boolean agenceImmobiliereAndAgentImmobiliereExists(AgenceImmobiliere agenceImmobiliere, AgentImmobilier agentImmobilier) {
+    public boolean agenceAndAgentExists(AgenceImmobiliere agenceImmobiliere, AgentImmobilier agentImmobilier) {
         return this.affectationAgentAgenceRepository.existsByAgenceImmobiliereAndAgentImmobilier(agenceImmobiliere, agentImmobilier);
     }
 
     @Override
-    public boolean agenceImmobiliereAndMatriculeAgentImmobilier(AgenceImmobiliere agenceImmobiliere, String matricule) {
+    public boolean agenceAndMatriculeAgentExists(AgenceImmobiliere agenceImmobiliere, String matricule) {
         return this.affectationAgentAgenceRepository.existsByAgenceImmobiliereAndAgentImmobilier_Matricule(agenceImmobiliere, matricule);
     }
 }

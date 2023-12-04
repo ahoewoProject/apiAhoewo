@@ -1,5 +1,7 @@
 package com.memoire.apiAhoewo.repository.gestionDesBiensImmobiliers;
 
+import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.AgenceImmobiliere;
+import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.BienImmobilier;
 import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.DelegationGestion;
 import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,8 +11,8 @@ import java.util.List;
 
 @Repository
 public interface DelegationGestionRepository extends JpaRepository<DelegationGestion, Long> {
-
-    List<DelegationGestion> findDelegationGestionByBienImmobilier_Personne(Personne personne);
-
-    List<DelegationGestion> findDelegationGestionByGestionnaire(Personne personne);
+    List<DelegationGestion> findByBienImmobilier_Personne(Personne personne);
+    List<DelegationGestion> findByGestionnaire(Personne personne);
+    List<DelegationGestion> findByAgenceImmobiliereIn(List<AgenceImmobiliere> agenceImmobiliereList);
+    boolean existsByBienImmobilierAndStatutDelegation(BienImmobilier bienImmobilier, Integer statutDelegation);
 }

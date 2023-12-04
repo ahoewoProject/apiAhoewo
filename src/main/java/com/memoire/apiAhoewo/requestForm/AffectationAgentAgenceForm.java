@@ -4,7 +4,6 @@ import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.AgenceImmobilie
 import com.memoire.apiAhoewo.model.gestionDesComptes.AgentImmobilier;
 
 public class AffectationAgentAgenceForm {
-
     private String matricule;
     private AgenceImmobiliere agenceImmobiliere;
     private AgentImmobilier agentImmobilier;

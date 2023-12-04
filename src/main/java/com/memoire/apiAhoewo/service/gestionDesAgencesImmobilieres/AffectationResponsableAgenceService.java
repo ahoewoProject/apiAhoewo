@@ -6,7 +6,6 @@ import java.security.Principal;
 import java.util.List;
 
 public interface AffectationResponsableAgenceService {
-
     public List<AffectationResponsableAgence> getAll();
 
     AffectationResponsableAgence findById(Long id);

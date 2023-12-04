@@ -1,6 +1,7 @@
 package com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers;
 
 import com.memoire.apiAhoewo.model.EntiteDeBase;
+import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.AgenceImmobiliere;
 import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
 
 import javax.persistence.*;
@@ -19,6 +20,10 @@ public class DelegationGestion extends EntiteDeBase {
     private Personne gestionnaire;
 
     @ManyToOne
+    @JoinColumn(name = "agence_immobiliere_id")
+    private AgenceImmobiliere agenceImmobiliere;
+
+    @ManyToOne
     @JoinColumn(name = "bien_immobilier_id")
     private BienImmobilier bienImmobilier;
 
@@ -34,12 +39,12 @@ public class DelegationGestion extends EntiteDeBase {
     private Date dateDelegation;
 
     @Column(name = "statut_delegation")
-    private Boolean statutDelegation;
+    private Integer statutDelegation;
 
     public DelegationGestion() {
     }
 
-    public DelegationGestion(Long id, Personne gestionnaire, BienImmobilier bienImmobilier, Date dateDelegation, Boolean statutDelegation) {
+    public DelegationGestion(Long id, Personne gestionnaire, BienImmobilier bienImmobilier, Date dateDelegation, Integer statutDelegation) {
         this.id = id;
         this.gestionnaire = gestionnaire;
         this.bienImmobilier = bienImmobilier;
@@ -63,6 +68,14 @@ public class DelegationGestion extends EntiteDeBase {
         this.gestionnaire = gestionnaire;
     }
 
+    public AgenceImmobiliere getAgenceImmobiliere() {
+        return agenceImmobiliere;
+    }
+
+    public void setAgenceImmobiliere(AgenceImmobiliere agenceImmobiliere) {
+        this.agenceImmobiliere = agenceImmobiliere;
+    }
+
     public BienImmobilier getBienImmobilier() {
         return bienImmobilier;
     }
@@ -79,11 +92,11 @@ public class DelegationGestion extends EntiteDeBase {
         this.dateDelegation = dateDelegation;
     }
 
-    public Boolean getStatutDelegation() {
+    public Integer getStatutDelegation() {
         return statutDelegation;
     }
 
-    public void setStatutDelegation(Boolean statutDelegation) {
+    public void setStatutDelegation(Integer statutDelegation) {
         this.statutDelegation = statutDelegation;
     }
 }

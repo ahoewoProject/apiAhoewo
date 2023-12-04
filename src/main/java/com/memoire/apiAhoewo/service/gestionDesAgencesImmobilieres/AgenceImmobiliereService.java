@@ -7,7 +7,6 @@ import java.security.Principal;
 import java.util.List;
 
 public interface AgenceImmobiliereService {
-
     public List<AgenceImmobiliere> getAgencesByResponsable(Principal principal);
 
     public List<AgenceImmobiliere> getAgencesByAgent(Principal principal);
@@ -16,6 +15,8 @@ public interface AgenceImmobiliereService {
 
     public AgenceImmobiliere findByNomAgence(String nomAgence);
 
+    public AgenceImmobiliere findByCodeAgence(String codeAgence);
+
     public AgenceImmobiliere save(AgenceImmobiliere agenceImmobiliere, Principal principal);
 
     public AgenceImmobiliere update(AgenceImmobiliere agenceImmobiliere, Principal principal);
@@ -23,6 +24,8 @@ public interface AgenceImmobiliereService {
     public void activerAgence(Long id);
 
     public void desactiverAgence(Long id);
+
+    boolean codeAgenceExists(String codeAgence);
 
     public String enregistrerLogo(MultipartFile file);
 

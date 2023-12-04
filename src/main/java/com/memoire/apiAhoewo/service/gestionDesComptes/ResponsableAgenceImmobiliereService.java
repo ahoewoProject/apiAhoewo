@@ -6,10 +6,7 @@ import java.util.List;
 
 public interface ResponsableAgenceImmobiliereService {
     public List<ResponsableAgenceImmobiliere> getAll();
-
     public ResponsableAgenceImmobiliere findById(Long id);
-
     public void deleteById(Long id);
-
     public int countResponsablesAgenceImmobiliere();
 }

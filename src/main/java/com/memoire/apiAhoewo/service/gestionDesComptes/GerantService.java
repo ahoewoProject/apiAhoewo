@@ -7,16 +7,10 @@ import java.util.List;
 
 public interface GerantService {
     public List<Gerant> getAll();
-
     public List<Gerant> findGerantsByProprietaire(Principal principal);
-
     public Gerant findById(Long id);
-
     public Gerant save(Gerant gerant, Principal principal);
-
     public void deleteById(Long id);
-
     public int countGerants();
-
     public int countGerantsByProprietaire(Principal principal);
 }

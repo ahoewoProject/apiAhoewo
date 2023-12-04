@@ -8,7 +8,6 @@ import java.security.Principal;
 import java.util.List;
 
 public interface ImagesBienImmobilierService {
-
     public List<ImagesBienImmobilier> getAll();
 
     public List<ImagesBienImmobilier> findByBienImmobilier(BienImmobilier bienImmobilier);

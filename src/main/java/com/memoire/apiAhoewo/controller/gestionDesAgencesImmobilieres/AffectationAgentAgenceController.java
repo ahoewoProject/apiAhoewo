@@ -82,7 +82,7 @@ public class AffectationAgentAgenceController {
     public ResponseEntity<?> ajouterAgentAgence(Principal principal, @RequestBody AffectationAgentAgenceForm affectationAgentAgenceForm) {
         AffectationAgentAgence affectationAgentAgence;
         try {
-            if (affectationAgentAgenceService.agenceImmobiliereAndAgentImmobiliereExists(
+            if (affectationAgentAgenceService.agenceAndAgentExists(
                     affectationAgentAgenceForm.getAgenceImmobiliere(),
                     affectationAgentAgenceForm.getAgentImmobilier()))
             {
@@ -108,7 +108,7 @@ public class AffectationAgentAgenceController {
             if (agentImmobilierService.matriculeExists(affectationAgentAgenceForm.getMatricule())) {
                 AgentImmobilier agentImmobilier = agentImmobilierService.findByMatricule(affectationAgentAgenceForm.getMatricule());
 
-                if (affectationAgentAgenceService.agenceImmobiliereAndMatriculeAgentImmobilier(
+                if (affectationAgentAgenceService.agenceAndMatriculeAgentExists(
                         affectationAgentAgenceForm.getAgenceImmobiliere(),
                         agentImmobilier.getMatricule())) {
                     return new ResponseEntity<>("Cet agent immobilier a déjà été ajouté dans cette agence", HttpStatus.CONFLICT);
