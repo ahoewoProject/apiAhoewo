@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface VilleRepository extends JpaRepository<Ville, Long> {
     List<Ville> findByEtat(Boolean etat);
+
     Ville findByLibelle(String libelle);
 }

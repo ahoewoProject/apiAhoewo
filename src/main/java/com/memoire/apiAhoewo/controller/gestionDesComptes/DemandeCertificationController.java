@@ -29,7 +29,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 public class DemandeCertificationController {
-
     @Autowired
     private DemandeCertificationService demandeCertificationService;
     @Autowired

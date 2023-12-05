@@ -8,7 +8,6 @@ import javax.persistence.*;
 @Entity
 @Table(name="agences_immobilieres")
 public class AgenceImmobiliere extends EntiteDeBase {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -132,5 +131,22 @@ public class AgenceImmobiliere extends EntiteDeBase {
 
     public void setEtatAgence(Boolean etatAgence) {
         this.etatAgence = etatAgence;
+    }
+
+    @Override
+    public String toString() {
+        return "AgenceImmobiliere{" +
+                "id=" + id +
+                ", logoAgence='" + logoAgence + '\'' +
+                ", codeAgence='" + codeAgence + '\'' +
+                ", nomAgence='" + nomAgence + '\'' +
+                ", adresse='" + adresse + '\'' +
+                ", adresseEmail='" + adresseEmail + '\'' +
+                ", telephone='" + telephone + '\'' +
+                ", heureOuverture='" + heureOuverture + '\'' +
+                ", heureFermeture='" + heureFermeture + '\'' +
+                ", estCertifie=" + estCertifie +
+                ", etatAgence=" + etatAgence +
+                '}';
     }
 }

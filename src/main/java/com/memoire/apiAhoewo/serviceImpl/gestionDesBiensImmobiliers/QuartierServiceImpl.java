@@ -18,6 +18,7 @@ public class QuartierServiceImpl implements QuartierService {
     private PersonneService personneService;
     @Autowired
     private QuartierRepository quartierRepository;
+
     @Override
     public List<Quartier> getAll() {
         return quartierRepository.findAll();

@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface QuartierRepository extends JpaRepository<Quartier, Long> {
     List<Quartier> findByEtat(Boolean etat);
+
     Quartier findByLibelle(String libelle);
 }

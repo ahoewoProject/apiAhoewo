@@ -31,7 +31,6 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
     @Autowired
     private EmailSenderService emailSenderService;
 
-
     @Override
     public List<DelegationGestion> getDelegationsByProprietaire(Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());

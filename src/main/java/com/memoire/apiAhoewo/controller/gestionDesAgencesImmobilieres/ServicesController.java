@@ -14,7 +14,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 public class ServicesController {
-
     @Autowired
     private ServicesService servicesService;
 
@@ -67,12 +66,12 @@ public class ServicesController {
             }
 
             services = this.servicesService.save(services, principal);
+            return ResponseEntity.ok(services);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Une erreur s'est produite lors de l'ajout du service : " + e.getMessage());
         }
-        return ResponseEntity.ok(services);
     }
 
     @RequestMapping(value = "/services/modifier/{id}", method = RequestMethod.PUT, headers = "accept=Application/json")
@@ -86,10 +85,12 @@ public class ServicesController {
             }
             services.setNomService(servicesModifie.getNomService());
             services = this.servicesService.update(services, principal);
+            return ResponseEntity.ok(services);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Une erreur s'est produite lors de la modification du service : " + e.getMessage());
         }
-        return ResponseEntity.ok(services);
     }
 
     @RequestMapping(value = "/activer/services/{id}", method = RequestMethod.GET, headers = "accept=Application/json")

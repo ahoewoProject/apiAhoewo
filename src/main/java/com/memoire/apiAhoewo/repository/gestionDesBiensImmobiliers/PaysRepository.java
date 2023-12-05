@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface PaysRepository extends JpaRepository<Pays, Long> {
     List<Pays> findByEtat(Boolean etat);
+
     Pays findByLibelle(String libelle);
 }

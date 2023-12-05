@@ -24,10 +24,8 @@ import java.util.List;
 public class ImagesBienImmobilierController {
     @Autowired
     private ImagesBienImmobilierService imagesBienImmobilierService;
-
     @Autowired
     private BienImmobilierService bienImmobilierService;
-
     @Autowired
     private FileManagerService fileManagerService;
 

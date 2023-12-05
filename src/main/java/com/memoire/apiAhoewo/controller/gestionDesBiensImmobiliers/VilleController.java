@@ -66,12 +66,12 @@ public class VilleController {
             }
 
             ville = this.villeService.save(ville, principal);
+            return ResponseEntity.ok(ville);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Une erreur s'est produite lors de l'ajout du type de bien : " + e.getMessage());
+                    .body("Une erreur s'est produite lors de l'ajout de la ville : " + e.getMessage());
         }
-        return ResponseEntity.ok(ville);
     }
 
     @RequestMapping(value = "/ville/modifier/{id}", method = RequestMethod.PUT, headers = "accept=Application/json")
@@ -85,10 +85,12 @@ public class VilleController {
             }
             ville.setLibelle(villeModifie.getLibelle());
             ville = this.villeService.update(ville, principal);
+            return ResponseEntity.ok(ville);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Une erreur s'est produite lors de la modification de la ville : " + e.getMessage());
         }
-        return ResponseEntity.ok(ville);
     }
 
     @RequestMapping(value = "/activer/ville/{id}", method = RequestMethod.GET, headers = "accept=Application/json")

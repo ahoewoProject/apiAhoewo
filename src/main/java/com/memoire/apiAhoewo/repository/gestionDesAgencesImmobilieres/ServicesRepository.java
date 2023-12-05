@@ -10,5 +10,6 @@ import java.util.List;
 @Repository
 public interface ServicesRepository extends JpaRepository<Services, Long> {
     Services findByNomService(String nomService);
+
     List<Services> findByEtat(Boolean etat);
 }

@@ -23,7 +23,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api")
 public class AgenceImmobiliereController {
-
     @Autowired
     private AgenceImmobiliereService agenceImmobiliereService;
     @Autowired
@@ -116,13 +115,13 @@ public class AgenceImmobiliereController {
             }
 
             agenceImmobiliere = this.agenceImmobiliereService.save(agenceImmobiliere, principal);
+            return ResponseEntity.ok(agenceImmobiliere);
 
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Une erreur s'est produite lors de l'ajout de l'agence immobilière : " + e.getMessage());
         }
-        return ResponseEntity.ok(agenceImmobiliere);
     }
 
     @RequestMapping(value = "/agence-immobiliere/modifier/{id}", method = RequestMethod.PUT, headers = "accept=Application/json")
@@ -153,13 +152,12 @@ public class AgenceImmobiliereController {
             agenceImmobiliere.setHeureOuverture(agenceImmobiliereModifie.getHeureOuverture());
             agenceImmobiliere.setHeureFermeture(agenceImmobiliereModifie.getHeureFermeture());
             agenceImmobiliere = this.agenceImmobiliereService.update(agenceImmobiliere, principal);
-
+            return ResponseEntity.ok(agenceImmobiliere);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Une erreur s'est produite lors de la modification de l'agence immobilière : " + e.getMessage());
         }
-        return ResponseEntity.ok(agenceImmobiliere);
     }
 
     @RequestMapping(value = "/activer/agence-immobiliere/{id}", method = RequestMethod.GET, headers = "accept=Application/json")

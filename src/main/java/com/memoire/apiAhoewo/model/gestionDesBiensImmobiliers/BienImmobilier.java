@@ -176,4 +176,24 @@ public class BienImmobilier extends EntiteDeBase {
     public void setAgenceImmobiliere(AgenceImmobiliere agenceImmobiliere) {
         this.agenceImmobiliere = agenceImmobiliere;
     }
+
+    @Override
+    public String toString() {
+        return "BienImmobilier{" +
+                "id=" + id +
+                ", numeroIdentifiant='" + numeroIdentifiant + '\'' +
+                ", description='" + description + '\'' +
+                ", adresse='" + adresse + '\'' +
+                ", surface=" + surface +
+                ", typeDeBien=" + typeDeBien +
+                ", statutBien='" + statutBien + '\'' +
+                ", etatBien=" + etatBien +
+                ", pays=" + pays +
+                ", region=" + region +
+                ", ville=" + ville +
+                ", quartier=" + quartier +
+                ", personne=" + personne +
+                ", agenceImmobiliere=" + agenceImmobiliere +
+                '}';
+    }
 }

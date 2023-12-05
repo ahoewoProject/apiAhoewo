@@ -9,7 +9,6 @@ import java.util.Date;
 @Entity
 @Table(name="affectations_agents_agences")
 public class AffectationAgentAgence extends EntiteDeBase {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -56,5 +55,15 @@ public class AffectationAgentAgence extends EntiteDeBase {
 
     public void setDateAffectation(Date dateAffectation) {
         this.dateAffectation = dateAffectation;
+    }
+
+    @Override
+    public String toString() {
+        return "AffectationAgentAgence{" +
+                "id=" + id +
+                ", agenceImmobiliere=" + agenceImmobiliere +
+                ", agentImmobilier=" + agentImmobilier +
+                ", dateAffectation=" + dateAffectation +
+                '}';
     }
 }

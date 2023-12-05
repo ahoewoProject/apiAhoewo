@@ -16,7 +16,6 @@ import java.util.List;
 public class TypeDeBienServiceImpl implements TypeDeBienService {
     @Autowired
     private TypeDeBienRepository typeDeBienRepository;
-
     @Autowired
     private PersonneService personneService;
 

@@ -99,4 +99,16 @@ public class DelegationGestion extends EntiteDeBase {
     public void setStatutDelegation(Integer statutDelegation) {
         this.statutDelegation = statutDelegation;
     }
+
+    @Override
+    public String toString() {
+        return "DelegationGestion{" +
+                "id=" + id +
+                ", gestionnaire=" + gestionnaire +
+                ", agenceImmobiliere=" + agenceImmobiliere +
+                ", bienImmobilier=" + bienImmobilier +
+                ", dateDelegation=" + dateDelegation +
+                ", statutDelegation=" + statutDelegation +
+                '}';
+    }
 }

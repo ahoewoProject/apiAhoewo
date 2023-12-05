@@ -87,4 +87,16 @@ public class Confort extends Equipements {
     public void setSecheCheveux(Boolean secheCheveux) {
         this.secheCheveux = secheCheveux;
     }
+
+    @Override
+    public String toString() {
+        return "Confort{" +
+                "id=" + id +
+                ", chauffage=" + chauffage +
+                ", climatisation=" + climatisation +
+                ", nombreFauteuils=" + nombreFauteuils +
+                ", nombreLits=" + nombreLits +
+                ", secheCheveux=" + secheCheveux +
+                '}';
+    }
 }

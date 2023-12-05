@@ -7,7 +7,6 @@ import java.security.Principal;
 import java.util.List;
 
 public interface DelegationGestionService {
-
     List<DelegationGestion> getDelegationsByProprietaire(Principal principal);
 
     List<DelegationGestion> getDelegationsByGestionnaire(Principal principal);

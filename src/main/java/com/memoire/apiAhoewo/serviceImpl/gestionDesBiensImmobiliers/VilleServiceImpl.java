@@ -18,7 +18,6 @@ public class VilleServiceImpl implements VilleService {
     private PersonneService personneService;
     @Autowired
     private VilleRepository villeRepository;
-
     @Override
     public List<Ville> getAll() {
         return villeRepository.findAll();

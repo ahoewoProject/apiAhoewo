@@ -66,12 +66,12 @@ public class PaysController {
             }
 
             pays = this.paysService.save(pays, principal);
+            return ResponseEntity.ok(pays);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Une erreur s'est produite lors de l'ajout du type de bien : " + e.getMessage());
+                    .body("Une erreur s'est produite lors de l'ajout du pays : " + e.getMessage());
         }
-        return ResponseEntity.ok(pays);
     }
 
     @RequestMapping(value = "/pays/modifier/{id}", method = RequestMethod.PUT, headers = "accept=Application/json")
@@ -85,10 +85,12 @@ public class PaysController {
             }
             pays.setLibelle(paysModifie.getLibelle());
             pays = this.paysService.update(pays, principal);
+            return ResponseEntity.ok(pays);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Une erreur s'est produite lors de la modification du pays : " + e.getMessage());
         }
-        return ResponseEntity.ok(pays);
     }
 
     @RequestMapping(value = "/activer/pays/{id}", method = RequestMethod.GET, headers = "accept=Application/json")

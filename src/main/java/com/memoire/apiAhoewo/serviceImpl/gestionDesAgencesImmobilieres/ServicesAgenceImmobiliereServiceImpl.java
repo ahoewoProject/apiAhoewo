@@ -1,6 +1,7 @@
 package com.memoire.apiAhoewo.serviceImpl.gestionDesAgencesImmobilieres;
 
 import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.AgenceImmobiliere;
+import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.Services;
 import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.ServicesAgenceImmobiliere;
 import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
 import com.memoire.apiAhoewo.repository.gestionDesAgencesImmobilieres.ServicesAgenceImmobiliereRepository;
@@ -62,6 +63,11 @@ public class ServicesAgenceImmobiliereServiceImpl implements ServicesAgenceImmob
         servicesAgenceImmobiliere.setModifierLe(new Date());
         servicesAgenceImmobiliere.setModifierPar(personne.getId());
         return servicesAgenceImmobiliereRepository.save(servicesAgenceImmobiliere);
+    }
+
+    @Override
+    public boolean servicesAndAgenceImmobiliereExists(Services services, AgenceImmobiliere agenceImmobiliere) {
+        return servicesAgenceImmobiliereRepository.existsByServicesAndAgenceImmobiliere(services, agenceImmobiliere);
     }
 
     @Override

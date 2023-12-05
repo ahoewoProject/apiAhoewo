@@ -66,12 +66,12 @@ public class QuartierController {
             }
 
             quartier = this.quartierService.save(quartier, principal);
+            return ResponseEntity.ok(quartier);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Une erreur s'est produite lors de l'ajout du type de bien : " + e.getMessage());
+                    .body("Une erreur s'est produite lors de l'ajout du quartier : " + e.getMessage());
         }
-        return ResponseEntity.ok(quartier);
     }
 
     @RequestMapping(value = "/quartier/modifier/{id}", method = RequestMethod.PUT, headers = "accept=Application/json")
@@ -85,10 +85,12 @@ public class QuartierController {
             }
             quartier.setLibelle(quartierModifie.getLibelle());
             quartier = this.quartierService.update(quartier, principal);
+            return ResponseEntity.ok(quartier);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Une erreur s'est produite lors de la modification du quartier : " + e.getMessage());
         }
-        return ResponseEntity.ok(quartier);
     }
 
     @RequestMapping(value = "/activer/quartier/{id}", method = RequestMethod.GET, headers = "accept=Application/json")

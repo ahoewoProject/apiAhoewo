@@ -12,7 +12,10 @@ import java.util.List;
 @Repository
 public interface DelegationGestionRepository extends JpaRepository<DelegationGestion, Long> {
     List<DelegationGestion> findByBienImmobilier_Personne(Personne personne);
+
     List<DelegationGestion> findByGestionnaire(Personne personne);
+
     List<DelegationGestion> findByAgenceImmobiliereIn(List<AgenceImmobiliere> agenceImmobiliereList);
+
     boolean existsByBienImmobilierAndStatutDelegation(BienImmobilier bienImmobilier, Integer statutDelegation);
 }

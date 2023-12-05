@@ -10,6 +10,8 @@ import java.util.List;
 @Repository
 public interface AgenceImmobiliereRepository extends JpaRepository<AgenceImmobiliere, Long> {
     AgenceImmobiliere findByNomAgence(String nomAgence);
+
     AgenceImmobiliere findByCodeAgence(String codeAgence);
+
     boolean existsByCodeAgence(String codeAgence);
 }

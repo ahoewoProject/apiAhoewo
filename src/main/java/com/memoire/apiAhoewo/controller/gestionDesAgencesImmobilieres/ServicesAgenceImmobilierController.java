@@ -58,35 +58,42 @@ public class ServicesAgenceImmobilierController {
     @RequestMapping(value = "/service/agence-immobiliere/ajouter", method = RequestMethod.POST, headers = "accept=Application/json")
     public ResponseEntity<?> ajouterServiceAgence(Principal principal, @RequestBody ServicesAgenceImmobiliere servicesAgenceImmobiliere) {
         try {
-            List<ServicesAgenceImmobiliere> servicesExistants = this.servicesAgenceImmobiliereService.getServicesOfAgence(principal);
-
-            for (ServicesAgenceImmobiliere serviceExistant : servicesExistants) {
-                if (serviceExistant.getServices().getNomService().equalsIgnoreCase(servicesAgenceImmobiliere.getServices().getNomService())) {
-                    return ResponseEntity.status(HttpStatus.CONFLICT)
-                            .body("Un service avec ce nom " + serviceExistant.getServices().getNomService() + " existe déjà.");
-                }
-
+            if (servicesAgenceImmobiliereService.servicesAndAgenceImmobiliereExists(
+                    servicesAgenceImmobiliere.getServices(), servicesAgenceImmobiliere.getAgenceImmobiliere())
+            ) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body("Un service avec ce nom " + servicesAgenceImmobiliere.getServices().getNomService() +
+                                " existe déjà dans cette agence.");
             }
             servicesAgenceImmobiliere = this.servicesAgenceImmobiliereService.save(servicesAgenceImmobiliere, principal);
+            return ResponseEntity.ok(servicesAgenceImmobiliere);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Une erreur s'est produite lors de l'ajout du service : " + e.getMessage());
         }
-        return ResponseEntity.ok(servicesAgenceImmobiliere);
     }
 
     @RequestMapping(value = "/service/agence-immobiliere/modifier/{id}", method = RequestMethod.PUT, headers = "accept=Application/json")
     public ResponseEntity<?> modifierServiceAgence(Principal principal, @RequestBody ServicesAgenceImmobiliere servicesModifie, @PathVariable  Long id) {
         ServicesAgenceImmobiliere servicesAgenceImmobiliere = servicesAgenceImmobiliereService.findById(id);
         try {
+            if (servicesAgenceImmobiliereService.servicesAndAgenceImmobiliereExists(
+                    servicesModifie.getServices(), servicesModifie.getAgenceImmobiliere())
+            ) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body("Un service avec ce nom " + servicesAgenceImmobiliere.getServices().getNomService() +
+                                " existe déjà dans cette agence.");
+            }
             servicesAgenceImmobiliere.setServices(servicesModifie.getServices());
             servicesAgenceImmobiliere.setAgenceImmobiliere(servicesModifie.getAgenceImmobiliere());
             servicesAgenceImmobiliere = this.servicesAgenceImmobiliereService.update(servicesAgenceImmobiliere, principal);
+            return ResponseEntity.ok(servicesAgenceImmobiliere);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Une erreur s'est produite lors de la modification du service de l'agence immobilière.");
         }
-        return ResponseEntity.ok(servicesAgenceImmobiliere);
     }
 
     @RequestMapping(value = "/activer/service/agence-immobiliere/{id}", method = RequestMethod.GET, headers = "accept=Application/json")

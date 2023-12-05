@@ -7,7 +7,6 @@ import javax.persistence.*;
 @Entity
 @Table(name="services_agences_immobilieres")
 public class ServicesAgenceImmobiliere extends EntiteDeBase {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -54,5 +53,15 @@ public class ServicesAgenceImmobiliere extends EntiteDeBase {
 
     public void setEtat(Boolean etat) {
         this.etat = etat;
+    }
+
+    @Override
+    public String toString() {
+        return "ServicesAgenceImmobiliere{" +
+                "id=" + id +
+                ", services=" + services +
+                ", agenceImmobiliere=" + agenceImmobiliere +
+                ", etat=" + etat +
+                '}';
     }
 }

@@ -21,7 +21,6 @@ import java.util.List;
 public class ImagesBienImmobilierServiceImpl implements ImagesBienImmobilierService {
     @Autowired
     private ImagesBienImmobilierRepository imagesBienImmobilierRepository;
-
     @Autowired
     private PersonneService personneService;
 

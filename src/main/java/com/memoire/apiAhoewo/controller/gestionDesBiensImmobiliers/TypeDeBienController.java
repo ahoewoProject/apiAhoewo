@@ -18,7 +18,6 @@ import java.util.List;
 public class TypeDeBienController {
     @Autowired
     private TypeDeBienService typeDeBienService;
-
     @Autowired
     private BienImmobilierRepository bienImmobilierRepository;
 
@@ -71,12 +70,12 @@ public class TypeDeBienController {
             }
 
             typeDeBien = this.typeDeBienService.save(typeDeBien, principal);
+            return ResponseEntity.ok(typeDeBien);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Une erreur s'est produite lors de l'ajout du type de bien : " + e.getMessage());
         }
-        return ResponseEntity.ok(typeDeBien);
     }
 
     @RequestMapping(value = "/type-de-bien/modifier/{id}", method = RequestMethod.PUT, headers = "accept=Application/json")
@@ -90,10 +89,12 @@ public class TypeDeBienController {
             }
             typeDeBien.setDesignation(typeDeBienModifie.getDesignation());
             typeDeBien = this.typeDeBienService.update(typeDeBien, principal);
+            return ResponseEntity.ok(typeDeBien);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Une erreur s'est produite lors de la modification du type de bien : " + e.getMessage());
         }
-        return ResponseEntity.ok(typeDeBien);
     }
 
     @RequestMapping(value = "/activer/type-de-bien/{id}", method = RequestMethod.GET, headers = "accept=Application/json")

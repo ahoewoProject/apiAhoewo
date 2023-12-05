@@ -9,5 +9,6 @@ import java.util.List;
 @Repository
 public interface TypeDeBienRepository extends JpaRepository<TypeDeBien, Long> {
     TypeDeBien findByDesignation(String designation);
+
     List<TypeDeBien> findByEtat(Boolean etat);
 }

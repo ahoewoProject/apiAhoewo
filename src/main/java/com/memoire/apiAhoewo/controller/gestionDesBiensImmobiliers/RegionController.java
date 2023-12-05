@@ -67,12 +67,12 @@ public class RegionController {
             }
 
             region = this.regionService.save(region, principal);
+            return ResponseEntity.ok(region);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Une erreur s'est produite lors de l'ajout du type de bien : " + e.getMessage());
+                    .body("Une erreur s'est produite lors de l'ajout de la région : " + e.getMessage());
         }
-        return ResponseEntity.ok(region);
     }
 
     @RequestMapping(value = "/region/modifier/{id}", method = RequestMethod.PUT, headers = "accept=Application/json")
@@ -86,10 +86,12 @@ public class RegionController {
             }
             region.setLibelle(regionModifie.getLibelle());
             region = this.regionService.update(region, principal);
+            return ResponseEntity.ok(region);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Une erreur s'est produite lors de la modification de la région : " + e.getMessage());
         }
-        return ResponseEntity.ok(region);
     }
 
     @RequestMapping(value = "/activer/region/{id}", method = RequestMethod.GET, headers = "accept=Application/json")

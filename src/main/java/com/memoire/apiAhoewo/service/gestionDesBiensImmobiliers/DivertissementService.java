@@ -7,6 +7,8 @@ import java.security.Principal;
 
 public interface DivertissementService {
     Divertissement getByBienImmobilier(Long id);
+
     Divertissement save(BienImmobilier bienImmobilier, Divertissement divertissement, Principal principal);
+
     Divertissement update(BienImmobilier bienImmobilier, Divertissement divertissement, Principal principal);
 }

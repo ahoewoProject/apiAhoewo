@@ -94,12 +94,12 @@ public class AffectationAgentAgenceController {
             AgentImmobilier agentImmobilier = affectationAgentAgenceForm.getAgentImmobilier();
             AgenceImmobiliere agenceImmobiliere = affectationAgentAgenceForm.getAgenceImmobiliere();
             affectationAgentAgence = this.affectationAgentAgenceService.save(agentImmobilier, agenceImmobiliere, principal);
+            return ResponseEntity.ok(affectationAgentAgence);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Une erreur s'est produite lors de l'ajout du service : " + e.getMessage());
         }
-        return ResponseEntity.ok(affectationAgentAgence);
     }
 
     @RequestMapping(value = "/affectation-matricule-agent-agence/ajouter", method = RequestMethod.POST, headers = "accept=Application/json")

@@ -19,4 +19,11 @@ public class Equipements extends EntiteDeBase {
     public void setBienImmobilier(BienImmobilier bienImmobilier) {
         this.bienImmobilier = bienImmobilier;
     }
+
+    @Override
+    public String toString() {
+        return "Equipements{" +
+                "bienImmobilier=" + bienImmobilier +
+                '}';
+    }
 }

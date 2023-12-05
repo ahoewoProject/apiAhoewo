@@ -7,7 +7,6 @@ import javax.persistence.*;
 @Entity
 @Table(name="services")
 public class Services extends EntiteDeBase {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -76,5 +75,16 @@ public class Services extends EntiteDeBase {
 
     public void setEtat(Boolean etat) {
         this.etat = etat;
+    }
+
+    @Override
+    public String toString() {
+        return "Services{" +
+                "id=" + id +
+                ", codeService='" + codeService + '\'' +
+                ", nomService='" + nomService + '\'' +
+                ", description='" + description + '\'' +
+                ", etat=" + etat +
+                '}';
     }
 }

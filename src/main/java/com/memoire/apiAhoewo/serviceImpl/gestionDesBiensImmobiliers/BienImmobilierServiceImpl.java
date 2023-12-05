@@ -2,8 +2,6 @@ package com.memoire.apiAhoewo.serviceImpl.gestionDesBiensImmobiliers;
 
 import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.AgenceImmobiliere;
 import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.BienImmobilier;
-import com.memoire.apiAhoewo.model.gestionDesComptes.AgentImmobilier;
-import com.memoire.apiAhoewo.model.gestionDesComptes.Gerant;
 import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
 import com.memoire.apiAhoewo.repository.gestionDesBiensImmobiliers.BienImmobilierRepository;
 import com.memoire.apiAhoewo.service.gestionDesAgencesImmobilieres.AgenceImmobiliereService;

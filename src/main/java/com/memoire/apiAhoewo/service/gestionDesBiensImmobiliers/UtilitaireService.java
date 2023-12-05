@@ -7,6 +7,8 @@ import java.security.Principal;
 
 public interface UtilitaireService {
     Utilitaire getByBienImmobilier(Long id);
+
     Utilitaire save(BienImmobilier bienImmobilier, Utilitaire utilitaire, Principal principal);
+
     Utilitaire update(BienImmobilier bienImmobilier, Utilitaire utilitaire, Principal principal);
 }

@@ -11,6 +11,8 @@ import java.util.List;
 @Repository
 public interface AffectationResponsableAgenceRepository extends JpaRepository<AffectationResponsableAgence, Long> {
     List<AffectationResponsableAgence> findByResponsableAgenceImmobiliere(ResponsableAgenceImmobiliere responsableAgenceImmobiliere);
+
     List<AffectationResponsableAgence> findByAgenceImmobiliereIn(List<AgenceImmobiliere> agenceImmobiliereList);
+
     List<AffectationResponsableAgence> findByAgenceImmobiliere(AgenceImmobiliere agenceImmobiliere);
 }

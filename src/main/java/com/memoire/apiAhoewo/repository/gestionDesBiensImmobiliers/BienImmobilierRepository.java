@@ -11,8 +11,9 @@ import java.util.List;
 
 @Repository
 public interface BienImmobilierRepository extends JpaRepository<BienImmobilier, Long> {
-
     List<BienImmobilier> findByPersonne(Personne personne);
+
     List<BienImmobilier> findByTypeDeBien(TypeDeBien typeDeBien);
+
     List<BienImmobilier> findByAgenceImmobiliereIn(List<AgenceImmobiliere> agenceImmobilieres);
 }

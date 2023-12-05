@@ -8,7 +8,6 @@ import javax.persistence.*;
 @Entity
 @Table(name="affectations_responsables_agences")
 public class AffectationResponsableAgence extends EntiteDeBase {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -44,5 +43,14 @@ public class AffectationResponsableAgence extends EntiteDeBase {
 
     public void setAgenceImmobiliere(AgenceImmobiliere agenceImmobiliere) {
         this.agenceImmobiliere = agenceImmobiliere;
+    }
+
+    @Override
+    public String toString() {
+        return "AffectationResponsableAgence{" +
+                "id=" + id +
+                ", responsableAgenceImmobiliere=" + responsableAgenceImmobiliere +
+                ", agenceImmobiliere=" + agenceImmobiliere +
+                '}';
     }
 }

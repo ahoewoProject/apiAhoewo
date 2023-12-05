@@ -1,5 +1,7 @@
 package com.memoire.apiAhoewo.service.gestionDesAgencesImmobilieres;
 
+import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.AgenceImmobiliere;
+import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.Services;
 import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.ServicesAgenceImmobiliere;
 
 import java.security.Principal;
@@ -17,6 +19,8 @@ public interface ServicesAgenceImmobiliereService {
 
     public ServicesAgenceImmobiliere update(ServicesAgenceImmobiliere servicesAgenceImmobiliere,
                                             Principal principal);
+
+    public boolean servicesAndAgenceImmobiliereExists(Services services, AgenceImmobiliere agenceImmobiliere);
 
     public void activerServiceAgence(Long id);
 

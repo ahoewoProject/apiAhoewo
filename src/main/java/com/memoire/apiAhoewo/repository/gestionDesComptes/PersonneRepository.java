@@ -7,10 +7,16 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PersonneRepository extends JpaRepository<Personne, Long> {
     Personne findByUsername(String username);
+
     Personne findByMatricule(String matricule);
+
     boolean existsByUsername(String username);
+
     boolean existsByMatricule(String matricule);
+
     boolean existsByEmail(String email);
+
     Personne findByEmail(String email);
+
     Personne findByResetToken(String token);
 }

@@ -74,4 +74,15 @@ public class Divertissement extends Equipements {
     public void setSalleDeSport(Boolean salleDeSport) {
         this.salleDeSport = salleDeSport;
     }
+
+    @Override
+    public String toString() {
+        return "Divertissement{" +
+                "id=" + id +
+                ", television=" + television +
+                ", piscine=" + piscine +
+                ", jardin=" + jardin +
+                ", salleDeSport=" + salleDeSport +
+                '}';
+    }
 }

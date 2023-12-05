@@ -5,6 +5,7 @@ import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
 import com.memoire.apiAhoewo.requestForm.RegisterForm;
 import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,8 @@ import java.util.Map;
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class PersonneController {
-    private final PersonneService personneService;
+    @Autowired
+    private PersonneService personneService;
 
     @RequestMapping(value = "/register", method = RequestMethod.POST, headers = "accept=Application/json")
     public ResponseEntity<?> savePersonne(@RequestBody RegisterForm registerForm) {

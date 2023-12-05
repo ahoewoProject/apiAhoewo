@@ -53,12 +53,12 @@ public class RoleController {
             }
 
             role = this.roleService.save(role, principal);
+            return ResponseEntity.ok(role);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Une erreur s'est produite lors de l'ajout du rôle : " + e.getMessage());
         }
-        return ResponseEntity.ok(role);
     }
 
     @RequestMapping(value = "/role/modifier/{id}", method = RequestMethod.PUT, headers = "accept=Application/json")
@@ -73,10 +73,13 @@ public class RoleController {
             role.setCode(roleModifie.getCode());
             role.setLibelle(roleModifie.getLibelle());
             role = this.roleService.update(role, principal);
+            return ResponseEntity.ok(role);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Une erreur s'est produite lors de la modification du rôle : " + e.getMessage());
         }
-        return ResponseEntity.ok(role);
+
     }
 
     @RequestMapping(value = "/role/supprimer/{id}", method = RequestMethod.DELETE, headers = "accept=Application/json")

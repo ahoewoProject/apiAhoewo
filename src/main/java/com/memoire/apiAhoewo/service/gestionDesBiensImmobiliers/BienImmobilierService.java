@@ -9,13 +9,22 @@ import java.util.List;
 
 public interface BienImmobilierService {
     public List<BienImmobilier> getAll();
+
     public List<BienImmobilier> getAllByProprietaire(Principal principal);
+
     public List<BienImmobilier> getBiensOfAgencesByResponsable(Principal principal);
+
     public List<BienImmobilier> getBiensOfAgencesByAgent(Principal principal);
+
     public BienImmobilier findById(Long id);
+
     public BienImmobilier save(BienImmobilier bienImmobilier, Principal principal);
+
     public BienImmobilier update(BienImmobilier bienImmobilier, Principal principal);
+
     public void activerBienImmobilier(Long id);
+
     public void desactiverBienImmobilier(Long id);
+
     public void deleteById(Long id);
 }
