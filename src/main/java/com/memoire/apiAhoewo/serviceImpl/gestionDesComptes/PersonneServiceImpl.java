@@ -176,7 +176,7 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
 
         String resetLink = "http://localhost:4200/#/reset-password?token=" + token;
 
-        String contenu = "Bonjour M/Mlle " + personne.getPrenom() + ",\n\n" +
+        String contenu = "Bonjour M/Mlle " + personne.getPrenom() + " " + personne.getNom() + ",\n\n" +
                 "Pour réinitialiser votre mot de passe, veuillez cliquer sur le lien ci-dessous :\n" +
                 resetLink + "\n\n" +
                 "Si vous n'avez pas demandé de réinitialisation de mot de passe, veuillez ignorer cet email.\n\n" +

@@ -58,7 +58,7 @@ public class AdministrateurServiceImpl implements AdministrateurService {
         savedAdmin.setMatricule("ADMIN00" + savedAdmin.getId());
         Administrateur newAdmin = administrateurRepository.save(savedAdmin);
 
-        String contenu = "Bonjour " + administrateur.getPrenom() + ",\n\n" +
+        String contenu = "Bonjour " + administrateur.getPrenom() + " " + administrateur.getNom() + ",\n\n" +
                 "Votre compte a été créé avec succès suite à l'enregistrement de vos informations par l'administrateur " + personne.getNom() + " " + personne.getPrenom() + ".\n" +
                 "Voici vos identifiants de connexion :\n" +
                 "Nom d'utilisateur : " + username + "\n" +

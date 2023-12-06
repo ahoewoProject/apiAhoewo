@@ -71,7 +71,7 @@ public class AgentImmobilierServiceImpl implements AgentImmobilierService {
         savedAgent.setMatricule("AGENT00" + savedAgent.getId());
         AgentImmobilier newAgent = agentImmobilierRepository.save(savedAgent);
 
-        String contenu = "Bonjour " + agentImmobilier.getPrenom() + ",\n\n" +
+        String contenu = "Bonjour " + agentImmobilier.getPrenom() + " " + agentImmobilier.getNom() + ",\n\n" +
                 "Votre compte a été créé avec succès suite à l'enregistrement de vos informations auprès de l'agence immobilière pour laquelle vous travaillez.\n" +
                 "Voici vos identifiants de connexion :\n" +
                 "Nom d'utilisateur : " + username + "\n" +

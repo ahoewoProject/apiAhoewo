@@ -59,7 +59,7 @@ public class NotaireServiceImpl implements NotaireService {
         savedNotaire.setMatricule("NOTAI00" + savedNotaire.getId());
         Notaire newNotaire = notaireRepository.save(savedNotaire);
 
-        String contenu = "Bonjour " + notaire.getPrenom() + ",\n\n" +
+        String contenu = "Bonjour " + notaire.getPrenom() + " " + notaire.getNom() + ",\n\n" +
                 "Votre compte a été créé avec succès suite à l'enregistrement de vos informations par l'administrateur " + personne.getNom() + " " + personne.getPrenom() + ".\n" +
                 "Voici vos identifiants de connexion :\n" +
                 "Nom d'utilisateur : " + username + "\n" +

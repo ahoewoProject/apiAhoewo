@@ -146,13 +146,13 @@ public class DelegationGestionController {
     @RequestMapping(value = "/accepter/delegation-gestion/{id}", method = RequestMethod.GET, headers = "accept=Application/json")
     public ResponseEntity<?> accepterDelegationGestion(@PathVariable Long id) {
         DelegationGestion delegationGestion = delegationGestionService.findById(id);
-        if (delegationGestionService.bienImmobilierAndStatutDelegationExists(delegationGestion.getBienImmobilier(), 2)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Cette délégation de gestion est déjà acceptée");
+        if (delegationGestionService.bienImmobilierAndStatutDelegationExists(delegationGestion.getBienImmobilier(), 1)) {
+            return new ResponseEntity<>("Délégation de gestion déjà acceptée", HttpStatus.BAD_REQUEST);
         }
-        this.delegationGestionService.accepterDelegationGestion(id);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body("Délégation de gestion acceptée avec succès");
+        else {
+            this.delegationGestionService.accepterDelegationGestion(delegationGestion.getId());
+            return ResponseEntity.ok(delegationGestion);
+        }
     }
 
     @RequestMapping(value = "/refuser/delegation-gestion/{id}", method = RequestMethod.GET, headers = "accept=Application/json")

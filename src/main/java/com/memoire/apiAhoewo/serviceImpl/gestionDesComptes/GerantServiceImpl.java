@@ -65,7 +65,7 @@ public class GerantServiceImpl implements GerantService {
         gerantSaved.setMatricule("GERAN00" + gerantSaved.getId());
         Gerant newGerant = gerantRepository.save(gerantSaved);
 
-        String contenu = "Bonjour " + gerant.getPrenom() + ",\n\n" +
+        String contenu = "Bonjour " + gerant.getPrenom() + " " + gerant.getNom() + ",\n\n" +
                 "Votre compte a été créé avec succès suite à l'enregistrement de vos informations par le propriétaire " + personne.getNom() + " " + personne.getPrenom() + ".\n" +
                 "Voici vos identifiants de connexion :\n" +
                 "Nom d'utilisateur : " + username + "\n" +

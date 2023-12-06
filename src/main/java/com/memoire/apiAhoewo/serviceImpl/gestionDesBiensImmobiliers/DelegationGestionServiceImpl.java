@@ -76,15 +76,14 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
 
         if (delegationGestion.getAgenceImmobiliere() == null) {
 
-            if (delegationGestion.getGestionnaire().getRole().getCode() == "ROLE_DEMARCHEUR") {
+            if ("ROLE_DEMARCHEUR".equals(delegationGestion.getGestionnaire().getRole().getCode())) {
                 delegationGestionLink = "http://localhost:4200/#/demarcheur/delegations-gestions";
             } else {
                 delegationGestionLink = "http://localhost:4200/#/gerant/delegations-gestions";
             }
 
-
-            contenu = "Bonjour M/Mlle " + delegationGestion.getGestionnaire().getPrenom() + delegationGestion.getGestionnaire().getNom() + ",\n\n" +
-                    "Nous avons le plaisir de vous informer que M/Mlle " + personne.getPrenom() + personne.getNom() + " vient de vous déléguer la gestion d'un de ses biens.\n" +
+            contenu = "Bonjour M/Mlle " + delegationGestion.getGestionnaire().getPrenom() + " " + delegationGestion.getGestionnaire().getNom() + ",\n\n" +
+                    "Nous avons le plaisir de vous informer que M/Mlle " + personne.getPrenom() + " " + personne.getNom() + " vient de vous déléguer la gestion d'un de ses biens.\n" +
                     "\n\n" +
                     "Cliquez sur le lien suivant pour accéder à la délégation de la gestion de bien : " + delegationGestionLink + "\n" +
                     "\n\n" +
@@ -94,7 +93,7 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
         } else {
             delegationGestionLink = "http://localhost:4200/#/responsable/agences-immobilieres/delegations-gestions";
             contenu = "Bonjour Agence immobilière " + delegationGestion.getAgenceImmobiliere().getNomAgence() + ",\n\n" +
-                    "Nous avons le plaisir de vous informer que M/Mlle " + personne.getPrenom() + personne.getNom() + " vient de vous déléguer la gestion d'un de ses biens.\n" +
+                    "Nous avons le plaisir de vous informer que M/Mlle " + personne.getPrenom() + " " + personne.getNom() + " vient de vous déléguer la gestion d'un de ses biens.\n" +
                     "\n\n" +
                     "Cliquez sur le lien suivant pour accéder à la délégation de la gestion de bien : " + delegationGestionLink + "\n" +
                     "\n\n" +
@@ -117,20 +116,21 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
     public void accepterDelegationGestion(Long id) {
         DelegationGestion delegationGestion = delegationGestionRepository.findById(id).orElse(null);
         delegationGestion.setStatutDelegation(1);
+        delegationGestionRepository.save(delegationGestion);
 
         String delegationGestionLink = "http://localhost:4200/#/proprietaire/delegations-gestions";
         String contenu = "";
 
         if (delegationGestion.getAgenceImmobiliere() == null) {
-             contenu = "Bonjour M/Mlle " + delegationGestion.getBienImmobilier().getPersonne().getPrenom() + delegationGestion.getBienImmobilier().getPersonne().getNom() + ",\n\n" +
-                    "Nous avons le plaisir de vous informer que M/Mlle " + delegationGestion.getGestionnaire().getPrenom() + delegationGestion.getGestionnaire().getNom() + " vient d'accepter la gestion de votre bien que vous lui avez délégué.\n" +
+             contenu = "Bonjour M/Mlle " + delegationGestion.getBienImmobilier().getPersonne().getPrenom() + " " + delegationGestion.getBienImmobilier().getPersonne().getNom() + ",\n\n" +
+                    "Nous avons le plaisir de vous informer que M/Mlle " + delegationGestion.getGestionnaire().getPrenom() + " " + delegationGestion.getGestionnaire().getNom() + " vient d'accepter la gestion de votre bien que vous lui avez délégué.\n" +
                     "\n\n" +
                     "Cliquez sur le lien suivant pour accéder à la délégation de la gestion de bien : " + delegationGestionLink + "\n" +
                     "\n\n" +
                     "Cordialement,\n" +
                     "\nL'équipe de support technique - ahoewo !";
         } else {
-             contenu = "Bonjour M/Mlle " + delegationGestion.getBienImmobilier().getPersonne().getPrenom() + delegationGestion.getBienImmobilier().getPersonne().getNom() + ",\n\n" +
+             contenu = "Bonjour M/Mlle " + delegationGestion.getBienImmobilier().getPersonne().getPrenom() + " " + delegationGestion.getBienImmobilier().getPersonne().getNom() + ",\n\n" +
                     "Nous avons le plaisir de vous informer que l'agence immobilière " + delegationGestion.getAgenceImmobiliere().getNomAgence() + " vient d'accepter la gestion de votre bien que vous lui avez délégué.\n" +
                     "\n\n" +
                     "Cliquez sur le lien suivant pour accéder à la délégation de la gestion de bien : " + delegationGestionLink + "\n" +
@@ -144,28 +144,27 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
         CompletableFuture.runAsync(() -> {
             emailSenderService.sendMail(delegationGestion.getGestionnaire().getEmail(), "Acceptation de la délégation de gestion de bien", finalContenu);
         });
-
-        delegationGestionRepository.save(delegationGestion);
     }
 
     @Override
     public void refuserDelegationGestion(Long id) {
         DelegationGestion delegationGestion = delegationGestionRepository.findById(id).orElse(null);
         delegationGestion.setStatutDelegation(2);
+        delegationGestionRepository.save(delegationGestion);
 
         String delegationGestionLink = "http://localhost:4200/#/proprietaire/delegations-gestions";
         String contenu = "";
 
         if (delegationGestion.getAgenceImmobiliere() == null) {
-            contenu = "Bonjour M/Mlle " + delegationGestion.getBienImmobilier().getPersonne().getPrenom() + delegationGestion.getBienImmobilier().getPersonne().getNom() + ",\n\n" +
-                    "Nous avons le plaisir de vous informer que M/Mlle " + delegationGestion.getGestionnaire().getPrenom() + delegationGestion.getGestionnaire().getNom() + " vient de rejeter la gestion de votre bien que vous lui avez délégué.\n" +
+            contenu = "Bonjour M/Mlle " + delegationGestion.getBienImmobilier().getPersonne().getPrenom() + " " + delegationGestion.getBienImmobilier().getPersonne().getNom() + ",\n\n" +
+                    "Nous avons le plaisir de vous informer que M/Mlle " + delegationGestion.getGestionnaire().getPrenom() + " " + delegationGestion.getGestionnaire().getNom() + " vient de rejeter la gestion de votre bien que vous lui avez délégué.\n" +
                     "\n\n" +
                     "Cliquez sur le lien suivant pour accéder à la délégation de la gestion de bien : " + delegationGestionLink + "\n" +
                     "\n\n" +
                     "Cordialement,\n" +
                     "\nL'équipe de support technique - ahoewo !";
         } else {
-            contenu = "Bonjour M/Mlle " + delegationGestion.getBienImmobilier().getPersonne().getPrenom() + delegationGestion.getBienImmobilier().getPersonne().getNom() + ",\n\n" +
+            contenu = "Bonjour M/Mlle " + delegationGestion.getBienImmobilier().getPersonne().getPrenom() + " " + delegationGestion.getBienImmobilier().getPersonne().getNom() + ",\n\n" +
                     "Nous avons le plaisir de vous informer que l'agence immobilière " + delegationGestion.getAgenceImmobiliere().getNomAgence() + " vient de rejeter la gestion de votre bien que vous lui avez délégué.\n" +
                     "\n\n" +
                     "Cliquez sur le lien suivant pour accéder à la délégation de la gestion de bien : " + delegationGestionLink + "\n" +
@@ -179,8 +178,6 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
         CompletableFuture.runAsync(() -> {
             emailSenderService.sendMail(delegationGestion.getGestionnaire().getEmail(), "Refus de la délégation de gestion de bien", finalContenu);
         });
-
-        delegationGestionRepository.save(delegationGestion);
     }
 
     @Override
