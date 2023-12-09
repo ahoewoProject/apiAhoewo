@@ -9,6 +9,8 @@ import com.memoire.apiAhoewo.service.GenererUsernameService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.NotaireService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +36,12 @@ public class NotaireServiceImpl implements NotaireService {
     @Override
     public List<Notaire> getAll() {
         return notaireRepository.findAll();
+    }
+
+    @Override
+    public Page<Notaire> getNotaires(int numeroDeLaPage, int elementsParPage) {
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return notaireRepository.findAll(pageRequest);
     }
 
     @Override

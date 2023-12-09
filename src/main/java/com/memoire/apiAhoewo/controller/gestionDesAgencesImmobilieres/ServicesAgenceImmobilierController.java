@@ -1,8 +1,10 @@
 package com.memoire.apiAhoewo.controller.gestionDesAgencesImmobilieres;
 
 import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.ServicesAgenceImmobiliere;
+import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.DelegationGestion;
 import com.memoire.apiAhoewo.service.gestionDesAgencesImmobilieres.ServicesAgenceImmobiliereService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +32,20 @@ public class ServicesAgenceImmobilierController {
         return servicesAgenceImmobilieres;
     }
 
+    @RequestMapping(value = "/services/agence-immobiliere/pagines", method = RequestMethod.GET)
+    public Page<ServicesAgenceImmobiliere> getServicesOfAgencePagines(Principal principal,
+                                                                @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+                                                                @RequestParam(value = "elementsParPage") int elementsParPage) {
+
+        try {
+            return this.servicesAgenceImmobiliereService.getServicesOfAgencePagines(principal, numeroDeLaPage, elementsParPage);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des services de l'agence.", e);
+        }
+    }
+
     @RequestMapping(value = "/services/agence-immobiliere/{id}", method = RequestMethod.GET)
     public List<ServicesAgenceImmobiliere> getServicesOfAgence(@PathVariable Long id) {
 
@@ -41,6 +57,20 @@ public class ServicesAgenceImmobilierController {
             System.out.println("Erreur " + e.getMessage());
         }
         return servicesAgenceImmobilieres;
+    }
+
+    @RequestMapping(value = "/services/agence-immobiliere/pagines/{id}", method = RequestMethod.GET)
+    public Page<ServicesAgenceImmobiliere> getServicesOfAgencePagines(@PathVariable Long id,
+                                                                      @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+                                                                      @RequestParam(value = "elementsParPage") int elementsParPage) {
+
+        try {
+            return this.servicesAgenceImmobiliereService.getServicesOfAgencePagines(id, numeroDeLaPage, elementsParPage);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des services de l'agence.", e);
+        }
     }
 
     @RequestMapping(value = "/service/agence-immobiliere/{id}", method = RequestMethod.GET)

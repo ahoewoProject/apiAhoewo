@@ -9,6 +9,8 @@ import com.memoire.apiAhoewo.service.GenererUsernameService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.GerantService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,15 +33,18 @@ public class GerantServiceImpl implements GerantService {
     @Autowired
     private EmailSenderService emailSenderService;
 
+
     @Override
-    public List<Gerant> getAll() {
-        return gerantRepository.findAll();
+    public Page<Gerant> getGerants(int numeroDeLaPage, int elementsParPage) {
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return gerantRepository.findAll(pageRequest);
     }
 
     @Override
-    public List<Gerant> findGerantsByProprietaire(Principal principal) {
+    public Page<Gerant> findGerantsByProprietaire(Principal principal, int numeroDeLaPage, int elementsParPage) {
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
         Personne personne = personneService.findByUsername(principal.getName());
-        return gerantRepository.findByCreerPar(personne.getId());
+        return gerantRepository.findAllByCreerPar(personne.getId(), pageRequest);
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.AffectationAgen
 import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.AffectationResponsableAgence;
 import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.AgenceImmobiliere;
 import com.memoire.apiAhoewo.model.gestionDesComptes.AgentImmobilier;
+import org.springframework.data.domain.Page;
 
 import java.security.Principal;
 import java.util.List;
@@ -14,6 +15,8 @@ public interface AffectationAgentAgenceService {
     List<AffectationAgentAgence> getAgentsByAgences(Principal principal);
 
     List<AffectationResponsableAgence> getAgencesByAgent(Principal principal);
+
+    Page<AffectationResponsableAgence> getAgencesByAgentPaginees(Principal principal, int numeroDeLaPage, int elementsParPage);
 
     AffectationAgentAgence findById(Long id);
 

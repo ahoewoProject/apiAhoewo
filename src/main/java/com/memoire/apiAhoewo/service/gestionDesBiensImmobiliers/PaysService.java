@@ -1,12 +1,15 @@
 package com.memoire.apiAhoewo.service.gestionDesBiensImmobiliers;
 
 import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.Pays;
+import org.springframework.data.domain.Page;
 
 import java.security.Principal;
 import java.util.List;
 
 public interface PaysService {
     List<Pays> getAll();
+
+    Page<Pays> getPaysPagines(int numeroDeLaPage, int elementsParPage);
 
     List<Pays> getPaysActifs(Boolean etat);
 

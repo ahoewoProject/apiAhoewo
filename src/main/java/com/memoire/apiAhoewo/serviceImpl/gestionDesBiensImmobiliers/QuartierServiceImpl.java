@@ -6,6 +6,8 @@ import com.memoire.apiAhoewo.repository.gestionDesBiensImmobiliers.QuartierRepos
 import com.memoire.apiAhoewo.service.gestionDesBiensImmobiliers.QuartierService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -22,6 +24,12 @@ public class QuartierServiceImpl implements QuartierService {
     @Override
     public List<Quartier> getAll() {
         return quartierRepository.findAll();
+    }
+
+    @Override
+    public Page<Quartier> getQuartiersPagines(int numeroDeLaPage, int elementsParPage) {
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return quartierRepository.findAll(pageRequest);
     }
 
     @Override

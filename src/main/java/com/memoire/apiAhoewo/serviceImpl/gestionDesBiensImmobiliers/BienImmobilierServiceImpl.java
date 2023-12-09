@@ -8,6 +8,8 @@ import com.memoire.apiAhoewo.service.gestionDesAgencesImmobilieres.AgenceImmobil
 import com.memoire.apiAhoewo.service.gestionDesBiensImmobiliers.BienImmobilierService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -26,6 +28,27 @@ public class BienImmobilierServiceImpl implements BienImmobilierService {
     @Override
     public List<BienImmobilier> getAll() {
         return bienImmobilierRepository.findAll();
+    }
+
+    @Override
+    public Page<BienImmobilier> getAllByProprietairePagines(Principal principal, int numeroDeLaPage, int elementsParPage) {
+        Personne personne = personneService.findByUsername(principal.getName());
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return bienImmobilierRepository.findAllByPersonne(personne, pageRequest);
+    }
+
+    @Override
+    public Page<BienImmobilier> getBiensOfAgencesByResponsablePagines(Principal principal, int numeroDeLaPage, int elementsParPage) {
+        List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereService.getAgencesByResponsable(principal);
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return bienImmobilierRepository.findAllByAgenceImmobiliereIn(agenceImmobilieres, pageRequest);
+    }
+
+    @Override
+    public Page<BienImmobilier> getBiensOfAgencesByAgentPagines(Principal principal, int numeroDeLaPage, int elementsParPage) {
+        List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereService.getAgencesByAgent(principal);
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return bienImmobilierRepository.findAllByAgenceImmobiliereIn(agenceImmobilieres, pageRequest);
     }
 
     @Override

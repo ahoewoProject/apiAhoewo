@@ -7,6 +7,8 @@ import com.memoire.apiAhoewo.repository.gestionDesBiensImmobiliers.PaysRepositor
 import com.memoire.apiAhoewo.service.gestionDesBiensImmobiliers.PaysService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -23,6 +25,12 @@ public class PaysServiceImpl implements PaysService {
     @Override
     public List<Pays> getAll() {
         return paysRepository.findAll();
+    }
+
+    @Override
+    public Page<Pays> getPaysPagines(int numeroDeLaPage, int elementsParPage) {
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return paysRepository.findAll(pageRequest);
     }
 
     @Override

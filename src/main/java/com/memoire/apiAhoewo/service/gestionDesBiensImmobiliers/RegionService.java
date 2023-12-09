@@ -1,12 +1,15 @@
 package com.memoire.apiAhoewo.service.gestionDesBiensImmobiliers;
 
 import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.Region;
+import org.springframework.data.domain.Page;
 
 import java.security.Principal;
 import java.util.List;
 
 public interface RegionService {
     List<Region> getAll();
+
+    Page<Region> getRegionsPaginees(int numeroDeLaPage, int elementsParPage);
 
     List<Region> getRegionsActifs(Boolean etat);
 

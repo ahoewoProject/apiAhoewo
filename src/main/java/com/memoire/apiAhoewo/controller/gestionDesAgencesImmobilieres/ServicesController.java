@@ -3,6 +3,7 @@ package com.memoire.apiAhoewo.controller.gestionDesAgencesImmobilieres;
 import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.Services;
 import com.memoire.apiAhoewo.service.gestionDesAgencesImmobilieres.ServicesService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,20 @@ public class ServicesController {
             System.out.println("Erreur " + e.getMessage());
         }
         return servicesList;
+    }
+
+    @RequestMapping(value = "/services/pagines", method = RequestMethod.GET)
+    public Page<Services> getServicesPagines(
+            @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+            @RequestParam(value = "elementsParPage") int elementsParPage) {
+
+        try {
+            return this.servicesService.getServices(numeroDeLaPage, elementsParPage);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des services.", e);
+        }
     }
 
     @RequestMapping(value = "/services/actifs", method = RequestMethod.GET)

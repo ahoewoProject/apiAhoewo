@@ -5,6 +5,7 @@ import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.TypeDeBien;
 import com.memoire.apiAhoewo.repository.gestionDesBiensImmobiliers.BienImmobilierRepository;
 import com.memoire.apiAhoewo.service.gestionDesBiensImmobiliers.TypeDeBienService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +33,20 @@ public class TypeDeBienController {
             System.out.println("Erreur " + e.getMessage());
         }
         return typeDeBiens;
+    }
+
+    @RequestMapping(value = "/types-de-bien/pagines", method = RequestMethod.GET)
+    public Page<TypeDeBien> getTypesDeBienPagines(
+            @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+            @RequestParam(value = "elementsParPage") int elementsParPage) {
+
+        try {
+            return this.typeDeBienService.getTypesDeBienPagines(numeroDeLaPage, elementsParPage);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des types de biens.", e);
+        }
     }
 
     @RequestMapping(value = "/types-de-bien/actifs", method = RequestMethod.GET)

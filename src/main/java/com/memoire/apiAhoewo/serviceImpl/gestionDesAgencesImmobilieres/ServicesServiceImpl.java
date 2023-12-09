@@ -6,6 +6,8 @@ import com.memoire.apiAhoewo.repository.gestionDesAgencesImmobilieres.ServicesRe
 import com.memoire.apiAhoewo.service.gestionDesAgencesImmobilieres.ServicesService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -22,6 +24,12 @@ public class ServicesServiceImpl implements ServicesService {
     @Override
     public List<Services> getAll() {
         return servicesRepository.findAll();
+    }
+
+    @Override
+    public Page<Services> getServices(int numeroDeLaPage, int elementsParPage) {
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return servicesRepository.findAll(pageRequest);
     }
 
     @Override

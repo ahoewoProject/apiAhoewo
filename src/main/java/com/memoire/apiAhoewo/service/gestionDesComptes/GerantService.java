@@ -1,14 +1,15 @@
 package com.memoire.apiAhoewo.service.gestionDesComptes;
 
 import com.memoire.apiAhoewo.model.gestionDesComptes.Gerant;
+import org.springframework.data.domain.Page;
 
 import java.security.Principal;
 import java.util.List;
 
 public interface GerantService {
-    public List<Gerant> getAll();
+    Page<Gerant> getGerants(int numeroDeLaPage, int elementsParPage);
 
-    public List<Gerant> findGerantsByProprietaire(Principal principal);
+    Page<Gerant> findGerantsByProprietaire(Principal principal, int numeroDeLaPage, int elementsParPage);
 
     public Gerant findById(Long id);
 

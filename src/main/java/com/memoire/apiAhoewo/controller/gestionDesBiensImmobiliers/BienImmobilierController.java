@@ -1,19 +1,15 @@
 package com.memoire.apiAhoewo.controller.gestionDesBiensImmobiliers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.memoire.apiAhoewo.exception.UnsupportedFileTypeException;
 import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.*;
-import com.memoire.apiAhoewo.service.FileManagerService;
 import com.memoire.apiAhoewo.service.gestionDesBiensImmobiliers.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +39,48 @@ public class BienImmobilierController {
             System.out.println("Erreur " + e.getMessage());
         }
         return bienImmobiliers;
+    }
+
+    @RequestMapping(value = "/biens-immobiliers/proprietaire/pagines", method = RequestMethod.GET)
+    public Page<BienImmobilier> getAllByProprietairePagines(Principal principal,
+            @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+            @RequestParam(value = "elementsParPage") int elementsParPage) {
+
+        try {
+            return this.bienImmobilierService.getAllByProprietairePagines(principal, numeroDeLaPage, elementsParPage);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des biens immobiliers.", e);
+        }
+    }
+
+    @RequestMapping(value = "/biens-immobiliers/agences/responsable/pagines", method = RequestMethod.GET)
+    public Page<BienImmobilier> getBiensOfAgencesByResponsablePagines(Principal principal,
+                                                            @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+                                                            @RequestParam(value = "elementsParPage") int elementsParPage) {
+
+        try {
+            return this.bienImmobilierService.getBiensOfAgencesByResponsablePagines(principal, numeroDeLaPage, elementsParPage);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des biens immobiliers.", e);
+        }
+    }
+
+    @RequestMapping(value = "/biens-immobiliers/agences/agent/pagines", method = RequestMethod.GET)
+    public Page<BienImmobilier> getBiensOfAgencesByAgentPagines(Principal principal,
+                                                                      @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+                                                                      @RequestParam(value = "elementsParPage") int elementsParPage) {
+
+        try {
+            return this.bienImmobilierService.getBiensOfAgencesByAgentPagines(principal, numeroDeLaPage, elementsParPage);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des biens immobiliers.", e);
+        }
     }
 
     @RequestMapping(value = "/biens-immobiliers/proprietaire", method = RequestMethod.GET)

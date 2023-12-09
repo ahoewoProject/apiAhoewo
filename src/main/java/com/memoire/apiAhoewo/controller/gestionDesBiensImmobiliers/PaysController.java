@@ -3,6 +3,7 @@ package com.memoire.apiAhoewo.controller.gestionDesBiensImmobiliers;
 import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.Pays;
 import com.memoire.apiAhoewo.service.gestionDesBiensImmobiliers.PaysService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,20 @@ public class PaysController {
             System.out.println("Erreur " + e.getMessage());
         }
         return pays;
+    }
+
+    @RequestMapping(value = "/pays/pagines", method = RequestMethod.GET)
+    public Page<Pays> getPaysPaginees(
+            @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+            @RequestParam(value = "elementsParPage") int elementsParPage) {
+
+        try {
+            return this.paysService.getPaysPagines(numeroDeLaPage, elementsParPage);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des pays.", e);
+        }
     }
 
     @RequestMapping(value = "/pays/actifs", method = RequestMethod.GET)

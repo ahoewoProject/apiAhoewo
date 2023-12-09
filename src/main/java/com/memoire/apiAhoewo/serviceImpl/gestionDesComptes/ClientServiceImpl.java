@@ -4,6 +4,8 @@ import com.memoire.apiAhoewo.model.gestionDesComptes.Client;
 import com.memoire.apiAhoewo.repository.gestionDesComptes.ClientRepository;
 import com.memoire.apiAhoewo.service.gestionDesComptes.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +18,12 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public List<Client> getAll() {
         return clientRepository.findAll();
+    }
+
+    @Override
+    public Page<Client> getClients(int numeroDeLaPage, int elementsParPage) {
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return clientRepository.findAll(pageRequest);
     }
 
     @Override

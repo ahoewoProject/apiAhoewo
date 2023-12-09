@@ -6,6 +6,8 @@ import com.memoire.apiAhoewo.repository.gestionDesComptes.RoleRepository;
 import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -22,6 +24,12 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public List<Role> getAll() {
         return this.roleRepository.findAll();
+    }
+
+    @Override
+    public Page<Role> getRoles(int numeroDeLaPage, int elementsParPage) {
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return roleRepository.findAll(pageRequest);
     }
 
     @Override

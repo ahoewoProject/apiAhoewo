@@ -1,12 +1,15 @@
 package com.memoire.apiAhoewo.service.gestionDesComptes;
 
 import com.memoire.apiAhoewo.model.gestionDesComptes.Role;
+import org.springframework.data.domain.Page;
 
 import java.security.Principal;
 import java.util.List;
 
 public interface RoleService {
     public List<Role> getAll();
+
+    Page<Role> getRoles(int numeroDeLaPage, int elementsParPage);
 
     public Role findById(Long id);
 

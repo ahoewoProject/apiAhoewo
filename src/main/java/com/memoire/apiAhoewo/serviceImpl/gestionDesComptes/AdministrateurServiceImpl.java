@@ -9,6 +9,8 @@ import com.memoire.apiAhoewo.service.GenererUsernameService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.AdministrateurService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +35,12 @@ public class AdministrateurServiceImpl implements AdministrateurService {
     @Override
     public List<Administrateur> getAll() {
         return administrateurRepository.findAll();
+    }
+
+    @Override
+    public Page<Administrateur> getAdministrateurs(int numeroDeLaPage, int elementsParPage) {
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return administrateurRepository.findAll(pageRequest);
     }
 
     @Override

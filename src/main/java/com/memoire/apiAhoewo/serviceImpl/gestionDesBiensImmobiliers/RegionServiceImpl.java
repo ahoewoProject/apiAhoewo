@@ -6,6 +6,8 @@ import com.memoire.apiAhoewo.repository.gestionDesBiensImmobiliers.RegionReposit
 import com.memoire.apiAhoewo.service.gestionDesBiensImmobiliers.RegionService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import java.security.Principal;
@@ -22,6 +24,12 @@ public class RegionServiceImpl implements RegionService {
     @Override
     public List<Region> getAll() {
         return regionRepository.findAll();
+    }
+
+    @Override
+    public Page<Region> getRegionsPaginees(int numeroDeLaPage, int elementsParPage) {
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return regionRepository.findAll(pageRequest);
     }
 
     @Override

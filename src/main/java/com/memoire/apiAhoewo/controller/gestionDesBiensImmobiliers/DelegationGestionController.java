@@ -8,6 +8,7 @@ import com.memoire.apiAhoewo.service.gestionDesAgencesImmobilieres.AgenceImmobil
 import com.memoire.apiAhoewo.service.gestionDesBiensImmobiliers.DelegationGestionService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,62 @@ public class DelegationGestionController {
     private PersonneService personneService;
     @Autowired
     private AgenceImmobiliereService agenceImmobiliereService;
+
+    @RequestMapping(value = "/delegations-gestions/proprietaire/paginees", method = RequestMethod.GET)
+    public Page<DelegationGestion> getAllByProprietairePaginees(Principal principal,
+                                                                @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+                                                                @RequestParam(value = "elementsParPage") int elementsParPage) {
+
+        try {
+            return this.delegationGestionService.getDelegationsByProprietairePaginees(principal, numeroDeLaPage, elementsParPage);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des délégations de gestions.", e);
+        }
+    }
+
+    @RequestMapping(value = "/delegations-gestions/gestionnaire/paginees", method = RequestMethod.GET)
+    public Page<DelegationGestion> getAllByGestionnairePaginees(Principal principal,
+                                                                @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+                                                                @RequestParam(value = "elementsParPage") int elementsParPage) {
+
+        try {
+            return this.delegationGestionService.getDelegationsByGestionnairePaginees(principal, numeroDeLaPage, elementsParPage);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des délégations de gestions.", e);
+        }
+    }
+
+    @RequestMapping(value = "/delegations-gestions/agences/responsable/paginees", method = RequestMethod.GET)
+    public Page<DelegationGestion> getDelegationsGestionsOfAgencesByResponsablePaginees(Principal principal,
+                                                                @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+                                                                @RequestParam(value = "elementsParPage") int elementsParPage) {
+
+        try {
+            return this.delegationGestionService.getDelegationsOfAgencesByResponsablePaginees(principal, numeroDeLaPage, elementsParPage);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des délégations de gestions.", e);
+        }
+    }
+
+    @RequestMapping(value = "/delegations-gestions/agences/agent/paginees", method = RequestMethod.GET)
+    public Page<DelegationGestion> getDelegationsGestionsOfAgencesByAgentPaginees(Principal principal,
+                                                                @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+                                                                @RequestParam(value = "elementsParPage") int elementsParPage) {
+
+        try {
+            return this.delegationGestionService.getDelegationsOfAgencesByAgentPaginees(principal, numeroDeLaPage, elementsParPage);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des délégations de gestions.", e);
+        }
+    }
 
     @RequestMapping(value = "/delegations-gestions/proprietaire", method = RequestMethod.GET)
     public List<DelegationGestion> getAllByProprietaire(Principal principal) {

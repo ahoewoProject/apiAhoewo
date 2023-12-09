@@ -1,12 +1,15 @@
 package com.memoire.apiAhoewo.service.gestionDesBiensImmobiliers;
 
 import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.TypeDeBien;
+import org.springframework.data.domain.Page;
 
 import java.security.Principal;
 import java.util.List;
 
 public interface TypeDeBienService {
     public List<TypeDeBien> getAll();
+
+    public Page<TypeDeBien> getTypesDeBienPagines(int numeroDeLaPage, int elementsParPage);
 
     public List<TypeDeBien> findTypeDeBienActifs();
 

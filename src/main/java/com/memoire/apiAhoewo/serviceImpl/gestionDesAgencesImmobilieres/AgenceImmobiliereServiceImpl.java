@@ -16,6 +16,8 @@ import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -58,6 +60,25 @@ public class AgenceImmobiliereServiceImpl implements AgenceImmobiliereService {
             agenceImmobilieres.add(affectation.getAgenceImmobiliere());
         }
         return agenceImmobilieres;
+    }
+
+    @Override
+    public Page<AgenceImmobiliere> getAgencesByResponsablePaginees(Principal principal, int numeroDeLaPage, int elementsParPage) {
+        ResponsableAgenceImmobiliere responsableAgenceImmobiliere =
+                (ResponsableAgenceImmobiliere) personneService.findByUsername(principal.getName());
+
+        // Récupérer les affectations pour le responsable
+        List<AffectationResponsableAgence> affectationResponsableAgences =
+                affectationResponsableAgenceRepository.findByResponsableAgenceImmobiliere(responsableAgenceImmobiliere);
+
+        // Récupérer les IDs des agences pour ce responsable
+        List<Long> idsAgences = affectationResponsableAgences.stream()
+                .map(affectation -> affectation.getAgenceImmobiliere().getId())
+                .collect(Collectors.toList());
+
+        // Récupérer les agences paginées
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return agenceImmobiliereRepository.findByIdIn(idsAgences, pageRequest);
     }
 
     @Override

@@ -6,6 +6,8 @@ import com.memoire.apiAhoewo.repository.gestionDesBiensImmobiliers.TypeDeBienRep
 import com.memoire.apiAhoewo.service.gestionDesBiensImmobiliers.TypeDeBienService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -22,6 +24,12 @@ public class TypeDeBienServiceImpl implements TypeDeBienService {
     @Override
     public List<TypeDeBien> getAll() {
         return typeDeBienRepository.findAll();
+    }
+
+    @Override
+    public Page<TypeDeBien> getTypesDeBienPagines(int numeroDeLaPage, int elementsParPage) {
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return typeDeBienRepository.findAll(pageRequest);
     }
 
     @Override

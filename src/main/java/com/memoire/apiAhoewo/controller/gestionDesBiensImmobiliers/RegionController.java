@@ -2,8 +2,8 @@ package com.memoire.apiAhoewo.controller.gestionDesBiensImmobiliers;
 
 import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.Region;
 import com.memoire.apiAhoewo.service.gestionDesBiensImmobiliers.RegionService;
-import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +29,20 @@ public class RegionController {
             System.out.println("Erreur " + e.getMessage());
         }
         return regionList;
+    }
+
+    @RequestMapping(value = "/regions/paginees", method = RequestMethod.GET)
+    public Page<Region> getRegionsPaginees(
+            @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+            @RequestParam(value = "elementsParPage") int elementsParPage) {
+
+        try {
+            return this.regionService.getRegionsPaginees(numeroDeLaPage, elementsParPage);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des regions.", e);
+        }
     }
 
     @RequestMapping(value = "/regions/actifs", method = RequestMethod.GET)

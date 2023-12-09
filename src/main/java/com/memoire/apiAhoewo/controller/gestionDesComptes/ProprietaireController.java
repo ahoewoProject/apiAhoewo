@@ -1,12 +1,11 @@
 package com.memoire.apiAhoewo.controller.gestionDesComptes;
 
+import com.memoire.apiAhoewo.model.gestionDesComptes.Demarcheur;
 import com.memoire.apiAhoewo.model.gestionDesComptes.Proprietaire;
 import com.memoire.apiAhoewo.service.gestionDesComptes.ProprietaireService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +27,21 @@ public class ProprietaireController {
             System.out.println("Erreur " + e.getMessage());
         }
         return proprietaireList;
+    }
+
+    @RequestMapping(value = "/proprietaires/pagines", method = RequestMethod.GET)
+    public Page<Proprietaire> getProprietaires(
+            @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+            @RequestParam(value = "elementsParPage") int elementsParPage) {
+
+        try {
+            return this.proprietaireService.getProprietaires(numeroDeLaPage, elementsParPage);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des proprietaires.", e);
+        }
+
     }
 
     @RequestMapping(value = "/proprietaire/{id}", method = RequestMethod.GET)

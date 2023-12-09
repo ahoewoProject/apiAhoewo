@@ -4,6 +4,8 @@ import com.memoire.apiAhoewo.model.gestionDesComptes.ResponsableAgenceImmobilier
 import com.memoire.apiAhoewo.repository.gestionDesComptes.ResponsableAgenceImmobiliereRepository;
 import com.memoire.apiAhoewo.service.gestionDesComptes.ResponsableAgenceImmobiliereService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +18,12 @@ public class ResponsableAgenceImmobiliereServiceImpl implements ResponsableAgenc
     @Override
     public List<ResponsableAgenceImmobiliere> getAll() {
         return responsableAgenceImmobiliereRepository.findAll();
+    }
+
+    @Override
+    public Page<ResponsableAgenceImmobiliere> getResponsables(int numeroDeLaPage, int elementsParPage) {
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return responsableAgenceImmobiliereRepository.findAll(pageRequest);
     }
 
     @Override

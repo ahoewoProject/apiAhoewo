@@ -9,6 +9,7 @@ import com.memoire.apiAhoewo.service.FileManagerService;
 import com.memoire.apiAhoewo.service.gestionDesAgencesImmobilieres.AffectationResponsableAgenceService;
 import com.memoire.apiAhoewo.service.gestionDesAgencesImmobilieres.AgenceImmobiliereService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,6 +44,20 @@ public class AgenceImmobiliereController {
         return affectationResponsableAgences;
     }
 
+    @RequestMapping(value = "/agences-immobilieres/paginees", method = RequestMethod.GET)
+    public Page<AffectationResponsableAgence> getAffectationsResponsableAgence(
+            @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+            @RequestParam(value = "elementsParPage") int elementsParPage) {
+
+        try {
+            return this.affectationResponsableAgenceService.getAffectationsResponsableAgence(numeroDeLaPage, elementsParPage);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des affectations responsables agences.", e);
+        }
+    }
+
     @RequestMapping(value = "/agences-immobilieres/responsable", method = RequestMethod.GET)
     public List<AgenceImmobiliere> findAgencesByResponsable(Principal principal) {
 
@@ -54,6 +69,20 @@ public class AgenceImmobiliereController {
             System.out.println("Erreur " + e.getMessage());
         }
         return agenceImmobilieres;
+    }
+
+    @RequestMapping(value = "/agences-immobilieres/responsable/paginees", method = RequestMethod.GET)
+    public Page<AgenceImmobiliere> findAgencesByResponsablePaginees(Principal principal,
+            @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+            @RequestParam(value = "elementsParPage") int elementsParPage) {
+
+        try {
+            return this.agenceImmobiliereService.getAgencesByResponsablePaginees(principal, numeroDeLaPage, elementsParPage);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des agences.", e);
+        }
     }
 
     @RequestMapping(value = "/agences-immobilieres/agent", method = RequestMethod.GET)

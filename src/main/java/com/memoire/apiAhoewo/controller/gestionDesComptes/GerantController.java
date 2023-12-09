@@ -1,9 +1,11 @@
 package com.memoire.apiAhoewo.controller.gestionDesComptes;
 
 import com.memoire.apiAhoewo.model.gestionDesComptes.Gerant;
+import com.memoire.apiAhoewo.model.gestionDesComptes.Role;
 import com.memoire.apiAhoewo.service.gestionDesComptes.GerantService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,30 +22,32 @@ public class GerantController {
     @Autowired
     private PersonneService personneService;
 
-    @RequestMapping(value = "/gerants", method = RequestMethod.GET)
-    public List<Gerant> getAll() {
+    @RequestMapping(value = "/gerants/pagines", method = RequestMethod.GET)
+    public Page<Gerant> getGerants(
+            @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+            @RequestParam(value = "elementsParPage") int elementsParPage) {
 
-        List<Gerant> gerantList = new ArrayList<>();
         try {
-            gerantList = this.gerantService.getAll();
+            return this.gerantService.getGerants(numeroDeLaPage, elementsParPage);
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des gerants.", e);
         }
-        return gerantList;
     }
 
-    @RequestMapping(value = "/gerants-proprietaire", method = RequestMethod.GET)
-    public List<Gerant> findGerantsByProprietaire(Principal principal) {
+    @RequestMapping(value = "/gerants/proprietaire/pagines", method = RequestMethod.GET)
+    public Page<Gerant> getGerantsParProprietaire(Principal principal,
+            @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+            @RequestParam(value = "elementsParPage") int elementsParPage) {
 
-        List<Gerant> gerantList = new ArrayList<>();
         try {
-            gerantList = this.gerantService.findGerantsByProprietaire(principal);
+            return this.gerantService.findGerantsByProprietaire(principal, numeroDeLaPage, elementsParPage);
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des gerants.", e);
         }
-        return gerantList;
     }
 
     @RequestMapping(value = "/gerant/{id}", method = RequestMethod.GET)

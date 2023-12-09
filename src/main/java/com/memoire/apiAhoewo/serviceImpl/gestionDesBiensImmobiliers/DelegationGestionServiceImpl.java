@@ -13,6 +13,8 @@ import com.memoire.apiAhoewo.service.gestionDesBiensImmobiliers.DelegationGestio
 import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.ResponsableAgenceImmobiliereService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -30,6 +32,34 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
     private AgenceImmobiliereService agenceImmobiliereService;
     @Autowired
     private EmailSenderService emailSenderService;
+
+    @Override
+    public Page<DelegationGestion> getDelegationsByProprietairePaginees(Principal principal, int numeroDeLaPage, int elementsParPage) {
+        Personne personne = personneService.findByUsername(principal.getName());
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return delegationGestionRepository.findAllByBienImmobilier_Personne(personne, pageRequest);
+    }
+
+    @Override
+    public Page<DelegationGestion> getDelegationsByGestionnairePaginees(Principal principal, int numeroDeLaPage, int elementsParPage) {
+        Personne personne = personneService.findByUsername(principal.getName());
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return delegationGestionRepository.findAllByGestionnaire(personne, pageRequest);
+    }
+
+    @Override
+    public Page<DelegationGestion> getDelegationsOfAgencesByResponsablePaginees(Principal principal, int numeroDeLaPage, int elementsParPage) {
+        List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereService.getAgencesByResponsable(principal);
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return delegationGestionRepository.findAllByAgenceImmobiliereIn(agenceImmobilieres, pageRequest);
+    }
+
+    @Override
+    public Page<DelegationGestion> getDelegationsOfAgencesByAgentPaginees(Principal principal, int numeroDeLaPage, int elementsParPage) {
+        List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereService.getAgencesByAgent(principal);
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return delegationGestionRepository.findAllByAgenceImmobiliereIn(agenceImmobilieres, pageRequest);
+    }
 
     @Override
     public List<DelegationGestion> getDelegationsByProprietaire(Principal principal) {

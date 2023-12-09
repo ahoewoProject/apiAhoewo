@@ -6,6 +6,8 @@ import com.memoire.apiAhoewo.repository.gestionDesAgencesImmobilieres.Affectatio
 import com.memoire.apiAhoewo.service.gestionDesAgencesImmobilieres.AffectationResponsableAgenceService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -22,6 +24,12 @@ public class AffectationResponsableAgenceServiceImpl implements AffectationRespo
     @Override
     public List<AffectationResponsableAgence> getAll() {
         return affectationResponsableAgenceRepository.findAll();
+    }
+
+    @Override
+    public Page<AffectationResponsableAgence> getAffectationsResponsableAgence(int numeroDeLaPage, int elementsParPage) {
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return affectationResponsableAgenceRepository.findAll(pageRequest);
     }
 
     @Override

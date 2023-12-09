@@ -3,6 +3,7 @@ package com.memoire.apiAhoewo.controller.gestionDesComptes;
 import com.memoire.apiAhoewo.model.gestionDesComptes.Role;
 import com.memoire.apiAhoewo.service.gestionDesComptes.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,20 @@ public class RoleController {
             System.out.println("Erreur " + e.getMessage());
         }
         return roles;
+    }
+
+    @RequestMapping(value = "/roles/pagines", method = RequestMethod.GET)
+    public Page<Role> getRolesPaginees(
+            @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+            @RequestParam(value = "elementsParPage") int elementsParPage) {
+
+        try {
+            return this.roleService.getRoles(numeroDeLaPage, elementsParPage);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des roles.", e);
+        }
     }
 
     @RequestMapping(value = "/role/{id}", method = RequestMethod.GET)

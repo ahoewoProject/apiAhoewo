@@ -4,6 +4,8 @@ import com.memoire.apiAhoewo.model.gestionDesComptes.Proprietaire;
 import com.memoire.apiAhoewo.repository.gestionDesComptes.ProprietaireRepository;
 import com.memoire.apiAhoewo.service.gestionDesComptes.ProprietaireService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +18,12 @@ public class ProprietaireServiceImpl implements ProprietaireService {
     @Override
     public List<Proprietaire> getAll() {
         return proprietaireRepository.findAll();
+    }
+
+    @Override
+    public Page<Proprietaire> getProprietaires(int numeroDeLaPage, int elementsParPage) {
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return proprietaireRepository.findAll(pageRequest);
     }
 
     @Override

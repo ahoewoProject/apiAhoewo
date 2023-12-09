@@ -1,12 +1,15 @@
 package com.memoire.apiAhoewo.service.gestionDesComptes;
 
 import com.memoire.apiAhoewo.model.gestionDesComptes.Notaire;
+import org.springframework.data.domain.Page;
 
 import java.security.Principal;
 import java.util.List;
 
 public interface NotaireService {
     public List<Notaire> getAll();
+
+    Page<Notaire> getNotaires(int numeroDeLaPage, int elementsParPage);
 
     public Notaire findById(Long id);
 

@@ -6,6 +6,8 @@ import com.memoire.apiAhoewo.repository.gestionDesBiensImmobiliers.VilleReposito
 import com.memoire.apiAhoewo.service.gestionDesBiensImmobiliers.VilleService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -21,6 +23,12 @@ public class VilleServiceImpl implements VilleService {
     @Override
     public List<Ville> getAll() {
         return villeRepository.findAll();
+    }
+
+    @Override
+    public Page<Ville> getVillesPaginees(int numeroDeLaPage, int elementsParPage) {
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return villeRepository.findAll(pageRequest);
     }
 
     @Override

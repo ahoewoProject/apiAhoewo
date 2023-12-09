@@ -9,6 +9,8 @@ import com.memoire.apiAhoewo.service.gestionDesAgencesImmobilieres.AgenceImmobil
 import com.memoire.apiAhoewo.service.gestionDesAgencesImmobilieres.ServicesAgenceImmobiliereService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
@@ -37,9 +39,23 @@ public class ServicesAgenceImmobiliereServiceImpl implements ServicesAgenceImmob
     }
 
     @Override
+    public Page<ServicesAgenceImmobiliere> getServicesOfAgencePagines(Principal principal, int numeroDeLaPage, int elementsParPage) {
+        List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereService.getAgencesByResponsable(principal);
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return servicesAgenceImmobiliereRepository.findAllByAgenceImmobiliereIn(agenceImmobilieres, pageRequest);
+    }
+
+    @Override
     public List<ServicesAgenceImmobiliere> getServicesOfAgence(Long id) {
         AgenceImmobiliere agenceImmobiliere = agenceImmobiliereService.findById(id);
         return servicesAgenceImmobiliereRepository.findByAgenceImmobiliere(agenceImmobiliere);
+    }
+
+    @Override
+    public Page<ServicesAgenceImmobiliere> getServicesOfAgencePagines(Long id, int numeroDeLaPage, int elementsParPage) {
+        AgenceImmobiliere agenceImmobiliere = agenceImmobiliereService.findById(id);
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return servicesAgenceImmobiliereRepository.findAllByAgenceImmobiliere(agenceImmobiliere, pageRequest);
     }
 
     @Override
