@@ -12,11 +12,15 @@ import java.util.List;
 
 @Repository
 public interface ServicesAgenceImmobiliereRepository extends JpaRepository<ServicesAgenceImmobiliere, Long> {
-    Page<ServicesAgenceImmobiliere> findAllByAgenceImmobiliereIn(List<AgenceImmobiliere> agenceImmobiliereList, Pageable pageable);
+    Page<ServicesAgenceImmobiliere> findByEtatInOrderByCreerLeDesc(Pageable pageable, List<Integer> etatList);
 
-    Page<ServicesAgenceImmobiliere> findAllByAgenceImmobiliere(AgenceImmobiliere agenceImmobiliere, Pageable pageable);
+    Page<ServicesAgenceImmobiliere> findAllByAgenceImmobiliereInAndEtatInOrderByCreerLeDesc(List<AgenceImmobiliere> agenceImmobiliereList, Pageable pageable, List<Integer> etatList);
+
+    Page<ServicesAgenceImmobiliere> findAllByAgenceImmobiliereAndEtatInOrderByCreerLeDesc(AgenceImmobiliere agenceImmobiliere, Pageable pageable, List<Integer> etatList);
 
     List<ServicesAgenceImmobiliere> findByAgenceImmobiliere(AgenceImmobiliere agenceImmobiliere);
+
+    ServicesAgenceImmobiliere findByServices(Services services);
 
     boolean existsByServicesAndAgenceImmobiliere(Services services, AgenceImmobiliere agenceImmobiliere);
 }

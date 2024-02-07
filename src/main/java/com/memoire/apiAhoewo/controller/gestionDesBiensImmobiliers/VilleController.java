@@ -58,6 +58,19 @@ public class VilleController {
         return villes;
     }
 
+    @RequestMapping(value = "/villes/region/{id}", method = RequestMethod.GET)
+    public List<Ville> getVillesByRegionId(@PathVariable Long id) {
+
+        List<Ville> villes = new ArrayList<>();
+        try {
+            villes = this.villeService.villesByRegionId(id);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return villes;
+    }
+
     @RequestMapping(value = "/ville/{id}", method = RequestMethod.GET)
     public Ville findById(@PathVariable Long id) {
 
@@ -73,11 +86,9 @@ public class VilleController {
     @RequestMapping(value = "/ville/ajouter", method = RequestMethod.POST, headers = "accept=Application/json")
     public ResponseEntity<?> ajouterVille(Principal principal, @RequestBody Ville ville) {
         try {
-            Ville villeExistant = villeService.findByLibelle(ville.getLibelle());
-
-            if (villeExistant != null) {
+            if (villeService.libelleAndRegionExists(ville.getLibelle(), ville.getRegion())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body("Une ville avec ce libelle " + ville.getLibelle() + " existe déjà.");
+                        .body("Une ville avec ce libelle " + ville.getLibelle() + " existe déjà dans cette region.");
             }
 
             ville = this.villeService.save(ville, principal);
@@ -92,11 +103,10 @@ public class VilleController {
     @RequestMapping(value = "/ville/modifier/{id}", method = RequestMethod.PUT, headers = "accept=Application/json")
     public ResponseEntity<?> modifierVille(Principal principal, @RequestBody Ville villeModifie, @PathVariable  Long id) {
         Ville ville = villeService.findById(id);
-        Ville villeExistant = villeService.findByLibelle(villeModifie.getLibelle());
         try {
-            if (villeExistant != null) {
+            if (villeService.libelleAndRegionExists(villeModifie.getLibelle(), villeModifie.getRegion())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body("Une ville avec ce libelle " + villeModifie.getLibelle() + " existe déjà.");
+                        .body("Une ville avec ce libelle " + villeModifie.getLibelle() + " existe déjà dans cette région.");
             }
             ville.setLibelle(villeModifie.getLibelle());
             ville = this.villeService.update(ville, principal);

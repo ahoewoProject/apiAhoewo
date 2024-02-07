@@ -58,6 +58,19 @@ public class QuartierController {
         return quartiers;
     }
 
+    @RequestMapping(value = "/quartiers/ville/{id}", method = RequestMethod.GET)
+    public List<Quartier> getQuartiersByVilleId(@PathVariable Long id) {
+
+        List<Quartier> quartiers = new ArrayList<>();
+        try {
+            quartiers = this.quartierService.quartiersByVilleId(id);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return quartiers;
+    }
+
     @RequestMapping(value = "/quartier/{id}", method = RequestMethod.GET)
     public Quartier findById(@PathVariable Long id) {
 
@@ -73,11 +86,9 @@ public class QuartierController {
     @RequestMapping(value = "/quartier/ajouter", method = RequestMethod.POST, headers = "accept=Application/json")
     public ResponseEntity<?> ajouterQuartier(Principal principal, @RequestBody Quartier quartier) {
         try {
-            Quartier quartierExistant = quartierService.findByLibelle(quartier.getLibelle());
-
-            if (quartierExistant != null) {
+            if (quartierService.libelleAndVilleExists(quartier.getLibelle(), quartier.getVille())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body("Un quartier avec ce libelle " + quartier.getLibelle() + " existe déjà.");
+                        .body("Un quartier avec ce libelle " + quartier.getLibelle() + " existe déjà dans cette ville.");
             }
 
             quartier = this.quartierService.save(quartier, principal);
@@ -92,11 +103,10 @@ public class QuartierController {
     @RequestMapping(value = "/quartier/modifier/{id}", method = RequestMethod.PUT, headers = "accept=Application/json")
     public ResponseEntity<?> modifierQuartier(Principal principal, @RequestBody Quartier quartierModifie, @PathVariable  Long id) {
         Quartier quartier = quartierService.findById(id);
-        Quartier quartierExistant = quartierService.findByLibelle(quartierModifie.getLibelle());
         try {
-            if (quartierExistant != null) {
+            if (quartierService.libelleAndVilleExists(quartierModifie.getLibelle(), quartierModifie.getVille())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body("Un quartier avec ce libelle " + quartierModifie.getLibelle() + " existe déjà.");
+                        .body("Un quartier avec ce libelle " + quartierModifie.getLibelle() + " existe déjà dans cette ville.");
             }
             quartier.setLibelle(quartierModifie.getLibelle());
             quartier = this.quartierService.update(quartier, principal);

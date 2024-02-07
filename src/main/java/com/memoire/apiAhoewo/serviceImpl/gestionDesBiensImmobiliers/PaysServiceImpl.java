@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class PaysServiceImpl implements PaysService {
@@ -30,7 +31,7 @@ public class PaysServiceImpl implements PaysService {
     @Override
     public Page<Pays> getPaysPagines(int numeroDeLaPage, int elementsParPage) {
         PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
-        return paysRepository.findAll(pageRequest);
+        return paysRepository.findAllByOrderByCreerLeDesc(pageRequest);
     }
 
     @Override
@@ -51,11 +52,14 @@ public class PaysServiceImpl implements PaysService {
     @Override
     public Pays save(Pays pays, Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
+        pays.setCodePays("PAYS" + UUID.randomUUID());
         pays.setEtat(true);
         pays.setCreerLe(new Date());
         pays.setCreerPar(personne.getId());
         pays.setStatut(true);
-        return paysRepository.save(pays);
+        Pays paysInsere = paysRepository.save(pays);
+        paysInsere.setCodePays("PAYS00" + paysInsere.getId());
+        return paysRepository.save(paysInsere);
     }
 
     @Override

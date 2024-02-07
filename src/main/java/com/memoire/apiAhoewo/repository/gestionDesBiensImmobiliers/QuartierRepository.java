@@ -1,6 +1,7 @@
 package com.memoire.apiAhoewo.repository.gestionDesBiensImmobiliers;
 
 import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.Quartier;
+import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.Ville;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,10 +11,13 @@ import java.util.List;
 
 @Repository
 public interface QuartierRepository extends JpaRepository<Quartier, Long> {
-    @Override
-    Page<Quartier> findAll(Pageable pageable);
+    Page<Quartier> findAllByOrderByCreerLeDesc(Pageable pageable);
 
     List<Quartier> findByEtat(Boolean etat);
 
+    List<Quartier> findByVille_Id(Long id);
+
     Quartier findByLibelle(String libelle);
+
+    boolean existsByLibelleAndVille(String libelle, Ville ville);
 }

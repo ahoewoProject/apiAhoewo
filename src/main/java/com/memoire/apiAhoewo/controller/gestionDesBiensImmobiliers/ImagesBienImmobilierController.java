@@ -48,7 +48,7 @@ public class ImagesBienImmobilierController {
     public ResponseEntity<byte[]> getPremiereImageBienImmobilier(@PathVariable Long id) {
         BienImmobilier bienImmobilier = bienImmobilierService.findById(id);
         List<ImagesBienImmobilier> imagesBienImmobilierList = this.imagesBienImmobilierService.findByBienImmobilier(bienImmobilier);
-        
+
         if (!imagesBienImmobilierList.isEmpty()) {
             ImagesBienImmobilier premiereImageBienImmobilier = imagesBienImmobilierList.get(0);
             ImagesBienImmobilier imagesBienImmobilier = imagesBienImmobilierService.findById(premiereImageBienImmobilier.getId());
@@ -65,9 +65,19 @@ public class ImagesBienImmobilierController {
                 return new ResponseEntity<>(HttpStatus.UNSUPPORTED_MEDIA_TYPE);
             }
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            // Si aucune image n'est trouvée, renvoyer une image par défaut
+            try {
+                String cheminFichierImageParDefaut = "src/main/resources/imagesBienImmobilier/house.jpg";
+                byte[] imageParDefautBytes = fileManagerService.lireFichier(cheminFichierImageParDefaut);
+
+                HttpHeaders headers = fileManagerService.construireHeaders(cheminFichierImageParDefaut, imageParDefautBytes.length);
+                return new ResponseEntity<>(imageParDefautBytes, headers, HttpStatus.OK);
+            } catch (IOException e) {
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         }
     }
+
 
     @RequestMapping(value = "/image/bien-immobilier/{id}", method = RequestMethod.GET)
     public ResponseEntity<byte[]> getImageBienImmobilier(@PathVariable Long id) {

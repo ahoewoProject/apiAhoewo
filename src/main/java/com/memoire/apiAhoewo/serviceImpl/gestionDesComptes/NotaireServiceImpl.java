@@ -9,6 +9,7 @@ import com.memoire.apiAhoewo.service.GenererUsernameService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.NotaireService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,6 +33,8 @@ public class NotaireServiceImpl implements NotaireService {
     private GenererMotDePasseService genererMotDePasseService;
     @Autowired
     private EmailSenderService emailSenderService;
+    @Autowired
+    private Environment env;
 
     @Override
     public List<Notaire> getAll() {
@@ -41,7 +44,7 @@ public class NotaireServiceImpl implements NotaireService {
     @Override
     public Page<Notaire> getNotaires(int numeroDeLaPage, int elementsParPage) {
         PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
-        return notaireRepository.findAll(pageRequest);
+        return notaireRepository.findAllByOrderByCreerLeDesc(pageRequest);
     }
 
     @Override
@@ -74,9 +77,9 @@ public class NotaireServiceImpl implements NotaireService {
                 "Mot de passe : " + motDePasse + "\n\n" +
                 "Vous pouvez maintenant vous connecter à votre compte.\n\n" +
                 "Cordialement,\n\n" +
-                "L'équipe de support technique - ahoewo !";
+                "L'équipe support technique - ahoewo !";
         CompletableFuture.runAsync(() -> {
-            emailSenderService.sendMail(notaire.getEmail(), "Informations de connexion", contenu);
+            emailSenderService.sendMail(env.getProperty("spring.mail.username"), notaire.getEmail(), "Informations de connexion", contenu);
         });
 
 

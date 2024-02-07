@@ -11,13 +11,13 @@ import java.util.List;
 public interface BienImmobilierService {
     public List<BienImmobilier> getAll();
 
-    Page<BienImmobilier> getAllByProprietairePagines(Principal principal, int numeroDeLaPage, int elementsParPage);
+    Page<BienImmobilier> getBiensPaginesByProprietaire(Principal principal, int numeroDeLaPage, int elementsParPage);
 
-    Page<BienImmobilier> getBiensOfAgencesByResponsablePagines(Principal principal, int numeroDeLaPage, int elementsParPage);
+    Page<BienImmobilier> getBiensPaginesOfAgencesByResponsable(Principal principal, int numeroDeLaPage, int elementsParPage);
 
-    Page<BienImmobilier> getBiensOfAgencesByAgentPagines(Principal principal, int numeroDeLaPage, int elementsParPage);
+    Page<BienImmobilier> getBiensPaginesOfAgencesByAgent(Principal principal, int numeroDeLaPage, int elementsParPage);
 
-    public List<BienImmobilier> getAllByProprietaire(Principal principal);
+    public List<BienImmobilier> getBiensByProprietaire(Principal principal);
 
     public List<BienImmobilier> getBiensOfAgencesByResponsable(Principal principal);
 
@@ -25,9 +25,13 @@ public interface BienImmobilierService {
 
     public BienImmobilier findById(Long id);
 
+    public BienImmobilier findByCodeBien(String codeBien);
+
     public BienImmobilier save(BienImmobilier bienImmobilier, Principal principal);
 
     public BienImmobilier update(BienImmobilier bienImmobilier, Principal principal);
+
+    public boolean existsByCodeBien(String codeBien);
 
     public void activerBienImmobilier(Long id);
 

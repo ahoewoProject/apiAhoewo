@@ -8,57 +8,62 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "biens_immobiliers")
+@DiscriminatorColumn(name = "type_bien")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class BienImmobilier extends EntiteDeBase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id;
+    protected Long id;
 
-    @Column(name = "numero_identifiant", nullable = false, unique = true)
-    private String numeroIdentifiant;
+    @Column(name = "code_bien", nullable = false, unique = true)
+    protected String codeBien;
 
     @Column(name = "description", columnDefinition = "TEXT", nullable = false)
-    private String description;
+    protected String description;
 
     @Column(name = "adresse", nullable = false)
-    private String adresse;
+    protected String adresse;
 
     @Column(name = "surface", nullable = false)
-    private Integer surface;
+    protected Integer surface;
 
     @ManyToOne()
     @JoinColumn(name = "type_de_bien_id")
-    private TypeDeBien typeDeBien;
+    protected TypeDeBien typeDeBien;
+
+    @Column(name = "categorie")
+    protected String categorie;
 
     @Column(name = "statut_bien", nullable = false)
-    private String statutBien;
+    protected String statutBien;
 
     @Column(name = "etat_bien")
-    private Boolean etatBien;
+    protected Boolean etatBien;
 
     @ManyToOne
     @JoinColumn(name = "pays_id")
-    private Pays pays;
+    protected Pays pays;
 
     @ManyToOne
     @JoinColumn(name = "region_id")
-    private Region region;
+    protected Region region;
 
     @ManyToOne
     @JoinColumn(name = "ville_id")
-    private Ville ville;
+    protected Ville ville;
 
     @ManyToOne
     @JoinColumn(name = "quartier_id")
-    private Quartier quartier;
+    protected Quartier quartier;
 
     @ManyToOne
     @JoinColumn(name = "proprietaire_id")
-    private Personne personne;
+    protected Personne personne;
 
     @ManyToOne
     @JoinColumn(name = "agence_immobiliere_id")
-    private AgenceImmobiliere agenceImmobiliere;
+    protected AgenceImmobiliere agenceImmobiliere;
 
     public BienImmobilier() {
     }
@@ -73,12 +78,12 @@ public class BienImmobilier extends EntiteDeBase {
         this.id = id;
     }
 
-    public String getNumeroIdentifiant() {
-        return numeroIdentifiant;
+    public String getCodeBien() {
+        return codeBien;
     }
 
-    public void setNumeroIdentifiant(String numeroIdentifiant) {
-        this.numeroIdentifiant = numeroIdentifiant;
+    public void setCodeBien(String codeBien) {
+        this.codeBien = codeBien;
     }
 
     public String getDescription() {
@@ -111,6 +116,14 @@ public class BienImmobilier extends EntiteDeBase {
 
     public void setTypeDeBien(TypeDeBien typeDeBien) {
         this.typeDeBien = typeDeBien;
+    }
+
+    public String getCategorie() {
+        return categorie;
+    }
+
+    public void setCategorie(String categorie) {
+        this.categorie = categorie;
     }
 
     public String getStatutBien() {
@@ -181,11 +194,12 @@ public class BienImmobilier extends EntiteDeBase {
     public String toString() {
         return "BienImmobilier{" +
                 "id=" + id +
-                ", numeroIdentifiant='" + numeroIdentifiant + '\'' +
+                ", codeBien='" + codeBien + '\'' +
                 ", description='" + description + '\'' +
                 ", adresse='" + adresse + '\'' +
                 ", surface=" + surface +
                 ", typeDeBien=" + typeDeBien +
+                ", categorie='" + categorie + '\'' +
                 ", statutBien='" + statutBien + '\'' +
                 ", etatBien=" + etatBien +
                 ", pays=" + pays +

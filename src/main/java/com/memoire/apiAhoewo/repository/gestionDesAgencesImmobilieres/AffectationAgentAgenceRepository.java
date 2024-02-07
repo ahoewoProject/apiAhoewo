@@ -13,6 +13,8 @@ public interface AffectationAgentAgenceRepository extends JpaRepository<Affectat
     List<AffectationAgentAgence> findByAgenceImmobiliereIn(List<AgenceImmobiliere> agenceImmobiliereList);
 
     List<AffectationAgentAgence> findByAgentImmobilier(AgentImmobilier agentImmobilier);
+     
+    List<AffectationAgentAgence> findByAgentImmobilierAndActif(AgentImmobilier agentImmobilier, Boolean actif);
 
     List<AffectationAgentAgence> findByAgenceImmobiliere(AgenceImmobiliere agenceImmobiliere);
 
@@ -20,4 +22,7 @@ public interface AffectationAgentAgenceRepository extends JpaRepository<Affectat
 
     boolean existsByAgenceImmobiliereAndAgentImmobilier_Matricule(AgenceImmobiliere agenceImmobiliere, String matricule);
 
+    boolean existsByAgenceImmobiliereAndAgentImmobilierAndActif(AgenceImmobiliere agenceImmobiliere, AgentImmobilier agentImmobilier, Boolean actif);
+
+    boolean existsByAgenceImmobiliereAndAgentImmobilier_MatriculeAndActif(AgenceImmobiliere agenceImmobiliere, String matricule, Boolean actif);
 }

@@ -26,4 +26,12 @@ public interface AffectationAgentAgenceService {
     boolean agenceAndAgentExists(AgenceImmobiliere agenceImmobiliere, AgentImmobilier agentImmobilier);
 
     boolean agenceAndMatriculeAgentExists(AgenceImmobiliere agenceImmobiliere, String matricule);
+
+    boolean agenceAndAgentAndActifExists(AgenceImmobiliere agenceImmobiliere, AgentImmobilier agentImmobilier, Boolean actif);
+
+    boolean agenceAndMatriculeAgentAndActifExists(AgenceImmobiliere agenceImmobiliere, String matricule, Boolean actif);
+
+    void activerCompteAgentAgence(Long id);
+
+    void desactiverCompteAgentAgence(Long id);
 }

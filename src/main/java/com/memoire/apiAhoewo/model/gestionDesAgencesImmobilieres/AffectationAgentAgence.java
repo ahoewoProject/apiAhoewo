@@ -22,8 +22,14 @@ public class AffectationAgentAgence extends EntiteDeBase {
     @JoinColumn(name = "agent_immobilier_id")
     private AgentImmobilier agentImmobilier;
 
-    @Column(name = "date_affectation")
+    @Column(name = "date_affectation", nullable = false)
     private Date dateAffectation;
+
+    @Column(name = "date_fin")
+    private Date dateFin;
+
+    @Column(name = "actif", nullable = false)
+    private Boolean actif;
 
     public Long getId() {
         return id;
@@ -57,6 +63,22 @@ public class AffectationAgentAgence extends EntiteDeBase {
         this.dateAffectation = dateAffectation;
     }
 
+    public Date getDateFin() {
+        return dateFin;
+    }
+
+    public void setDateFin(Date dateFin) {
+        this.dateFin = dateFin;
+    }
+
+    public Boolean getActif() {
+        return actif;
+    }
+
+    public void setActif(Boolean actif) {
+        this.actif = actif;
+    }
+
     @Override
     public String toString() {
         return "AffectationAgentAgence{" +
@@ -64,6 +86,8 @@ public class AffectationAgentAgence extends EntiteDeBase {
                 ", agenceImmobiliere=" + agenceImmobiliere +
                 ", agentImmobilier=" + agentImmobilier +
                 ", dateAffectation=" + dateAffectation +
+                ", dateFin=" + dateFin +
+                ", actif=" + actif +
                 '}';
     }
 }

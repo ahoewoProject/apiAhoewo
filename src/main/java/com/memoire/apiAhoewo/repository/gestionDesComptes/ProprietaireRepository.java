@@ -8,6 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProprietaireRepository extends JpaRepository<Proprietaire, Long> {
-    @Override
-    Page<Proprietaire> findAll(Pageable pageable);
+    Page<Proprietaire> findAllByOrderByCreerLeDesc(Pageable pageable);
 }

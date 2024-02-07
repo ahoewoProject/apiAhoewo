@@ -8,6 +8,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ResponsableAgenceImmobiliereRepository extends JpaRepository<ResponsableAgenceImmobiliere, Long> {
-    @Override
-    Page<ResponsableAgenceImmobiliere> findAll(Pageable pageable);
+    Page<ResponsableAgenceImmobiliere> findAllByOrderByCreerLeDesc(Pageable pageable);
+
+    ResponsableAgenceImmobiliere findByMatricule(String matricule);
+
+    boolean existsByMatricule(String matricule);
 }

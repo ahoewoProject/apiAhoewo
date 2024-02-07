@@ -8,8 +8,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
-    @Override
-    Page<Role> findAll(Pageable pageable);
+    Page<Role> findAllByOrderByCreerLeDesc(Pageable pageable);
 
     Role findByCode(String code);
 }

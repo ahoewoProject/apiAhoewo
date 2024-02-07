@@ -1,5 +1,6 @@
 package com.memoire.apiAhoewo.service.gestionDesBiensImmobiliers;
 
+import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.Pays;
 import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.Region;
 import org.springframework.data.domain.Page;
 
@@ -13,6 +14,8 @@ public interface RegionService {
 
     List<Region> getRegionsActifs(Boolean etat);
 
+    List<Region> regionsByPaysId(Long id);
+
     Region findById(Long id);
 
     Region findByLibelle(String libelle);
@@ -20,6 +23,8 @@ public interface RegionService {
     Region save(Region region, Principal principal);
 
     Region update(Region region, Principal principal);
+
+    boolean libelleAndPaysExists(String libelle, Pays pays);
 
     void activerRegion(Long id);
 

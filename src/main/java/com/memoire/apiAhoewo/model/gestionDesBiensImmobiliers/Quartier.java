@@ -12,7 +12,10 @@ public class Quartier extends EntiteDeBase {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "libelle", unique = true)
+    @Column(name = "code_quartier", unique = true,nullable = false)
+    private String codeQuartier;
+
+    @Column(name = "libelle", nullable = false)
     private String libelle;
 
     @ManyToOne()
@@ -26,14 +29,24 @@ public class Quartier extends EntiteDeBase {
 
     }
 
-    public Quartier(Long id, String libelle) {
+    public Quartier(Long id, String codeQuartier, String libelle, Ville ville) {
         this.id = id;
+        this.codeQuartier = codeQuartier;
         this.libelle = libelle;
+        this.ville = ville;
     }
 
     @Override
     public Long getId() {
         return id;
+    }
+
+    public String getCodeQuartier() {
+        return codeQuartier;
+    }
+
+    public void setCodeQuartier(String codeQuartier) {
+        this.codeQuartier = codeQuartier;
     }
 
     @Override
@@ -69,6 +82,7 @@ public class Quartier extends EntiteDeBase {
     public String toString() {
         return "Quartier{" +
                 "id=" + id +
+                ", codeQuartier='" + codeQuartier + '\'' +
                 ", libelle='" + libelle + '\'' +
                 ", ville=" + ville +
                 ", etat=" + etat +

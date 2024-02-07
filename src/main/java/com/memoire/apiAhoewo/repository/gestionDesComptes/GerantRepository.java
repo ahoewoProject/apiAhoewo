@@ -10,10 +10,9 @@ import java.util.List;
 
 @Repository
 public interface GerantRepository extends JpaRepository<Gerant, Long> {
-    @Override
-    Page<Gerant> findAll(Pageable pageable);
+    Page<Gerant> findAllByOrderByCreerLeDesc(Pageable pageable);
 
-    Page<Gerant> findAllByCreerPar(Long id, Pageable pageable);
+    Page<Gerant> findAllByCreerParOrderByCreerLeDesc(Long id, Pageable pageable);
 
     public List<Gerant> findByCreerPar(Long id);
 }

@@ -23,7 +23,7 @@ public class DemarcheurServiceImpl implements DemarcheurService {
     @Override
     public Page<Demarcheur> getDemarcheurs(int numeroDeLaPage, int elementsParPage) {
         PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
-        return demarcheurRepository.findAll(pageRequest);
+        return demarcheurRepository.findAllByOrderByCreerLeDesc(pageRequest);
     }
 
     @Override

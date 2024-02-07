@@ -4,6 +4,7 @@ import com.memoire.apiAhoewo.model.EntiteDeBase;
 import com.memoire.apiAhoewo.model.gestionDesComptes.ResponsableAgenceImmobiliere;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name="affectations_responsables_agences")
@@ -20,6 +21,15 @@ public class AffectationResponsableAgence extends EntiteDeBase {
     @ManyToOne()
     @JoinColumn(name = "agence_immobiliere_id")
     private AgenceImmobiliere agenceImmobiliere;
+
+    @Column(name = "date_debut", nullable = false)
+    private Date dateDebut;
+
+    @Column(name = "date_fin")
+    private Date dateFin;
+
+    @Column(name = "actif", nullable = false)
+    private Boolean actif;
 
     public Long getId() {
         return id;
@@ -45,12 +55,39 @@ public class AffectationResponsableAgence extends EntiteDeBase {
         this.agenceImmobiliere = agenceImmobiliere;
     }
 
+    public Date getDateDebut() {
+        return dateDebut;
+    }
+
+    public void setDateDebut(Date dateDebut) {
+        this.dateDebut = dateDebut;
+    }
+
+    public Date getDateFin() {
+        return dateFin;
+    }
+
+    public void setDateFin(Date dateFin) {
+        this.dateFin = dateFin;
+    }
+
+    public Boolean getActif() {
+        return actif;
+    }
+
+    public void setActif(Boolean actif) {
+        this.actif = actif;
+    }
+
     @Override
     public String toString() {
         return "AffectationResponsableAgence{" +
                 "id=" + id +
                 ", responsableAgenceImmobiliere=" + responsableAgenceImmobiliere +
                 ", agenceImmobiliere=" + agenceImmobiliere +
+                ", dateDebut=" + dateDebut +
+                ", dateFin=" + dateFin +
+                ", actif=" + actif +
                 '}';
     }
 }

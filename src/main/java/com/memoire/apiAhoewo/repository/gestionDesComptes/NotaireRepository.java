@@ -8,6 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface NotaireRepository extends JpaRepository<Notaire, Long> {
-    @Override
-    Page<Notaire> findAll(Pageable pageable);
+    Page<Notaire> findAllByOrderByCreerLeDesc(Pageable pageable);
 }

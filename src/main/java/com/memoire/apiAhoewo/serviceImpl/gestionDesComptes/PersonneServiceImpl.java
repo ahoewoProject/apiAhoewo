@@ -7,6 +7,7 @@ import com.memoire.apiAhoewo.service.EmailSenderService;
 import com.memoire.apiAhoewo.service.GenererUsernameService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -44,6 +45,8 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
     private EmailSenderService emailSenderService;
     @Autowired
     private GenererUsernameService genererUsernameService;
+    @Autowired
+    private Environment env;
 
     public PersonneServiceImpl() {
     }
@@ -164,8 +167,7 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
 
         Personne personneInseree = personneRepository.save(personne);
         personneInseree.setMatricule(genererMatricule(roleCode, personneInseree.getId()));
-        Personne newPersonne = personneRepository.save(personneInseree);
-        return newPersonne;
+        return personneRepository.save(personneInseree);
     }
 
     @Override
@@ -181,10 +183,10 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
                 resetLink + "\n\n" +
                 "Si vous n'avez pas demandé de réinitialisation de mot de passe, veuillez ignorer cet email.\n\n" +
                 "Cordialement,\n" +
-                "\nL'équipe de support technique - ahoewo !";
+                "\nL'équipe support technique - ahoewo !";
 
         // Envoyer l'email
-        emailSenderService.sendMail(personne.getEmail(), "Réinitialisation du mot de passe", contenu);
+        emailSenderService.sendMail(env.getProperty("spring.mail.username"), personne.getEmail(), "Réinitialisation du mot de passe", contenu);
     }
 
     @Override

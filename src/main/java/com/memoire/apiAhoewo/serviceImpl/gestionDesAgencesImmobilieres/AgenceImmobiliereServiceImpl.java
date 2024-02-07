@@ -26,6 +26,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -78,7 +79,7 @@ public class AgenceImmobiliereServiceImpl implements AgenceImmobiliereService {
 
         // Récupérer les agences paginées
         PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
-        return agenceImmobiliereRepository.findByIdIn(idsAgences, pageRequest);
+        return agenceImmobiliereRepository.findByIdInOrderByCreerLeDesc(idsAgences, pageRequest);
     }
 
     @Override
@@ -112,7 +113,10 @@ public class AgenceImmobiliereServiceImpl implements AgenceImmobiliereService {
     @Override
     public AgenceImmobiliere save(AgenceImmobiliere agenceImmobiliere, Principal principal) {
         ResponsableAgenceImmobiliere responsableAgenceImmobiliere = (ResponsableAgenceImmobiliere) personneService.findByUsername(principal.getName());
-        agenceImmobiliere.setCodeAgence("AGENCE00");
+        if (responsableAgenceImmobiliere.getEstCertifie()) {
+            agenceImmobiliere.setEstCertifie(true);
+        }
+        agenceImmobiliere.setCodeAgence("AGENCE" + UUID.randomUUID());
         agenceImmobiliere.setCreerLe(new Date());
         agenceImmobiliere.setCreerPar(responsableAgenceImmobiliere.getId());
         agenceImmobiliere.setStatut(true);

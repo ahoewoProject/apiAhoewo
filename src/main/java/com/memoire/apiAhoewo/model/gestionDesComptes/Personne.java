@@ -6,8 +6,8 @@ import com.memoire.apiAhoewo.model.EntiteDeBase;
 import javax.persistence.*;
 
 @Entity
-@Table(name="personnes")
-@DiscriminatorColumn(name="type_personne")
+@Table(name = "personnes")
+@DiscriminatorColumn(name = "type_personne")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Personne extends EntiteDeBase {
 

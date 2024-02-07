@@ -9,6 +9,7 @@ import com.memoire.apiAhoewo.service.GenererUsernameService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.GerantService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,19 +33,20 @@ public class GerantServiceImpl implements GerantService {
     private GenererMotDePasseService genererMotDePasseService;
     @Autowired
     private EmailSenderService emailSenderService;
-
+    @Autowired
+    private Environment env;
 
     @Override
     public Page<Gerant> getGerants(int numeroDeLaPage, int elementsParPage) {
         PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
-        return gerantRepository.findAll(pageRequest);
+        return gerantRepository.findAllByOrderByCreerLeDesc(pageRequest);
     }
 
     @Override
     public Page<Gerant> findGerantsByProprietaire(Principal principal, int numeroDeLaPage, int elementsParPage) {
         PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
         Personne personne = personneService.findByUsername(principal.getName());
-        return gerantRepository.findAllByCreerPar(personne.getId(), pageRequest);
+        return gerantRepository.findAllByCreerParOrderByCreerLeDesc(personne.getId(), pageRequest);
     }
 
     @Override
@@ -77,9 +79,9 @@ public class GerantServiceImpl implements GerantService {
                 "Mot de passe : " + motDePasse + "\n\n" +
                 "Vous pouvez maintenant vous connecter à votre compte.\n\n" +
                 "Cordialement,\n\n" +
-                "L'équipe de support technique - ahoewo !";
+                "L'équipe support technique - ahoewo !";
         CompletableFuture.runAsync(() -> {
-            emailSenderService.sendMail(gerant.getEmail(), "Informations de connexion", contenu);
+            emailSenderService.sendMail(env.getProperty("spring.mail.username"), gerant.getEmail(), "Informations de connexion", contenu);
         });
 
 

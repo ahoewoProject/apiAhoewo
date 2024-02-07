@@ -1,7 +1,7 @@
 package com.memoire.apiAhoewo.controller.gestionDesAgencesImmobilieres;
 
 import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.ServicesAgenceImmobiliere;
-import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.DelegationGestion;
+import com.memoire.apiAhoewo.requestForm.ServiceNonTrouveForm;
 import com.memoire.apiAhoewo.service.gestionDesAgencesImmobilieres.ServicesAgenceImmobiliereService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -11,26 +11,15 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
 public class ServicesAgenceImmobilierController {
     @Autowired
     private ServicesAgenceImmobiliereService servicesAgenceImmobiliereService;
-
-    @RequestMapping(value = "/services/agence-immobiliere", method = RequestMethod.GET)
-    public List<ServicesAgenceImmobiliere> getServicesOfAgence(Principal principal) {
-
-        List<ServicesAgenceImmobiliere> servicesAgenceImmobilieres = new ArrayList<>();
-        try {
-            servicesAgenceImmobilieres = this.servicesAgenceImmobiliereService.getServicesOfAgence(principal);
-        } catch (Exception e) {
-            // TODO: handle exception
-            System.out.println("Erreur " + e.getMessage());
-        }
-        return servicesAgenceImmobilieres;
-    }
 
     @RequestMapping(value = "/services/agence-immobiliere/pagines", method = RequestMethod.GET)
     public Page<ServicesAgenceImmobiliere> getServicesOfAgencePagines(Principal principal,
@@ -44,19 +33,6 @@ public class ServicesAgenceImmobilierController {
             System.out.println("Erreur " + e.getMessage());
             throw new RuntimeException("Une erreur s'est produite lors de la récupération des services de l'agence.", e);
         }
-    }
-
-    @RequestMapping(value = "/services/agence-immobiliere/{id}", method = RequestMethod.GET)
-    public List<ServicesAgenceImmobiliere> getServicesOfAgence(@PathVariable Long id) {
-
-        List<ServicesAgenceImmobiliere> servicesAgenceImmobilieres = new ArrayList<>();
-        try {
-            servicesAgenceImmobilieres = this.servicesAgenceImmobiliereService.getServicesOfAgence(id);
-        } catch (Exception e) {
-            // TODO: handle exception
-            System.out.println("Erreur " + e.getMessage());
-        }
-        return servicesAgenceImmobilieres;
     }
 
     @RequestMapping(value = "/services/agence-immobiliere/pagines/{id}", method = RequestMethod.GET)
@@ -123,6 +99,19 @@ public class ServicesAgenceImmobilierController {
             System.out.println("Erreur " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Une erreur s'est produite lors de la modification du service de l'agence immobilière.");
+        }
+    }
+
+    @RequestMapping(value = "/demande/ajout-nouveau-service", method = RequestMethod.POST, headers = "accept=Application/json")
+    public ResponseEntity<?> demandeAjoutNouveauService(Principal principal, @RequestBody ServiceNonTrouveForm serviceNonTrouveForm) {
+        try {
+            servicesAgenceImmobiliereService.demandeAjoutServiceNonTrouve(principal, serviceNonTrouveForm);
+            Map<String, Object> response = new HashMap<>();
+            String message = "Demande envoyée.";
+            response.put("message", message);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Demande non envoyée", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

@@ -29,7 +29,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public Page<Role> getRoles(int numeroDeLaPage, int elementsParPage) {
         PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
-        return roleRepository.findAll(pageRequest);
+        return roleRepository.findAllByOrderByCreerLeDesc(pageRequest);
     }
 
     @Override

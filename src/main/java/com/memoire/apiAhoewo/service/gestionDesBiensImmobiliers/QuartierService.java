@@ -1,6 +1,7 @@
 package com.memoire.apiAhoewo.service.gestionDesBiensImmobiliers;
 
 import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.Quartier;
+import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.Ville;
 import org.springframework.data.domain.Page;
 
 import java.security.Principal;
@@ -13,6 +14,8 @@ public interface QuartierService {
 
     List<Quartier> getQuartiersActifs(Boolean etat);
 
+    List<Quartier> quartiersByVilleId(Long id);
+
     Quartier findById(Long id);
 
     Quartier findByLibelle(String libelle);
@@ -20,6 +23,8 @@ public interface QuartierService {
     Quartier save(Quartier quartier, Principal principal);
 
     Quartier update(Quartier quartier, Principal principal);
+
+    boolean libelleAndVilleExists(String libelle, Ville ville);
 
     void activerQuartier(Long id);
 

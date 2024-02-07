@@ -13,6 +13,8 @@ public interface TypeDeBienService {
 
     public List<TypeDeBien> findTypeDeBienActifs();
 
+    public List<TypeDeBien> findTypeDeBienActifsByLibelle(List<String> libelles);
+
     public TypeDeBien findById(Long id);
 
     public TypeDeBien findByDesignation(String designation);

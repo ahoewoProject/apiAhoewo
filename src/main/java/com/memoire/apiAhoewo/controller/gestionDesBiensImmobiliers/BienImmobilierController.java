@@ -2,7 +2,9 @@ package com.memoire.apiAhoewo.controller.gestionDesBiensImmobiliers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.*;
+import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
 import com.memoire.apiAhoewo.service.gestionDesBiensImmobiliers.*;
+import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -20,13 +22,11 @@ public class BienImmobilierController {
     @Autowired
     private BienImmobilierService bienImmobilierService;
     @Autowired
+    private CaracteristiquesService caracteristiquesService;
+    @Autowired
     private ImagesBienImmobilierService imagesBienImmobilierService;
     @Autowired
-    private ConfortService confortService;
-    @Autowired
-    private DivertissementService divertissementService;
-    @Autowired
-    private UtilitaireService utilitaireService;
+    private PersonneService personneService;
 
     @RequestMapping(value = "/biens-immobiliers", method = RequestMethod.GET)
     public List<BienImmobilier> getAll() {
@@ -42,12 +42,12 @@ public class BienImmobilierController {
     }
 
     @RequestMapping(value = "/biens-immobiliers/proprietaire/pagines", method = RequestMethod.GET)
-    public Page<BienImmobilier> getAllByProprietairePagines(Principal principal,
+    public Page<BienImmobilier> getBiensPaginesByProprietaire(Principal principal,
             @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
             @RequestParam(value = "elementsParPage") int elementsParPage) {
 
         try {
-            return this.bienImmobilierService.getAllByProprietairePagines(principal, numeroDeLaPage, elementsParPage);
+            return this.bienImmobilierService.getBiensPaginesByProprietaire(principal, numeroDeLaPage, elementsParPage);
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Erreur " + e.getMessage());
@@ -56,12 +56,12 @@ public class BienImmobilierController {
     }
 
     @RequestMapping(value = "/biens-immobiliers/agences/responsable/pagines", method = RequestMethod.GET)
-    public Page<BienImmobilier> getBiensOfAgencesByResponsablePagines(Principal principal,
+    public Page<BienImmobilier> getBiensPaginesOfAgencesByResponsable(Principal principal,
                                                             @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
                                                             @RequestParam(value = "elementsParPage") int elementsParPage) {
 
         try {
-            return this.bienImmobilierService.getBiensOfAgencesByResponsablePagines(principal, numeroDeLaPage, elementsParPage);
+            return this.bienImmobilierService.getBiensPaginesOfAgencesByResponsable(principal, numeroDeLaPage, elementsParPage);
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Erreur " + e.getMessage());
@@ -70,12 +70,12 @@ public class BienImmobilierController {
     }
 
     @RequestMapping(value = "/biens-immobiliers/agences/agent/pagines", method = RequestMethod.GET)
-    public Page<BienImmobilier> getBiensOfAgencesByAgentPagines(Principal principal,
+    public Page<BienImmobilier> getBiensPaginesOfAgencesByAgent(Principal principal,
                                                                       @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
                                                                       @RequestParam(value = "elementsParPage") int elementsParPage) {
 
         try {
-            return this.bienImmobilierService.getBiensOfAgencesByAgentPagines(principal, numeroDeLaPage, elementsParPage);
+            return this.bienImmobilierService.getBiensPaginesOfAgencesByAgent(principal, numeroDeLaPage, elementsParPage);
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Erreur " + e.getMessage());
@@ -84,11 +84,11 @@ public class BienImmobilierController {
     }
 
     @RequestMapping(value = "/biens-immobiliers/proprietaire", method = RequestMethod.GET)
-    public List<BienImmobilier> getAllByProprietaire(Principal principal) {
+    public List<BienImmobilier> getBiensByProprietaire(Principal principal) {
 
         List<BienImmobilier> bienImmobiliers = new ArrayList<>();
         try {
-            bienImmobiliers = this.bienImmobilierService.getAllByProprietaire(principal);
+            bienImmobiliers = this.bienImmobilierService.getBiensByProprietaire(principal);
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Erreur " + e.getMessage());
@@ -137,35 +137,19 @@ public class BienImmobilierController {
 
     @RequestMapping(value = "/bien-immobilier/ajouter", method = RequestMethod.POST, headers = "accept=Application/json")
     public ResponseEntity<?> ajouterBienImmobilier(Principal principal,
-               @RequestParam(value = "images", required = false) List<MultipartFile> files,
-               String bienImmobilierJson,
-               @RequestParam(value = "confortJson", required = false) String confortJson,
-               @RequestParam(value = "utilitaireJson", required = false) String utilitaireJson,
-               @RequestParam(value = "divertissementJson", required = false) String divertissementJson) {
+                                                   @RequestParam(value = "images", required = false) List<MultipartFile> files,
+                                                   String bienImmobilierJson,
+                                                   @RequestParam(value = "caracteristiquesJson", required = false) String caracteristiquesJson         ) {
 
         try {
-
+            Personne personne = personneService.findByUsername(principal.getName());
             BienImmobilier bienImmobilier = new BienImmobilier();
-            Confort confort = new Confort();
-            Utilitaire utilitaire = new Utilitaire();
-            Divertissement divertissement = new Divertissement();
+            Caracteristiques caracteristique;
 
             if (bienImmobilierJson != null && !bienImmobilierJson.isEmpty()) {
                 bienImmobilier = new ObjectMapper().readValue(bienImmobilierJson, BienImmobilier.class);
             }
-
-            if (confortJson != null && !confortJson.isEmpty()) {
-                confort = new ObjectMapper().readValue(confortJson, Confort.class);
-            }
-
-            if (utilitaireJson != null && !utilitaireJson.isEmpty()) {
-                utilitaire = new ObjectMapper().readValue(utilitaireJson, Utilitaire.class);
-            }
-
-            if (divertissementJson != null && !divertissementJson.isEmpty()) {
-                divertissement = new ObjectMapper().readValue(divertissementJson, Divertissement.class);
-            }
-
+            bienImmobilier.setPersonne(personne);
             bienImmobilier = this.bienImmobilierService.save(bienImmobilier, principal);
 
             if (files != null) {
@@ -178,16 +162,9 @@ public class BienImmobilierController {
                 }
             }
 
-            if (bienImmobilier.getTypeDeBien().getDesignation() != "Terrains") {
-                if (confort != null) {
-                    confortService.save(bienImmobilier, confort, principal);
-                }
-                if (utilitaire != null) {
-                    utilitaireService.save(bienImmobilier, utilitaire, principal);
-                }
-                if (divertissement != null) {
-                    divertissementService.save(bienImmobilier, divertissement, principal);
-                }
+            if (caracteristiquesJson != null && !caracteristiquesJson.trim().isEmpty() && !caracteristiquesJson.equals("{}")) {
+                caracteristique = new ObjectMapper().readValue(caracteristiquesJson, Caracteristiques.class);
+                caracteristiquesService.save(bienImmobilier, caracteristique, principal);
             }
 
             return ResponseEntity.ok(bienImmobilier);
@@ -201,58 +178,38 @@ public class BienImmobilierController {
     @RequestMapping(value = "/bien-immobilier/modifier/{id}", method = RequestMethod.PUT, headers = "accept=Application/json")
     public ResponseEntity<?> modifierBienImmobilier(@PathVariable Long id,
                                                     Principal principal,
-                                    @RequestParam(value = "images", required = false) List<MultipartFile> files,
-                                    String bienImmobilierJson,
-                                    @RequestParam(value = "confortJson", required = false) String confortJson,
-                                    @RequestParam(value = "utilitaireJson", required = false) String utilitaireJson,
-                                    @RequestParam(value = "divertissementJson", required = false) String divertissementJson) {
-
+                                                    @RequestParam(value = "images", required = false) List<MultipartFile> files,
+                                                    String bienImmobilierJson,
+                                                    @RequestParam(value = "caracteristiquesJson", required = false) String caracteristiquesJson)
+    {
         try {
             BienImmobilier bienImmobilier = bienImmobilierService.findById(id);
 
             BienImmobilier bienImmobilierUpdate = new ObjectMapper().readValue(bienImmobilierJson, BienImmobilier.class);
             bienImmobilier.setDescription(bienImmobilierUpdate.getDescription());
+            bienImmobilier.setCategorie(bienImmobilierUpdate.getCategorie());
             bienImmobilier.setAdresse(bienImmobilierUpdate.getAdresse());
+            bienImmobilier.setPays(bienImmobilierUpdate.getPays());
+            bienImmobilier.setRegion(bienImmobilierUpdate.getRegion());
             bienImmobilier.setVille(bienImmobilierUpdate.getVille());
+            bienImmobilier.setQuartier(bienImmobilierUpdate.getQuartier());
             bienImmobilier.setSurface(bienImmobilierUpdate.getSurface());
 
-            // Enregistrer la mise à jour du bien immobilier dans la base de données
             bienImmobilier = bienImmobilierService.update(bienImmobilier, principal);
 
-            // Gérer Confort, Utilitaire et Divertissement si ce n'est pas un terrain
-            if (!bienImmobilier.getTypeDeBien().getDesignation().equals("Terrains")) {
-                Confort confort = confortService.getByBienImmobilier(id);
-                Utilitaire utilitaire = utilitaireService.getByBienImmobilier(id);
-                Divertissement divertissement = divertissementService.getByBienImmobilier(id);
-
-                if (confort != null && confortJson != null && !confortJson.isEmpty()) {
-                    Confort confortUpdate = new ObjectMapper().readValue(confortJson, Confort.class);
-                    confortUpdate.setBienImmobilier(confort.getBienImmobilier());
-                    confortService.update(bienImmobilier, confortUpdate, principal);
-                }
-
-                if (utilitaire != null && utilitaireJson != null && !utilitaireJson.isEmpty()) {
-                    Utilitaire utilitaireUpdate = new ObjectMapper().readValue(utilitaireJson, Utilitaire.class);
-                    utilitaireUpdate.setBienImmobilier(utilitaire.getBienImmobilier());
-                    utilitaireService.update(bienImmobilier, utilitaireUpdate, principal);
-                }
-
-                if (divertissement != null && divertissementJson != null && !divertissementJson.isEmpty()) {
-                    Divertissement divertissementUpdate = new ObjectMapper().readValue(divertissementJson, Divertissement.class);
-                    divertissementUpdate.setBienImmobilier(divertissement.getBienImmobilier());
-                    divertissementService.update(bienImmobilier, divertissementUpdate, principal);
-                }
-            }
-
-            // Enregistrer de nouvelles images si elles sont fournies
             if (files != null) {
                 for (MultipartFile image : files) {
                     ImagesBienImmobilier imagesBienImmobilier = new ImagesBienImmobilier();
                     String nomImageDuBien = imagesBienImmobilierService.enregistrerImageDuBien(image);
                     imagesBienImmobilier.setNomImage(nomImageDuBien);
                     imagesBienImmobilier.setBienImmobilier(bienImmobilier);
-                    imagesBienImmobilierService.save(imagesBienImmobilier, principal);
+                    imagesBienImmobilierService.update(imagesBienImmobilier, principal);
                 }
+            }
+
+            if (caracteristiquesJson != null && !caracteristiquesJson.trim().isEmpty() && !caracteristiquesJson.equals("{}")) {
+                Caracteristiques caracteristiqueUpdate = new ObjectMapper().readValue(caracteristiquesJson, Caracteristiques.class);
+                caracteristiquesService.update(id, caracteristiqueUpdate, principal);
             }
 
             return ResponseEntity.ok(bienImmobilier);

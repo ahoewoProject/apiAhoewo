@@ -11,10 +11,9 @@ import java.util.List;
 
 @Repository
 public interface ServicesRepository extends JpaRepository<Services, Long> {
-    @Override
-    Page<Services> findAll(Pageable pageable);
+    Page<Services> findAllByEtatInOrderByCreerLeDesc(Pageable pageable, List<Integer> etats);
 
     Services findByNomService(String nomService);
 
-    List<Services> findByEtat(Boolean etat);
+    List<Services> findByEtat(Integer etat);
 }

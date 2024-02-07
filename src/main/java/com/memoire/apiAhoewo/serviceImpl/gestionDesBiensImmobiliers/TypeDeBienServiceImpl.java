@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class TypeDeBienServiceImpl implements TypeDeBienService {
@@ -29,12 +30,17 @@ public class TypeDeBienServiceImpl implements TypeDeBienService {
     @Override
     public Page<TypeDeBien> getTypesDeBienPagines(int numeroDeLaPage, int elementsParPage) {
         PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
-        return typeDeBienRepository.findAll(pageRequest);
+        return typeDeBienRepository.findAllByOrderByCreerLeDesc(pageRequest);
     }
 
     @Override
     public List<TypeDeBien> findTypeDeBienActifs() {
         return typeDeBienRepository.findByEtat(true);
+    }
+
+    @Override
+    public List<TypeDeBien> findTypeDeBienActifsByLibelle(List<String> designations) {
+        return typeDeBienRepository.findByDesignationInAndEtat(designations, true);
     }
 
     @Override
@@ -50,11 +56,14 @@ public class TypeDeBienServiceImpl implements TypeDeBienService {
     @Override
     public TypeDeBien save(TypeDeBien typeDeBien, Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
+        typeDeBien.setCode("TYBIEN" + UUID.randomUUID());
         typeDeBien.setEtat(true);
         typeDeBien.setCreerLe(new Date());
         typeDeBien.setCreerPar(personne.getId());
         typeDeBien.setStatut(true);
-        return typeDeBienRepository.save(typeDeBien);
+        TypeDeBien typeDeBienInsere = typeDeBienRepository.save(typeDeBien);
+        typeDeBienInsere.setCode("TYBIEN00" + typeDeBienInsere.getId());
+        return typeDeBienRepository.save(typeDeBienInsere);
     }
 
     @Override

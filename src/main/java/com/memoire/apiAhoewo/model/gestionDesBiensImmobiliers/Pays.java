@@ -12,7 +12,10 @@ public class Pays extends EntiteDeBase {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "libelle", unique = true)
+    @Column(name = "code_pays", unique = true, nullable = false)
+    private String codePays;
+
+    @Column(name = "libelle", nullable = false)
     private String libelle;
 
     @Column(name = "etat")
@@ -21,8 +24,9 @@ public class Pays extends EntiteDeBase {
     public Pays() {
     }
 
-    public Pays(Long id, String libelle) {
+    public Pays(Long id, String codePays, String libelle) {
         this.id = id;
+        this.codePays = codePays;
         this.libelle = libelle;
     }
 
@@ -32,6 +36,14 @@ public class Pays extends EntiteDeBase {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getCodePays() {
+        return codePays;
+    }
+
+    public void setCodePays(String codePays) {
+        this.codePays = codePays;
     }
 
     public String getLibelle() {
@@ -54,6 +66,7 @@ public class Pays extends EntiteDeBase {
     public String toString() {
         return "Pays{" +
                 "id=" + id +
+                ", codePays='" + codePays + '\'' +
                 ", libelle='" + libelle + '\'' +
                 ", etat=" + etat +
                 '}';

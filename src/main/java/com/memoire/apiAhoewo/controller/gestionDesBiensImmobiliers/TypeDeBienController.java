@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -55,6 +57,84 @@ public class TypeDeBienController {
         List<TypeDeBien> typeDeBiens = new ArrayList<>();
         try {
             typeDeBiens = this.typeDeBienService.findTypeDeBienActifs();
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return typeDeBiens;
+    }
+
+    @RequestMapping(value = "/types-de-bien/to-start", method = RequestMethod.GET)
+    public List<TypeDeBien> getTypeDeBienToStart() {
+
+        List<TypeDeBien> typeDeBiens = new ArrayList<>();
+
+        List<String> designations = new ArrayList<>();
+        designations.add("Terrain");
+        designations.add("Maison");
+        designations.add("Immeuble");
+        designations.add("Villa");
+        try {
+            typeDeBiens = this.typeDeBienService.findTypeDeBienActifsByLibelle(designations);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return typeDeBiens;
+    }
+
+    @RequestMapping(value = "/types-de-bien/pour-maison", method = RequestMethod.GET)
+    public List<TypeDeBien> getTypeDeBienPourMaison() {
+
+        List<TypeDeBien> typeDeBiens = new ArrayList<>();
+
+        List<String> designations = new ArrayList<>();
+        designations.add("Appartement");
+        designations.add("Magasin");
+        designations.add("Bureau");
+        designations.add("Boutique");
+        designations.add("Chambre");
+        designations.add("Chambre salon");
+        try {
+            typeDeBiens = this.typeDeBienService.findTypeDeBienActifsByLibelle(designations);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return typeDeBiens;
+    }
+
+    @RequestMapping(value = "/types-de-bien/pour-immeuble", method = RequestMethod.GET)
+    public List<TypeDeBien> getTypeDeBienPourImmeuble() {
+
+        List<TypeDeBien> typeDeBiens = new ArrayList<>();
+
+        List<String> designations = new ArrayList<>();
+        designations.add("Appartement");
+        designations.add("Magasin");
+        designations.add("Bureau");
+        designations.add("Boutique");
+        designations.add("Chambre");
+        designations.add("Chambre salon");
+        try {
+            typeDeBiens = this.typeDeBienService.findTypeDeBienActifsByLibelle(designations);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return typeDeBiens;
+    }
+
+    @RequestMapping(value = "/types-de-bien/pour-villa", method = RequestMethod.GET)
+    public List<TypeDeBien> getTypeDeBienPourVilla() {
+
+        List<TypeDeBien> typeDeBiens = new ArrayList<>();
+
+        List<String> designations = new ArrayList<>();
+        designations.add("Chambre");
+        designations.add("Chambre salon");
+        try {
+            typeDeBiens = this.typeDeBienService.findTypeDeBienActifsByLibelle(designations);
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Erreur " + e.getMessage());
@@ -126,14 +206,14 @@ public class TypeDeBienController {
     public ResponseEntity<?> supprimerTypeDeBien(@PathVariable Long id) {
         TypeDeBien typeDeBien = typeDeBienService.findById(id);
         List<BienImmobilier> biensAssocies = bienImmobilierRepository.findByTypeDeBien(typeDeBien);
-
+        Map<String, Object> response = new HashMap<>();
         if (!biensAssocies.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Des biens sont liés à ce type de bien. Suppression impossible.");
         } else {
             typeDeBienService.deleteById(typeDeBien.getId());
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body("Type de bien supprimé avec succès");
+            response.put("message", "Type de bien supprimé avec succès");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         }
     }
 }

@@ -113,7 +113,7 @@ public class AffectationAgentAgenceController {
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Une erreur s'est produite lors de l'ajout du service : " + e.getMessage());
+                    .body("Une erreur s'est produite lors de l'affection de l'agence à l'agent : " + e.getMessage());
         }
     }
 
@@ -138,8 +138,17 @@ public class AffectationAgentAgenceController {
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Une erreur s'est produite lors de l'ajout du service : " + e.getMessage());
+                    .body("Une erreur s'est produite lors de l'ajout de l'affectation de l'agence à l'agent : " + e.getMessage());
         }
     }
 
+    @RequestMapping(value = "/activer/agent-agence/{id}", method = RequestMethod.GET, headers = "accept=Application/json")
+    public void activerCompteAgentAgence(@PathVariable Long id){
+        this.affectationAgentAgenceService.activerCompteAgentAgence(id);
+    }
+
+    @RequestMapping(value = "/desactiver/agent-agence/{id}", method = RequestMethod.GET, headers = "accept=Application/json")
+    public void desactiverCompteAgentAgence(@PathVariable Long id){
+        this.affectationAgentAgenceService.desactiverCompteAgentAgence(id);
+    }
 }

@@ -1,8 +1,13 @@
 package com.memoire.apiAhoewo.service.gestionDesBiensImmobiliers;
 
+import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.AgenceImmobiliere;
 import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.BienImmobilier;
+import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.Caracteristiques;
 import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.DelegationGestion;
+import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
+import com.memoire.apiAhoewo.requestForm.DelegationGestionForm2;
 import org.springframework.data.domain.Page;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.List;
@@ -28,11 +33,21 @@ public interface DelegationGestionService {
 
     public DelegationGestion save(DelegationGestion delegationGestion, Principal principal);
 
+    public DelegationGestion saveDelegationGestion2(DelegationGestionForm2 delegationGestionFormTwo, Caracteristiques caracteristiques, List<MultipartFile> files, Principal principal);
+
+    public DelegationGestion updateDelegationGestionTwo(DelegationGestionForm2 delegationGestionFormTwo, Caracteristiques caracteristiques, List<MultipartFile> files, Principal principal);
+
     void accepterDelegationGestion(Long id);
 
     void refuserDelegationGestion(Long id);
 
-    boolean bienImmobilierAndStatutDelegationExists(BienImmobilier bienImmobilier, Integer statutDelegation);
+    boolean bienImmobilierAndStatutDelegationAndEtatDelegationExists(BienImmobilier bienImmobilier, Integer statutDelegation, Boolean etatDelegation);
 
-    void supprimerDelegationGestion(Long id);
+    boolean bienImmobilierAndAgenceImmobiliereExists(BienImmobilier bienImmobilier, AgenceImmobiliere agenceImmobiliere);
+
+    boolean bienImmobilierAndGestionnaireExists(BienImmobilier bienImmobilier, Personne personne);
+
+    void activerDelegationGestion(Long id, Principal principal);
+
+    void desactiverDelegationGestion(Long id, Principal principal);
 }

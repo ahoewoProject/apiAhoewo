@@ -1,6 +1,7 @@
 package com.memoire.apiAhoewo.serviceImpl.gestionDesBiensImmobiliers;
 
 import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.Quartier;
+import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.Ville;
 import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
 import com.memoire.apiAhoewo.repository.gestionDesBiensImmobiliers.QuartierRepository;
 import com.memoire.apiAhoewo.service.gestionDesBiensImmobiliers.QuartierService;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class QuartierServiceImpl implements QuartierService {
@@ -29,12 +31,17 @@ public class QuartierServiceImpl implements QuartierService {
     @Override
     public Page<Quartier> getQuartiersPagines(int numeroDeLaPage, int elementsParPage) {
         PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
-        return quartierRepository.findAll(pageRequest);
+        return quartierRepository.findAllByOrderByCreerLeDesc(pageRequest);
     }
 
     @Override
     public List<Quartier> getQuartiersActifs(Boolean etat) {
         return quartierRepository.findByEtat(etat);
+    }
+
+    @Override
+    public List<Quartier> quartiersByVilleId(Long id) {
+        return quartierRepository.findByVille_Id(id);
     }
 
     @Override
@@ -50,11 +57,14 @@ public class QuartierServiceImpl implements QuartierService {
     @Override
     public Quartier save(Quartier quartier, Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
+        quartier.setCodeQuartier("QUART" + UUID.randomUUID());
         quartier.setEtat(true);
         quartier.setCreerLe(new Date());
         quartier.setCreerPar(personne.getId());
         quartier.setStatut(true);
-        return quartierRepository.save(quartier);
+        Quartier quartierInsere = quartierRepository.save(quartier);
+        quartierInsere.setCodeQuartier("QUART00" + quartierInsere.getId());
+        return quartierRepository.save(quartierInsere);
     }
 
     @Override
@@ -63,6 +73,11 @@ public class QuartierServiceImpl implements QuartierService {
         quartier.setModifierLe(new Date());
         quartier.setModifierPar(personne.getId());
         return quartierRepository.save(quartier);
+    }
+
+    @Override
+    public boolean libelleAndVilleExists(String libelle, Ville ville) {
+        return quartierRepository.existsByLibelleAndVille(libelle, ville);
     }
 
     @Override

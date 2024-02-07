@@ -75,7 +75,7 @@ public class AffectationAgentAgenceServiceImpl implements AffectationAgentAgence
                 .map(AffectationAgentAgence::getAgenceImmobiliere)
                 .collect(Collectors.toList());
 
-        return affectationResponsableAgenceRepository.findAllByAgenceImmobiliereIn(agenceImmobilieres, pageRequest);
+        return affectationResponsableAgenceRepository.findAllByAgenceImmobiliereInOrderByCreerLeDesc(agenceImmobilieres, pageRequest);
     }
 
     @Override
@@ -87,11 +87,14 @@ public class AffectationAgentAgenceServiceImpl implements AffectationAgentAgence
     public AffectationAgentAgence save(AgentImmobilier agentImmobilier,
                                        AgenceImmobiliere agenceImmobiliere, Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
-        AgentImmobilier agentImmobilierSaved = agentImmobilierService.save(agentImmobilier, principal);
         AffectationAgentAgence affectationAgentAgenceSaved = new AffectationAgentAgence();
-        affectationAgentAgenceSaved.setAgentImmobilier(agentImmobilierSaved);
+        if (agentImmobilier.getMatricule().isEmpty()) {
+            agentImmobilier = agentImmobilierService.save(agentImmobilier, principal);
+        }
+        affectationAgentAgenceSaved.setAgentImmobilier(agentImmobilier);
         affectationAgentAgenceSaved.setAgenceImmobiliere(agenceImmobiliere);
         affectationAgentAgenceSaved.setDateAffectation(new Date());
+        affectationAgentAgenceSaved.setActif(true);
         affectationAgentAgenceSaved.setCreerLe(new Date());
         affectationAgentAgenceSaved.setCreerPar(personne.getId());
         affectationAgentAgenceSaved.setStatut(true);
@@ -106,5 +109,34 @@ public class AffectationAgentAgenceServiceImpl implements AffectationAgentAgence
     @Override
     public boolean agenceAndMatriculeAgentExists(AgenceImmobiliere agenceImmobiliere, String matricule) {
         return this.affectationAgentAgenceRepository.existsByAgenceImmobiliereAndAgentImmobilier_Matricule(agenceImmobiliere, matricule);
+    }
+
+    @Override
+    public boolean agenceAndAgentAndActifExists(AgenceImmobiliere agenceImmobiliere, AgentImmobilier agentImmobilier, Boolean actif) {
+        return this.affectationAgentAgenceRepository.existsByAgenceImmobiliereAndAgentImmobilierAndActif(agenceImmobiliere,
+                agentImmobilier, actif);
+    }
+
+    @Override
+    public boolean agenceAndMatriculeAgentAndActifExists(AgenceImmobiliere agenceImmobiliere, String matricule, Boolean actif) {
+        return this.affectationAgentAgenceRepository.existsByAgenceImmobiliereAndAgentImmobilier_MatriculeAndActif(
+                agenceImmobiliere, matricule, actif);
+    }
+
+    @Override
+    public void activerCompteAgentAgence(Long id) {
+        AffectationAgentAgence affectationAgentAgence = this.affectationAgentAgenceRepository.findById(id).orElse(null);
+        affectationAgentAgence.setActif(true);
+        affectationAgentAgence.setDateAffectation(new Date());
+        affectationAgentAgence.setDateFin(null);
+        affectationAgentAgenceRepository.save(affectationAgentAgence);
+    }
+
+    @Override
+    public void desactiverCompteAgentAgence(Long id) {
+        AffectationAgentAgence affectationAgentAgence = this.affectationAgentAgenceRepository.findById(id).orElse(null);
+        affectationAgentAgence.setActif(false);
+        affectationAgentAgence.setDateFin(new Date());
+        affectationAgentAgenceRepository.save(affectationAgentAgence);
     }
 }

@@ -8,6 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DemarcheurRepository extends JpaRepository<Demarcheur, Long> {
-    @Override
-    Page<Demarcheur> findAll(Pageable pageable);
+    Page<Demarcheur> findAllByOrderByCreerLeDesc(Pageable pageable);
 }

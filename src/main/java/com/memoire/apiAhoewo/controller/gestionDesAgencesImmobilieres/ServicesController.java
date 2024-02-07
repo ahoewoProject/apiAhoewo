@@ -1,6 +1,8 @@
 package com.memoire.apiAhoewo.controller.gestionDesAgencesImmobilieres;
 
 import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.Services;
+import com.memoire.apiAhoewo.requestForm.MotifRejetServiceForm;
+import com.memoire.apiAhoewo.requestForm.ServiceNonTrouveForm;
 import com.memoire.apiAhoewo.service.gestionDesAgencesImmobilieres.ServicesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -45,6 +47,20 @@ public class ServicesController {
         }
     }
 
+    @RequestMapping(value = "/autres-services/pagines", method = RequestMethod.GET)
+    public Page<Services> getAutresServicesPagines(
+            @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+            @RequestParam(value = "elementsParPage") int elementsParPage) {
+
+        try {
+            return this.servicesService.getAutresServices(numeroDeLaPage, elementsParPage);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des services.", e);
+        }
+    }
+
     @RequestMapping(value = "/services/actifs", method = RequestMethod.GET)
     public List<Services> getServicesActifs() {
 
@@ -80,6 +96,7 @@ public class ServicesController {
                         .body("Un service avec ce nom " + services.getNomService() + " existe déjà.");
             }
 
+            services.setEtat(1);
             services = this.servicesService.save(services, principal);
             return ResponseEntity.ok(services);
         } catch (Exception e) {
@@ -116,5 +133,15 @@ public class ServicesController {
     @RequestMapping(value = "/desactiver/services/{id}", method = RequestMethod.GET, headers = "accept=Application/json")
     public void desactiverServices(@PathVariable Long id){
         this.servicesService.desactiverServices(id);
+    }
+
+    @RequestMapping(value = "/valider/services/{id}", method = RequestMethod.GET, headers = "accept=Application/json")
+    public void validerServices(@PathVariable Long id, Principal principal) {
+        this.servicesService.validerServices(id, principal);
+    }
+
+    @RequestMapping(value = "/rejeter/services", method = RequestMethod.POST, headers = "accept=Application/json")
+    public void rejeterServices(@RequestBody MotifRejetServiceForm motifRejetServiceForm, Principal principal) {
+        this.servicesService.rejeterServices(motifRejetServiceForm, principal);
     }
 }

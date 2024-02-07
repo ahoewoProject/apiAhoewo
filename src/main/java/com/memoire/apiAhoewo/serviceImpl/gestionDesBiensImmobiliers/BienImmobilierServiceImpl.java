@@ -13,8 +13,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class BienImmobilierServiceImpl implements BienImmobilierService {
@@ -31,28 +33,43 @@ public class BienImmobilierServiceImpl implements BienImmobilierService {
     }
 
     @Override
-    public Page<BienImmobilier> getAllByProprietairePagines(Principal principal, int numeroDeLaPage, int elementsParPage) {
+    public Page<BienImmobilier> getBiensPaginesByProprietaire(Principal principal, int numeroDeLaPage, int elementsParPage) {
         Personne personne = personneService.findByUsername(principal.getName());
         PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
-        return bienImmobilierRepository.findAllByPersonne(personne, pageRequest);
+        List<String> designations = new ArrayList<>();
+        designations.add("Terrain");
+        designations.add("Maison");
+        designations.add("Immeuble");
+        designations.add("Villa");
+        return bienImmobilierRepository.findAllByPersonneAndTypeDeBien_DesignationInOrderByCreerLeDesc(personne, pageRequest, designations);
     }
 
     @Override
-    public Page<BienImmobilier> getBiensOfAgencesByResponsablePagines(Principal principal, int numeroDeLaPage, int elementsParPage) {
+    public Page<BienImmobilier> getBiensPaginesOfAgencesByResponsable(Principal principal, int numeroDeLaPage, int elementsParPage) {
         List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereService.getAgencesByResponsable(principal);
         PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
-        return bienImmobilierRepository.findAllByAgenceImmobiliereIn(agenceImmobilieres, pageRequest);
+        List<String> designations = new ArrayList<>();
+        designations.add("Terrain");
+        designations.add("Maison");
+        designations.add("Immeuble");
+        designations.add("Villa");
+        return bienImmobilierRepository.findAllByAgenceImmobiliereInAndTypeDeBien_DesignationInOrderByCreerLeDesc(agenceImmobilieres, pageRequest, designations);
     }
 
     @Override
-    public Page<BienImmobilier> getBiensOfAgencesByAgentPagines(Principal principal, int numeroDeLaPage, int elementsParPage) {
+    public Page<BienImmobilier> getBiensPaginesOfAgencesByAgent(Principal principal, int numeroDeLaPage, int elementsParPage) {
         List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereService.getAgencesByAgent(principal);
         PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
-        return bienImmobilierRepository.findAllByAgenceImmobiliereIn(agenceImmobilieres, pageRequest);
+        List<String> designations = new ArrayList<>();
+        designations.add("Terrain");
+        designations.add("Maison");
+        designations.add("Immeuble");
+        designations.add("Villa");
+        return bienImmobilierRepository.findAllByAgenceImmobiliereInAndTypeDeBien_DesignationInOrderByCreerLeDesc(agenceImmobilieres, pageRequest, designations);
     }
 
     @Override
-    public List<BienImmobilier> getAllByProprietaire(Principal principal) {
+    public List<BienImmobilier> getBiensByProprietaire(Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
         return bienImmobilierRepository.findByPersonne(personne);
     }
@@ -78,16 +95,21 @@ public class BienImmobilierServiceImpl implements BienImmobilierService {
     }
 
     @Override
+    public BienImmobilier findByCodeBien(String codeBien) {
+        return bienImmobilierRepository.findByCodeBien(codeBien);
+    }
+
+    @Override
     public BienImmobilier save(BienImmobilier bienImmobilier, Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
-        bienImmobilier.setPersonne(personne);
+        bienImmobilier.setCodeBien("BIMMO" + UUID.randomUUID());
         bienImmobilier.setStatutBien("Disponible");
         bienImmobilier.setEtatBien(true);
         bienImmobilier.setCreerLe(new Date());
         bienImmobilier.setCreerPar(personne.getId());
         bienImmobilier.setStatut(true);
         BienImmobilier bienImmobilierInsere = bienImmobilierRepository.save(bienImmobilier);
-        bienImmobilierInsere.setNumeroIdentifiant("BIEN - 00"+bienImmobilierInsere.getId());
+        bienImmobilierInsere.setCodeBien("BIMMO00" + bienImmobilierInsere.getId());
         return bienImmobilierRepository.save(bienImmobilierInsere);
     }
 
@@ -97,6 +119,11 @@ public class BienImmobilierServiceImpl implements BienImmobilierService {
         bienImmobilier.setModifierLe(new Date());
         bienImmobilier.setModifierPar(personne.getId());
         return bienImmobilierRepository.save(bienImmobilier);
+    }
+
+    @Override
+    public boolean existsByCodeBien(String codeBien) {
+        return bienImmobilierRepository.existsByCodeBien(codeBien);
     }
 
     @Override

@@ -13,6 +13,9 @@ public class TypeDeBien extends EntiteDeBase {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "code", nullable = false)
+    private String code;
+
     @Column(name = "designation", unique = true, nullable = false)
     private String designation;
 
@@ -27,6 +30,12 @@ public class TypeDeBien extends EntiteDeBase {
         this.designation = designation;
     }
 
+    public TypeDeBien(Long id, String code, String designation) {
+        this.id = id;
+        this.code = code;
+        this.designation = designation;
+    }
+
     @Override
     public Long getId() {
         return id;
@@ -35,6 +44,14 @@ public class TypeDeBien extends EntiteDeBase {
     @Override
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getDesignation() {
@@ -57,6 +74,7 @@ public class TypeDeBien extends EntiteDeBase {
     public String toString() {
         return "TypeDeBien{" +
                 "id=" + id +
+                ", code='" + code + '\'' +
                 ", designation='" + designation + '\'' +
                 ", etat=" + etat +
                 '}';

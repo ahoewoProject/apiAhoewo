@@ -8,6 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AdministrateurRepository extends JpaRepository<Administrateur, Long> {
-    @Override
-    Page<Administrateur> findAll(Pageable pageable);
+    Page<Administrateur> findAllByOrderByCreerLeDesc(Pageable pageable);
 }

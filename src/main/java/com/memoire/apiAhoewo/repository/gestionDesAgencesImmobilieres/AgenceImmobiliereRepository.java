@@ -13,7 +13,7 @@ import java.util.List;
 public interface AgenceImmobiliereRepository extends JpaRepository<AgenceImmobiliere, Long> {
     AgenceImmobiliere findByNomAgence(String nomAgence);
 
-    Page<AgenceImmobiliere> findByIdIn(List<Long> idsAgences, Pageable pageable);
+    Page<AgenceImmobiliere> findByIdInOrderByCreerLeDesc(List<Long> idsAgences, Pageable pageable);
 
     AgenceImmobiliere findByCodeAgence(String codeAgence);
 

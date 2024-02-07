@@ -3,24 +3,25 @@ package com.memoire.apiAhoewo.service.gestionDesAgencesImmobilieres;
 import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.AgenceImmobiliere;
 import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.Services;
 import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.ServicesAgenceImmobiliere;
+import com.memoire.apiAhoewo.requestForm.ServiceNonTrouveForm;
 import org.springframework.data.domain.Page;
 
 import java.security.Principal;
 import java.util.List;
 
 public interface ServicesAgenceImmobiliereService {
-    public List<ServicesAgenceImmobiliere> getServicesOfAgence(Principal principal);
-
     public Page<ServicesAgenceImmobiliere> getServicesOfAgencePagines(Principal principal, int numeroDeLaPage, int elementsParPage);
-
-    public List<ServicesAgenceImmobiliere> getServicesOfAgence(Long id);
 
     public Page<ServicesAgenceImmobiliere> getServicesOfAgencePagines(Long id, int numeroDeLaPage, int elementsParPage);
 
     public ServicesAgenceImmobiliere findById(Long id);
 
+    public ServicesAgenceImmobiliere findByServices(Services services);
+
     public ServicesAgenceImmobiliere save(ServicesAgenceImmobiliere servicesAgenceImmobiliere,
                                           Principal principal);
+
+    public void demandeAjoutServiceNonTrouve(Principal principal, ServiceNonTrouveForm serviceNonTrouveForm);
 
     public ServicesAgenceImmobiliere update(ServicesAgenceImmobiliere servicesAgenceImmobiliere,
                                             Principal principal);

@@ -13,13 +13,17 @@ import java.util.List;
 
 @Repository
 public interface BienImmobilierRepository extends JpaRepository<BienImmobilier, Long> {
-    Page<BienImmobilier> findAllByPersonne(Personne personne, Pageable pageable);
+    Page<BienImmobilier> findAllByPersonneAndTypeDeBien_DesignationInOrderByCreerLeDesc(Personne personne, Pageable pageable, List<String> designations);
 
-    Page<BienImmobilier> findAllByAgenceImmobiliereIn(List<AgenceImmobiliere> agenceImmobilieres, Pageable pageable);
+    Page<BienImmobilier> findAllByAgenceImmobiliereInAndTypeDeBien_DesignationInOrderByCreerLeDesc(List<AgenceImmobiliere> agenceImmobilieres, Pageable pageable, List<String> designations);
 
     List<BienImmobilier> findByPersonne(Personne personne);
 
     List<BienImmobilier> findByTypeDeBien(TypeDeBien typeDeBien);
 
     List<BienImmobilier> findByAgenceImmobiliereIn(List<AgenceImmobiliere> agenceImmobilieres);
+
+    BienImmobilier findByCodeBien(String codeBien);
+
+    boolean existsByCodeBien(String codeBien);
 }

@@ -10,8 +10,7 @@ import java.util.List;
 
 @Repository
 public interface PaysRepository extends JpaRepository<Pays, Long> {
-    @Override
-    Page<Pays> findAll(Pageable pageable);
+    Page<Pays> findAllByOrderByCreerLeDesc(Pageable pageable);
 
     List<Pays> findByEtat(Boolean etat);
 

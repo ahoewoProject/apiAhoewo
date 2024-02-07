@@ -13,11 +13,11 @@ import java.util.List;
 
 @Repository
 public interface DelegationGestionRepository extends JpaRepository<DelegationGestion, Long> {
-    Page<DelegationGestion> findAllByBienImmobilier_Personne(Personne personne, Pageable pageable);
+    Page<DelegationGestion> findAllByBienImmobilier_PersonneOrderByCreerLeDesc(Personne personne, Pageable pageable);
 
-    Page<DelegationGestion> findAllByGestionnaire(Personne personne, Pageable pageable);
+    Page<DelegationGestion> findAllByGestionnaireOrderByCreerLeDesc(Personne personne, Pageable pageable);
 
-    Page<DelegationGestion> findAllByAgenceImmobiliereIn(List<AgenceImmobiliere> agenceImmobiliereList, Pageable pageable);
+    Page<DelegationGestion> findAllByAgenceImmobiliereInOrderByCreerLeDesc(List<AgenceImmobiliere> agenceImmobiliereList, Pageable pageable);
 
     List<DelegationGestion> findByBienImmobilier_Personne(Personne personne);
 
@@ -25,5 +25,11 @@ public interface DelegationGestionRepository extends JpaRepository<DelegationGes
 
     List<DelegationGestion> findByAgenceImmobiliereIn(List<AgenceImmobiliere> agenceImmobiliereList);
 
-    boolean existsByBienImmobilierAndStatutDelegation(BienImmobilier bienImmobilier, Integer statutDelegation);
+    List<DelegationGestion> findByBienImmobilier(BienImmobilier bienImmobilier);
+
+    boolean existsByBienImmobilierAndAgenceImmobiliere(BienImmobilier bienImmobilier, AgenceImmobiliere agenceImmobiliere);
+
+    boolean existsByBienImmobilierAndGestionnaire(BienImmobilier bienImmobilier, Personne personne);
+
+    boolean existsByBienImmobilierAndStatutDelegationAndEtatDelegation(BienImmobilier bienImmobilier, Integer statutDelegation, Boolean etatDelegation);
 }

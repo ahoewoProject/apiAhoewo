@@ -1,5 +1,6 @@
 package com.memoire.apiAhoewo.serviceImpl.gestionDesBiensImmobiliers;
 
+import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.Pays;
 import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.Region;
 import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
 import com.memoire.apiAhoewo.repository.gestionDesBiensImmobiliers.RegionRepository;
@@ -10,9 +11,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
+import java.rmi.server.UID;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class RegionServiceImpl implements RegionService {
@@ -29,12 +32,17 @@ public class RegionServiceImpl implements RegionService {
     @Override
     public Page<Region> getRegionsPaginees(int numeroDeLaPage, int elementsParPage) {
         PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
-        return regionRepository.findAll(pageRequest);
+        return regionRepository.findAllByOrderByCreerLeDesc(pageRequest);
     }
 
     @Override
     public List<Region> getRegionsActifs(Boolean etat) {
         return regionRepository.findByEtat(etat);
+    }
+
+    @Override
+    public List<Region> regionsByPaysId(Long id) {
+        return regionRepository.findByPays_id(id);
     }
 
     @Override
@@ -50,11 +58,14 @@ public class RegionServiceImpl implements RegionService {
     @Override
     public Region save(Region region, Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
+        region.setCodeRegion("REGIO" + UUID.randomUUID());
         region.setEtat(true);
         region.setCreerLe(new Date());
         region.setCreerPar(personne.getId());
         region.setStatut(true);
-        return regionRepository.save(region);
+        Region regionInseree = regionRepository.save(region);
+        regionInseree.setCodeRegion("REGIO00" + regionInseree.getId());
+        return regionRepository.save(regionInseree);
     }
 
     @Override
@@ -63,6 +74,11 @@ public class RegionServiceImpl implements RegionService {
         region.setModifierLe(new Date());
         region.setModifierPar(personne.getId());
         return regionRepository.save(region);
+    }
+
+    @Override
+    public boolean libelleAndPaysExists(String libelle, Pays pays) {
+        return regionRepository.existsByLibelleAndPays(libelle, pays);
     }
 
     @Override

@@ -23,7 +23,7 @@ public class ProprietaireServiceImpl implements ProprietaireService {
     @Override
     public Page<Proprietaire> getProprietaires(int numeroDeLaPage, int elementsParPage) {
         PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
-        return proprietaireRepository.findAll(pageRequest);
+        return proprietaireRepository.findAllByOrderByCreerLeDesc(pageRequest);
     }
 
     @Override

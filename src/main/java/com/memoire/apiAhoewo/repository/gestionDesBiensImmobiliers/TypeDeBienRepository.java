@@ -10,10 +10,11 @@ import java.util.List;
 
 @Repository
 public interface TypeDeBienRepository extends JpaRepository<TypeDeBien, Long> {
-    @Override
-    Page<TypeDeBien> findAll(Pageable pageable);
+    Page<TypeDeBien> findAllByOrderByCreerLeDesc(Pageable pageable);
 
     TypeDeBien findByDesignation(String designation);
 
     List<TypeDeBien> findByEtat(Boolean etat);
+
+    List<TypeDeBien> findByDesignationInAndEtat(List<String> designations, Boolean etat);
 }

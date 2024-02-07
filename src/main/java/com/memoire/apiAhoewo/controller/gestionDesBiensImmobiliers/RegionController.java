@@ -58,6 +58,19 @@ public class RegionController {
         return regionList;
     }
 
+    @RequestMapping(value = "/regions/pays/{id}", method = RequestMethod.GET)
+    public List<Region> getRegionsByPaysId(@PathVariable Long id) {
+
+        List<Region> regionList = new ArrayList<>();
+        try {
+            regionList = this.regionService.regionsByPaysId(id);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return regionList;
+    }
+
     @RequestMapping(value = "/region/{id}", method = RequestMethod.GET)
     public Region findById(@PathVariable Long id) {
 
@@ -73,11 +86,9 @@ public class RegionController {
     @RequestMapping(value = "/region/ajouter", method = RequestMethod.POST, headers = "accept=Application/json")
     public ResponseEntity<?> ajouterRegion(Principal principal, @RequestBody Region region) {
         try {
-            Region typeDeBienExistant = regionService.findByLibelle(region.getLibelle());
-
-            if (typeDeBienExistant != null) {
+            if (regionService.libelleAndPaysExists(region.getLibelle(), region.getPays())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body("Une région avec ce libelle " + region.getLibelle() + " existe déjà.");
+                        .body("Une région avec ce libelle " + region.getLibelle() + " existe déjà dans ce pays.");
             }
 
             region = this.regionService.save(region, principal);
@@ -92,11 +103,10 @@ public class RegionController {
     @RequestMapping(value = "/region/modifier/{id}", method = RequestMethod.PUT, headers = "accept=Application/json")
     public ResponseEntity<?> modifierRegion(Principal principal, @RequestBody Region regionModifie, @PathVariable  Long id) {
         Region region = regionService.findById(id);
-        Region regionExistant = regionService.findByLibelle(regionModifie.getLibelle());
         try {
-            if (regionExistant != null) {
+            if (regionService.libelleAndPaysExists(regionModifie.getLibelle(), regionModifie.getPays())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body("Une région avec ce libelle " + regionModifie.getLibelle() + " existe déjà.");
+                        .body("Une région avec ce libelle " + regionModifie.getLibelle() + " existe déjà dans ce pays.");
             }
             region.setLibelle(regionModifie.getLibelle());
             region = this.regionService.update(region, principal);

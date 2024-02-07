@@ -9,6 +9,7 @@ import com.memoire.apiAhoewo.service.GenererUsernameService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.AdministrateurService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -31,6 +33,8 @@ public class AdministrateurServiceImpl implements AdministrateurService {
     private EmailSenderService emailSenderService;
     @Autowired
     private GenererMotDePasseService genererMotDePasseService;
+    @Autowired
+    private Environment env;
 
     @Override
     public List<Administrateur> getAll() {
@@ -40,7 +44,7 @@ public class AdministrateurServiceImpl implements AdministrateurService {
     @Override
     public Page<Administrateur> getAdministrateurs(int numeroDeLaPage, int elementsParPage) {
         PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
-        return administrateurRepository.findAll(pageRequest);
+        return administrateurRepository.findAllByOrderByCreerLeDesc(pageRequest);
     }
 
     @Override
@@ -53,7 +57,7 @@ public class AdministrateurServiceImpl implements AdministrateurService {
         Personne personne = personneService.findByUsername(principal.getName());
         String username = personneService.genererUniqueUsername(administrateur.getPrenom());
         String motDePasse = genererMotDePasseService.genererMotDePasse(8);
-        administrateur.setMatricule("ADMIN00");
+        administrateur.setMatricule("ADMIN" + UUID.randomUUID());
         administrateur.setUsername(username);
         administrateur.setMotDePasse(passwordEncoder.encode(motDePasse));
         administrateur.setEtatCompte(true);
@@ -73,9 +77,10 @@ public class AdministrateurServiceImpl implements AdministrateurService {
                 "Mot de passe : " + motDePasse + "\n\n" +
                 "Vous pouvez maintenant vous connecter à votre compte.\n\n" +
                 "Cordialement,\n\n" +
-                "L'équipe de support technique - ahoewo !";
+                "L'équipe support technique - ahoewo !";
+
         CompletableFuture.runAsync(() -> {
-            emailSenderService.sendMail(administrateur.getEmail(), "Informations de connexion", contenu);
+            emailSenderService.sendMail(env.getProperty("spring.mail.username"), administrateur.getEmail(), "Informations de connexion", contenu);
         });
 
         return newAdmin;

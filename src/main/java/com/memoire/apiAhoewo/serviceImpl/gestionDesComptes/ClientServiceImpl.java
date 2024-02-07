@@ -23,7 +23,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public Page<Client> getClients(int numeroDeLaPage, int elementsParPage) {
         PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
-        return clientRepository.findAll(pageRequest);
+        return clientRepository.findAllByOrderByCreerLeDesc(pageRequest);
     }
 
     @Override

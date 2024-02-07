@@ -12,7 +12,10 @@ public class Region extends EntiteDeBase {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "libelle", unique = true)
+    @Column(name = "code_region", unique = true, nullable = false)
+    private String codeRegion;
+
+    @Column(name = "libelle", nullable = false)
     private String libelle;
 
     @ManyToOne()
@@ -26,9 +29,11 @@ public class Region extends EntiteDeBase {
 
     }
 
-    public Region(Long id, String libelle) {
+    public Region(Long id, String codeRegion, String libelle, Pays pays) {
         this.id = id;
+        this.codeRegion = codeRegion;
         this.libelle = libelle;
+        this.pays = pays;
     }
 
     public Long getId() {
@@ -37,6 +42,14 @@ public class Region extends EntiteDeBase {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getCodeRegion() {
+        return codeRegion;
+    }
+
+    public void setCodeRegion(String codeRegion) {
+        this.codeRegion = codeRegion;
     }
 
     public String getLibelle() {
@@ -67,6 +80,7 @@ public class Region extends EntiteDeBase {
     public String toString() {
         return "Region{" +
                 "id=" + id +
+                ", codeRegion='" + codeRegion + '\'' +
                 ", libelle='" + libelle + '\'' +
                 ", pays=" + pays +
                 ", etat=" + etat +

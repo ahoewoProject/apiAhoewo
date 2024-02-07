@@ -21,7 +21,17 @@ public class ServicesAgenceImmobiliere extends EntiteDeBase {
     private AgenceImmobiliere agenceImmobiliere;
 
     @Column(name = "etat")
-    private Boolean etat;
+    private Integer etat;
+
+    public ServicesAgenceImmobiliere() {
+    }
+
+    public ServicesAgenceImmobiliere(Long id, Services services, AgenceImmobiliere agenceImmobiliere, Integer etat) {
+        this.id = id;
+        this.services = services;
+        this.agenceImmobiliere = agenceImmobiliere;
+        this.etat = etat;
+    }
 
     public Long getId() {
         return id;
@@ -47,11 +57,11 @@ public class ServicesAgenceImmobiliere extends EntiteDeBase {
         this.agenceImmobiliere = agenceImmobiliere;
     }
 
-    public Boolean getEtat() {
+    public Integer getEtat() {
         return etat;
     }
 
-    public void setEtat(Boolean etat) {
+    public void setEtat(Integer etat) {
         this.etat = etat;
     }
 

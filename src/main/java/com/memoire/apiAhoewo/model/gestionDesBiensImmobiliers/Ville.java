@@ -12,7 +12,10 @@ public class Ville extends EntiteDeBase {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "libelle", unique = true)
+    @Column(name = "code_vile", unique = true, nullable = false)
+    private String codeVille;
+
+    @Column(name = "libelle", nullable = false)
     private String libelle;
 
     @ManyToOne()
@@ -26,9 +29,11 @@ public class Ville extends EntiteDeBase {
 
     }
 
-    public Ville(Long id, String libelle) {
+    public Ville(Long id, String codeVille, String libelle, Region region) {
         this.id = id;
+        this.codeVille = codeVille;
         this.libelle = libelle;
+        this.region = region;
     }
 
     @Override
@@ -39,6 +44,14 @@ public class Ville extends EntiteDeBase {
     @Override
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getCodeVille() {
+        return codeVille;
+    }
+
+    public void setCodeVille(String codeVille) {
+        this.codeVille = codeVille;
     }
 
     public String getLibelle() {
@@ -69,6 +82,7 @@ public class Ville extends EntiteDeBase {
     public String toString() {
         return "Ville{" +
                 "id=" + id +
+                ", codeVille='" + codeVille + '\'' +
                 ", libelle='" + libelle + '\'' +
                 ", region=" + region +
                 ", etat=" + etat +

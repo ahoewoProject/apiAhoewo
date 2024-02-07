@@ -22,12 +22,12 @@ public class Services extends EntiteDeBase {
     private String description;
 
     @Column(name = "etat")
-    protected Boolean etat;
+    protected Integer etat;
 
     public Services() {
     }
 
-    public Services(Long id, String codeService, String nomService, String description, Boolean etat) {
+    public Services(Long id, String codeService, String nomService, String description, Integer etat) {
         this.id = id;
         this.codeService = codeService;
         this.nomService = nomService;
@@ -69,11 +69,11 @@ public class Services extends EntiteDeBase {
         this.description = description;
     }
 
-    public Boolean getEtat() {
+    public Integer getEtat() {
         return etat;
     }
 
-    public void setEtat(Boolean etat) {
+    public void setEtat(Integer etat) {
         this.etat = etat;
     }
 

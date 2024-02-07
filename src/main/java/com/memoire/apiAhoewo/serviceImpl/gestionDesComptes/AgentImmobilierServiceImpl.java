@@ -12,6 +12,7 @@ import com.memoire.apiAhoewo.service.GenererUsernameService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.AgentImmobilierService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,8 @@ public class AgentImmobilierServiceImpl implements AgentImmobilierService {
     private GenererMotDePasseService genererMotDePasseService;
     @Autowired
     private EmailSenderService emailSenderService;
+    @Autowired
+    private Environment env;
 
     @Override
     public List<AgentImmobilier> getAll() {
@@ -78,9 +81,9 @@ public class AgentImmobilierServiceImpl implements AgentImmobilierService {
                 "Mot de passe : " + motDePasse + "\n\n" +
                 "Vous pouvez maintenant vous connecter à votre compte.\n\n" +
                 "Cordialement,\n" +
-                "\nL'équipe de support technique - ahoewo !";
+                "\nL'équipe support technique - ahoewo !";
         CompletableFuture.runAsync(() -> {
-            emailSenderService.sendMail(agentImmobilier.getEmail(), "Informations de connexion", contenu);
+            emailSenderService.sendMail(env.getProperty("spring.mail.username"), agentImmobilier.getEmail(), "Informations de connexion", contenu);
         });
 
 

@@ -17,6 +17,7 @@ import com.memoire.apiAhoewo.service.gestionDesComptes.DemandeCertificationServi
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,6 +42,8 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
     private AgentImmobilierRepository agentImmobilierRepository;
     @Autowired
     private AffectationAgentAgenceRepository affectationAgentAgenceRepository;
+    @Autowired
+    private Environment env;
 
     @Override
     public List<DemandeCertification> getAll() {
@@ -93,10 +96,10 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
                 "Nous avons le plaisir de vous informer que votre compte vient d'être certifié conformément à votre demande de certification.\n" +
                 "\n\n" +
                 "Cordialement,\n" +
-                "\nL'équipe de support technique - ahoewo !";
+                "\nL'équipe support technique - ahoewo !";
 
         CompletableFuture.runAsync(() -> {
-            emailSenderService.sendMail(personne.getEmail(), "Certification de compte", contenu);
+            emailSenderService.sendMail(env.getProperty("spring.mail.username"), personne.getEmail(), "Certification de compte", contenu);
         });
 
     }
@@ -120,9 +123,9 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
                 "N'hésitez pas à explorer toutes les fonctionnalités offertes par notre plateforme pour optimiser votre travail et offrir le meilleur service à vos clients.\n\n" +
                 "Si vous avez des questions ou avez besoin d'assistance, n'hésitez pas à nous contacter. Nous sommes là pour vous aider.\n\n" +
                 "Cordialement,\n" +
-                "\nL'équipe de support technique - ahoewo !";
+                "\nL'équipe support technique - ahoewo !";
         CompletableFuture.runAsync(() -> {
-            emailSenderService.sendMail(agenceImmobiliere.getAdresseEmail(), "Certification d'une agence", contenu1);
+            emailSenderService.sendMail(env.getProperty("spring.mail.username"), agenceImmobiliere.getAdresseEmail(), "Certification d'une agence", contenu1);
         });
 
         String contenu2 = "Bonjour M/Mlle " + personne.getPrenom() + " " + personne.getNom() + ",\n\n" +
@@ -131,9 +134,9 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
                 "N'hésitez pas à explorer toutes les fonctionnalités offertes par notre plateforme pour optimiser votre travail et offrir le meilleur service à vos clients.\n\n" +
                 "Si vous avez des questions ou avez besoin d'assistance, n'hésitez pas à nous contacter. Nous sommes là pour vous aider.\n\n" +
                 "Cordialement,\n" +
-                "\nL'équipe de support technique - ahoewo !";
+                "\nL'équipe support technique - ahoewo !";
         CompletableFuture.runAsync(() -> {
-            emailSenderService.sendMail(personne.getEmail(), "Certification de compte", contenu2);
+            emailSenderService.sendMail(env.getProperty("spring.mail.username"), personne.getEmail(), "Certification de compte", contenu2);
         });
 
         /*List<AgentImmobilier> agentImmobiliers = agentImmobilierRepository.findByCreerPar(personne.getId());
@@ -168,9 +171,9 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
                         "N'hésitez pas à explorer toutes les fonctionnalités offertes par notre plateforme pour optimiser votre travail et offrir le meilleur service à vos clients.\n\n" +
                         "Si vous avez des questions ou avez besoin d'assistance, n'hésitez pas à nous contacter. Nous sommes là pour vous aider.\n\n" +
                         "Cordialement,\n" +
-                        "\nL'équipe de support technique - ahoewo !";
+                        "\nL'équipe support technique - ahoewo !";
                 CompletableFuture.runAsync(() -> {
-                    emailSenderService.sendMail(agent.getEmail(), "Certification de compte", contenu3);
+                    emailSenderService.sendMail(env.getProperty("spring.mail.username"), agent.getEmail(), "Certification de compte", contenu3);
                 });
             }
         }

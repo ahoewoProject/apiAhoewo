@@ -11,18 +11,14 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class EmailSenderServiceImpl implements EmailSenderService {
-
     @Autowired
     private JavaMailSender javaMailSender;
 
-    @Autowired
-    private Environment env;
-
     @Override
-    public void sendMail(String destinataire, String sujet, String contenu) {
+    public void sendMail(String expediteur, String destinataire, String sujet, String contenu) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(env.getProperty("spring.mail.username"));
+            message.setFrom(expediteur);
             message.setTo(destinataire);
             message.setSubject(sujet);
             message.setText(contenu);

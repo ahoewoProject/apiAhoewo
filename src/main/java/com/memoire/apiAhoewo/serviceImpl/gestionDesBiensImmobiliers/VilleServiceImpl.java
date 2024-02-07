@@ -1,5 +1,6 @@
 package com.memoire.apiAhoewo.serviceImpl.gestionDesBiensImmobiliers;
 
+import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.Region;
 import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.Ville;
 import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
 import com.memoire.apiAhoewo.repository.gestionDesBiensImmobiliers.VilleRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class VilleServiceImpl implements VilleService {
@@ -28,12 +30,17 @@ public class VilleServiceImpl implements VilleService {
     @Override
     public Page<Ville> getVillesPaginees(int numeroDeLaPage, int elementsParPage) {
         PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
-        return villeRepository.findAll(pageRequest);
+        return villeRepository.findAllByOrderByCreerLeDesc(pageRequest);
     }
 
     @Override
     public List<Ville> getRegionsActifs(Boolean etat) {
         return villeRepository.findByEtat(etat);
+    }
+
+    @Override
+    public List<Ville> villesByRegionId(Long id) {
+        return villeRepository.findByRegion_Id(id);
     }
 
     @Override
@@ -49,11 +56,14 @@ public class VilleServiceImpl implements VilleService {
     @Override
     public Ville save(Ville ville, Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
+        ville.setCodeVille("VILLE" + UUID.randomUUID());
         ville.setEtat(true);
         ville.setCreerLe(new Date());
         ville.setCreerPar(personne.getId());
         ville.setStatut(true);
-        return villeRepository.save(ville);
+        Ville villeInseree = villeRepository.save(ville);
+        villeInseree.setCodeVille("VILLE00" + villeInseree.getId());
+        return villeRepository.save(villeInseree);
     }
 
     @Override
@@ -62,6 +72,11 @@ public class VilleServiceImpl implements VilleService {
         ville.setModifierLe(new Date());
         ville.setModifierPar(personne.getId());
         return villeRepository.save(ville);
+    }
+
+    @Override
+    public boolean libelleAndRegionExists(String libelle, Region region) {
+        return villeRepository.existsByLibelleAndRegion(libelle, region);
     }
 
     @Override

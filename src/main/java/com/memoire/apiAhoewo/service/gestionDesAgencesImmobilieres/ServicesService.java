@@ -1,6 +1,7 @@
 package com.memoire.apiAhoewo.service.gestionDesAgencesImmobilieres;
 
 import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.Services;
+import com.memoire.apiAhoewo.requestForm.MotifRejetServiceForm;
 import org.springframework.data.domain.Page;
 
 import java.security.Principal;
@@ -10,6 +11,8 @@ public interface ServicesService {
     public List<Services> getAll();
 
     Page<Services> getServices(int numeroDeLaPage, int elementsParPage);
+
+    Page<Services> getAutresServices(int numeroDeLaPage, int elementsParPage);
 
     public List<Services> servicesActifs();
 
@@ -24,4 +27,8 @@ public interface ServicesService {
     public void activerServices(Long id);
 
     public void desactiverServices(Long id);
+
+    public void validerServices(Long id, Principal principal);
+
+    public void rejeterServices(MotifRejetServiceForm motifRejetServiceForm, Principal principal);
 }
