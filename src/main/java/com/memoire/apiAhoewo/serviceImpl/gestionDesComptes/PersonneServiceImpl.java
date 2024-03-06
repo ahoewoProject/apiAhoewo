@@ -7,11 +7,13 @@ import com.memoire.apiAhoewo.service.EmailSenderService;
 import com.memoire.apiAhoewo.service.GenererUsernameService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -299,5 +301,10 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
     private String generateToken() {
         // Générer un token unique, par exemple en utilisant UUID.randomUUID().toString()
         return UUID.randomUUID().toString();
+    }
+
+    @Bean
+    PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
     }
 }

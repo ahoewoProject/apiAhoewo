@@ -53,6 +53,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public Notification save(Notification notification) {
         notification.setCodeNotification("NOTIF" + UUID.randomUUID());
+        notification.setStatut(true);
         Notification notificationAdd = notificationRepository.save(notification);
         notificationAdd.setCodeNotification("NOTIF00" + notificationAdd.getId());
         return notificationRepository.save(notificationAdd);

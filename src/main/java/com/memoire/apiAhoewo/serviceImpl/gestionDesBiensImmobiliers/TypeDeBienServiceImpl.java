@@ -54,6 +54,12 @@ public class TypeDeBienServiceImpl implements TypeDeBienService {
     }
 
     @Override
+    public TypeDeBien findByCode(String code) {
+        return typeDeBienRepository.findByCode(code);
+    }
+
+
+    @Override
     public TypeDeBien save(TypeDeBien typeDeBien, Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
         typeDeBien.setCode("TYBIEN" + UUID.randomUUID());
@@ -91,5 +97,18 @@ public class TypeDeBienServiceImpl implements TypeDeBienService {
     @Override
     public void deleteById(Long id) {
         typeDeBienRepository.deleteById(id);
+    }
+
+    @Override
+    public boolean isTypeBienSupport(String designation) {
+        return designation.equals("Maison") || designation.equals("Immeuble")
+                || designation.equals("Villa");
+    }
+
+    @Override
+    public boolean isTypeBienAssocie(String designation) {
+        return designation.equals("Appartement") || designation.equals("Chambre salon")
+                || designation.equals("Chambre") || designation.equals("Bureau")
+                || designation.equals("Boutique") || designation.equals("Magasin");
     }
 }

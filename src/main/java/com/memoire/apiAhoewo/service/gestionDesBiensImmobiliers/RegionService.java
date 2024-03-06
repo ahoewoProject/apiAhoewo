@@ -20,6 +20,8 @@ public interface RegionService {
 
     Region findByLibelle(String libelle);
 
+    Region findByCode(String code);
+
     Region save(Region region, Principal principal);
 
     Region update(Region region, Principal principal);

@@ -46,7 +46,6 @@ public class TypeDeBienController {
             return this.typeDeBienService.getTypesDeBienPagines(numeroDeLaPage, elementsParPage);
         } catch (Exception e) {
             // TODO: handle exception
-            System.out.println("Erreur " + e.getMessage());
             throw new RuntimeException("Une erreur s'est produite lors de la récupération des types de biens.", e);
         }
     }
@@ -133,6 +132,49 @@ public class TypeDeBienController {
         List<String> designations = new ArrayList<>();
         designations.add("Chambre");
         designations.add("Chambre salon");
+        try {
+            typeDeBiens = this.typeDeBienService.findTypeDeBienActifsByLibelle(designations);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return typeDeBiens;
+    }
+
+    @RequestMapping(value = "/types-de-bien/location", method = RequestMethod.GET)
+    public List<TypeDeBien> getTypeDeBienByLocation() {
+
+        List<TypeDeBien> typeDeBiens = new ArrayList<>();
+
+        List<String> designations = new ArrayList<>();
+        designations.add("Maison");
+        designations.add("Immeuble");
+        designations.add("Villa");
+        designations.add("Chambre");
+        designations.add("Chambre salon");
+        designations.add("Appartement");
+        designations.add("Bureau");
+        designations.add("Boutique");
+        designations.add("Magasin");
+        try {
+            typeDeBiens = this.typeDeBienService.findTypeDeBienActifsByLibelle(designations);
+        } catch (Exception e) {
+        // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return typeDeBiens;
+    }
+
+    @RequestMapping(value = "/types-de-bien/vente", method = RequestMethod.GET)
+    public List<TypeDeBien> getTypeDeBienByVente() {
+
+        List<TypeDeBien> typeDeBiens = new ArrayList<>();
+
+        List<String> designations = new ArrayList<>();
+        designations.add("Terrain");
+        designations.add("Maison");
+        designations.add("Immeuble");
+        designations.add("Villa");
         try {
             typeDeBiens = this.typeDeBienService.findTypeDeBienActifsByLibelle(designations);
         } catch (Exception e) {

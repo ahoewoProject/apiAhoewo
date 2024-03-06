@@ -56,6 +56,11 @@ public class RegionServiceImpl implements RegionService {
     }
 
     @Override
+    public Region findByCode(String code) {
+        return regionRepository.findByCodeRegion(code);
+    }
+
+    @Override
     public Region save(Region region, Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
         region.setCodeRegion("REGIO" + UUID.randomUUID());

@@ -23,6 +23,8 @@ public interface BienImmobilierService {
 
     public List<BienImmobilier> getBiensOfAgencesByAgent(Principal principal);
 
+    public List<BienImmobilier> getBiensPropresAndBiensDelegues(Principal principal);
+
     public BienImmobilier findById(Long id);
 
     public BienImmobilier findByCodeBien(String codeBien);

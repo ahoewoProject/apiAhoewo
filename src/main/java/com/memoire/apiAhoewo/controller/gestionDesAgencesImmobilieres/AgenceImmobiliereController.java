@@ -31,6 +31,61 @@ public class AgenceImmobiliereController {
     @Autowired
     private FileManagerService fileManagerService;
 
+    @RequestMapping(value = "/agences/actives/region/{id}", method = RequestMethod.GET)
+    public Page<AgenceImmobiliere> getAgencesActivesByRegionId(@PathVariable Long id,
+                                                               @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+                                                               @RequestParam(value = "elementsParPage") int elementsParPage) {
+
+        try {
+            return this.agenceImmobiliereService.getAgencesActivesByRegionId(id, numeroDeLaPage, elementsParPage);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des agences actives par region.", e);
+        }
+    }
+
+    @RequestMapping(value = "/agences/actives/ville/{id}", method = RequestMethod.GET)
+    public Page<AgenceImmobiliere> getAgencesActivesByVilleId(@PathVariable Long id,
+                                                              @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+                                                              @RequestParam(value = "elementsParPage") int elementsParPage) {
+
+        try {
+            return this.agenceImmobiliereService.getAgencesActivesByVilleId(id, numeroDeLaPage, elementsParPage);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des agences actives par ville.", e);
+        }
+    }
+
+    @RequestMapping(value = "/agences/actives/quartier/{id}", method = RequestMethod.GET)
+    public Page<AgenceImmobiliere> getAgencesActivesByQuartierId(@PathVariable Long id,
+                                                              @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+                                                              @RequestParam(value = "elementsParPage") int elementsParPage) {
+
+        try {
+            return this.agenceImmobiliereService.getAgencesActivesByQuartierId(id, numeroDeLaPage, elementsParPage);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des agences actives par quartier.", e);
+        }
+    }
+
+    @RequestMapping(value = "/agences-immobilieres/actives", method = RequestMethod.GET)
+    public Page<AgenceImmobiliere> getAgencesActives(@RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+                                                     @RequestParam(value = "elementsParPage") int elementsParPage) {
+
+        try {
+            return this.agenceImmobiliereService.getAgencesActives(numeroDeLaPage, elementsParPage);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des agences actives.", e);
+        }
+    }
+
     @RequestMapping(value = "/agences-immobilieres", method = RequestMethod.GET)
     public List<AffectationResponsableAgence> getAll() {
 
@@ -122,6 +177,18 @@ public class AgenceImmobiliereController {
         return agenceImmobiliere;
     }
 
+    @RequestMapping(value = "/agence/{nomAgence}", method = RequestMethod.GET)
+    public AgenceImmobiliere findByNomAgence(@PathVariable String nomAgence) {
+
+        AgenceImmobiliere agenceImmobiliere = new AgenceImmobiliere();
+        try {
+            agenceImmobiliere = this.agenceImmobiliereService.findByNomAgence(nomAgence);
+        } catch (Exception e) {
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return agenceImmobiliere;
+    }
+
     @RequestMapping(value = "/agence-immobiliere/ajouter", method = RequestMethod.POST, headers = "accept=Application/json")
     public ResponseEntity<?> ajouterAgenceImmobiliere(Principal principal,
                                                       @RequestParam(value = "logoAgence", required = false) MultipartFile file,
@@ -165,21 +232,23 @@ public class AgenceImmobiliereController {
 
         try {
             AgenceImmobiliere agenceImmobiliereExistante  = agenceImmobiliereService.findByNomAgence(agenceImmobiliere.getNomAgence());
-            if (agenceImmobiliereExistante  != null) {
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body("Une agence immobilière avec ce nom " + agenceImmobiliere.getNomAgence() + " existe déjà.");
-            }
+//            if (agenceImmobiliereExistante  != null) {
+//                return ResponseEntity.status(HttpStatus.CONFLICT)
+//                        .body("Une agence immobilière avec ce nom " + agenceImmobiliere.getNomAgence() + " existe déjà.");
+//            }
 
             if (file != null){
                 String nomLogo = agenceImmobiliereService.enregistrerLogo(file);
                 agenceImmobiliere.setLogoAgence(nomLogo);
             }
             agenceImmobiliere.setNomAgence(agenceImmobiliereModifie.getNomAgence());
+            agenceImmobiliere.setQuartier(agenceImmobiliereModifie.getQuartier());
             agenceImmobiliere.setAdresse(agenceImmobiliereModifie.getAdresse());
             agenceImmobiliere.setTelephone(agenceImmobiliereModifie.getTelephone());
             agenceImmobiliere.setAdresseEmail(agenceImmobiliereModifie.getAdresseEmail());
             agenceImmobiliere.setHeureOuverture(agenceImmobiliereModifie.getHeureOuverture());
             agenceImmobiliere.setHeureFermeture(agenceImmobiliereModifie.getHeureFermeture());
+            agenceImmobiliere.setDescription(agenceImmobiliereModifie.getDescription());
             agenceImmobiliere = this.agenceImmobiliereService.update(agenceImmobiliere, principal);
             return ResponseEntity.ok(agenceImmobiliere);
         } catch (Exception e) {

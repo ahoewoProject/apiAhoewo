@@ -19,6 +19,8 @@ public interface TypeDeBienService {
 
     public TypeDeBien findByDesignation(String designation);
 
+    public TypeDeBien findByCode(String code);
+
     public TypeDeBien save(TypeDeBien typeDeBien, Principal principal);
 
     public TypeDeBien update(TypeDeBien typeDeBien, Principal principal);
@@ -28,4 +30,8 @@ public interface TypeDeBienService {
     public void desactiverTypeDeBien(Long id);
 
     public void deleteById(Long id);
+
+    boolean isTypeBienSupport(String designation);
+
+    boolean isTypeBienAssocie(String designation);
 }

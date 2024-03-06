@@ -2,8 +2,10 @@ package com.memoire.apiAhoewo.serviceImpl.gestionDesBiensImmobiliers;
 
 import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.AgenceImmobiliere;
 import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.BienImmobilier;
+import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.DelegationGestion;
 import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
 import com.memoire.apiAhoewo.repository.gestionDesBiensImmobiliers.BienImmobilierRepository;
+import com.memoire.apiAhoewo.repository.gestionDesBiensImmobiliers.DelegationGestionRepository;
 import com.memoire.apiAhoewo.service.gestionDesAgencesImmobilieres.AgenceImmobiliereService;
 import com.memoire.apiAhoewo.service.gestionDesBiensImmobiliers.BienImmobilierService;
 import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class BienImmobilierServiceImpl implements BienImmobilierService {
@@ -26,6 +29,8 @@ public class BienImmobilierServiceImpl implements BienImmobilierService {
     private PersonneService personneService;
     @Autowired
     private AgenceImmobiliereService agenceImmobiliereService;
+    @Autowired
+    private DelegationGestionRepository delegationGestionRepository;
 
     @Override
     public List<BienImmobilier> getAll() {
@@ -87,6 +92,48 @@ public class BienImmobilierServiceImpl implements BienImmobilierService {
         List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereService.getAgencesByAgent(principal);
 
         return bienImmobilierRepository.findByAgenceImmobiliereIn(agenceImmobilieres);
+    }
+
+    @Override
+    public List<BienImmobilier> getBiensPropresAndBiensDelegues(Principal principal) {
+        Personne personne = personneService.findByUsername(principal.getName());
+        List<BienImmobilier> bienImmobilierList = new ArrayList<>();
+
+        if (personne.getRole().getCode().equals("ROLE_GERANT")) {
+            List<DelegationGestion> delegationGestionList = delegationGestionRepository.findByGestionnaireAndStatutDelegation(personne, 1);
+
+            bienImmobilierList = delegationGestionList.stream()
+                    .map(DelegationGestion::getBienImmobilier)
+                    .collect(Collectors.toList());
+        } else if (personne.getRole().getCode().equals("ROLE_DEMARCHEUR")) {
+            List<BienImmobilier> bienImmobiliers = bienImmobilierRepository.findByPersonne(personne);
+            List<DelegationGestion> delegationGestions = delegationGestionRepository.findByGestionnaireAndStatutDelegation(personne, 1);
+
+            bienImmobilierList = new ArrayList<>(bienImmobiliers);
+            bienImmobilierList.addAll(delegationGestions.stream()
+                    .map(DelegationGestion::getBienImmobilier)
+                    .collect(Collectors.toList()));
+        } else if (personne.getRole().getCode().equals("ROLE_RESPONSABLE")) {
+            List<AgenceImmobiliere> agenceImmobiliereList = agenceImmobiliereService.getAgencesByResponsable(principal);
+            List<BienImmobilier> bienImmobiliers = bienImmobilierRepository.findByAgenceImmobiliereIn(agenceImmobiliereList);
+            List<DelegationGestion> delegationGestionList = delegationGestionRepository.findByAgenceImmobiliereInAndStatutDelegation(agenceImmobiliereList, 1);
+
+            bienImmobilierList = new ArrayList<>(bienImmobiliers);
+            bienImmobilierList.addAll(delegationGestionList.stream()
+                    .map(DelegationGestion::getBienImmobilier)
+                    .collect(Collectors.toList()));
+        } else if (personne.getRole().getCode().equals("ROLE_AGENTIMMOBILIER")) {
+            List<AgenceImmobiliere> agenceImmobiliereList = agenceImmobiliereService.getAgencesByAgent(principal);
+            List<BienImmobilier> bienImmobiliers = bienImmobilierRepository.findByAgenceImmobiliereIn(agenceImmobiliereList);
+            List<DelegationGestion> delegationGestionList = delegationGestionRepository.findByAgenceImmobiliereInAndStatutDelegation(agenceImmobiliereList, 1);
+
+            bienImmobilierList = new ArrayList<>(bienImmobiliers);
+            bienImmobilierList.addAll(delegationGestionList.stream()
+                    .map(DelegationGestion::getBienImmobilier)
+                    .collect(Collectors.toList()));
+        }
+
+        return bienImmobilierList;
     }
 
     @Override

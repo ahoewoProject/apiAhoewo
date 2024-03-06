@@ -7,13 +7,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.http.HttpServletResponse;
@@ -25,12 +22,6 @@ import java.util.Map;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
-    private final UserDetailsService userDetailsService;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception{
-        auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
-    }
 
     protected void configure(HttpSecurity http) throws Exception{
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean());
@@ -50,7 +41,34 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/api/carte-cfe/demande-certification/{id}/**",
                 "/api/logo/agence-immobiliere/{id}/**",
                 "/api/image/bien-immobilier/{id}/**",
-                "/api/premiere-image/bien-immobilier/{id}/**").permitAll();
+                "/api/images/bien-immobilier/{id}/**",
+                "/api/premiere-image/bien-immobilier/{id}/**",
+                "/api/caracteristiques/bien-immobilier/{id}/**",
+                "/api/types-de-bien/location/**",
+                "/api/types-de-bien/vente/**",
+                "/api/types-de-bien/actifs/**",
+                "/api/pays/actifs/**",
+                "/api/regions/actifs/**",
+                "/api/villes/actifs/**",
+                "/api/quartiers/actifs/**",
+                "/api/regions/pays/{id}/**",
+                "/api/villes/region/{id}/**",
+                "/api/quartiers/ville/{id}/**",
+                "/api/agences-immobilieres/actives/**",
+                "/api/agence/{nomAgence}/**",
+                "/api/services/agence/{nomAgence}/**",
+                "/api/agences/actives/region/{id}/**",
+                "/api/agences/actives/ville/{id}/**",
+                "/api/agences/actives/quartier/{id}/**",
+                "/api/publications/actives/**",
+                "/api/publications/actives/recherche-simple/**",
+                "/api/publications/actives/recherche-avancee/**",
+                "/api/publications/actives/region/{libelle}/**",
+                "/api/publications/actives/type-de-bien/{designation}/**",
+                "/api/publications/actives/region-list/**",
+                "/api/publications/actives/type-de-bien-list/**",
+                "/api/publication/{id}/**",
+                "/api/publication/code/{code}/**").permitAll();
         //http.authorizeRequests().antMatchers(GET,"/api/user/**").hasAnyAuthority("ROLE_USER");
         //http.authorizeRequests().antMatchers(POST,"/api/user/save/**").hasAnyAuthority("ROLE_ADMIN");
         http.authorizeRequests().anyRequest().authenticated();

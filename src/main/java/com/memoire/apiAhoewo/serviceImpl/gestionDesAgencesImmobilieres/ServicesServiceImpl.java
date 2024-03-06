@@ -128,7 +128,6 @@ public class ServicesServiceImpl implements ServicesService {
         notification.setUrl("/agences-immobilieres/services");
         notification.setCreerPar(personne.getId());
         notification.setCreerLe(new Date());
-        notification.setStatut(true);
         notificationService.save(notification);
 
         String contenu1 = "Bonjour " + personneSave.getPrenom() + " " + personneSave.getNom() + ",\n\n" +
@@ -184,7 +183,6 @@ public class ServicesServiceImpl implements ServicesService {
         notification.setUrl("/agences-immobilieres/services");
         notification.setCreerPar(personne.getId());
         notification.setCreerLe(new Date());
-        notification.setStatut(true);
         notificationService.save(notification);
 
         String contenu1 = "Bonjour " + personneSave.getPrenom() + " " + personneSave.getNom() + ",\n\n" +

@@ -1,6 +1,10 @@
 package com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres;
 
 import com.memoire.apiAhoewo.model.EntiteDeBase;
+import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.Pays;
+import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.Quartier;
+import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.Region;
+import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.Ville;
 import com.memoire.apiAhoewo.model.gestionDesComptes.ResponsableAgenceImmobiliere;
 
 import javax.persistence.*;
@@ -22,6 +26,10 @@ public class AgenceImmobiliere extends EntiteDeBase {
     @Column(name = "nom_agence", nullable = false)
     private String nomAgence;
 
+    @ManyToOne
+    @JoinColumn(name = "quartier_id")
+    protected Quartier quartier;
+
     @Column(name = "adresse", nullable = false)
     private String adresse;
 
@@ -36,6 +44,9 @@ public class AgenceImmobiliere extends EntiteDeBase {
 
     @Column(name = "heure_fermeture", nullable = false)
     private String heureFermeture;
+
+    @Column(name = "description", columnDefinition = "TEXT", nullable = false)
+    protected String description;
 
     @Column(name = "est_certifie", nullable = false)
     private Boolean estCertifie;
@@ -75,6 +86,14 @@ public class AgenceImmobiliere extends EntiteDeBase {
 
     public void setNomAgence(String nomAgence) {
         this.nomAgence = nomAgence;
+    }
+
+    public Quartier getQuartier() {
+        return quartier;
+    }
+
+    public void setQuartier(Quartier quartier) {
+        this.quartier = quartier;
     }
 
     public String getAdresse() {
@@ -117,6 +136,14 @@ public class AgenceImmobiliere extends EntiteDeBase {
         this.heureFermeture = heureFermeture;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public Boolean getEstCertifie() {
         return estCertifie;
     }
@@ -140,6 +167,7 @@ public class AgenceImmobiliere extends EntiteDeBase {
                 ", logoAgence='" + logoAgence + '\'' +
                 ", codeAgence='" + codeAgence + '\'' +
                 ", nomAgence='" + nomAgence + '\'' +
+                ", quartier=" + quartier +
                 ", adresse='" + adresse + '\'' +
                 ", adresseEmail='" + adresseEmail + '\'' +
                 ", telephone='" + telephone + '\'' +

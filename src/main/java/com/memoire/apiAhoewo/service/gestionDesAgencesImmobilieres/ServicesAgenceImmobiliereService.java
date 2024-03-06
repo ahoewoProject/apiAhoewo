@@ -14,6 +14,8 @@ public interface ServicesAgenceImmobiliereService {
 
     public Page<ServicesAgenceImmobiliere> getServicesOfAgencePagines(Long id, int numeroDeLaPage, int elementsParPage);
 
+    public Page<ServicesAgenceImmobiliere> getServicesByNomAgence(String nomAgence, int numeroDeLaPage, int elementsParPage);
+
     public ServicesAgenceImmobiliere findById(Long id);
 
     public ServicesAgenceImmobiliere findByServices(Services services);

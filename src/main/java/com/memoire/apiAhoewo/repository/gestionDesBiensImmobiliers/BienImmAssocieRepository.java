@@ -13,7 +13,7 @@ import java.util.List;
 public interface BienImmAssocieRepository extends JpaRepository<BienImmAssocie, Long> {
     Page<BienImmAssocie> findAllByBienImmobilierOrderByCreerLeDesc(BienImmobilier bienImmobilier, Pageable pageable);
 
-    List<BienImmAssocie> findByBienImmobilier(BienImmobilier bienImmobilier);
+    List<BienImmAssocie> findAllByBienImmobilier(BienImmobilier bienImmobilier);
 
     boolean existsByBienImmobilier(BienImmobilier bienImmobilier);
 }

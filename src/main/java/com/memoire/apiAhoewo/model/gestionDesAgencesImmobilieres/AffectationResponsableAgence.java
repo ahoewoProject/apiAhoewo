@@ -2,10 +2,16 @@ package com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres;
 
 import com.memoire.apiAhoewo.model.EntiteDeBase;
 import com.memoire.apiAhoewo.model.gestionDesComptes.ResponsableAgenceImmobiliere;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name="affectations_responsables_agences")
 public class AffectationResponsableAgence extends EntiteDeBase {
@@ -30,64 +36,4 @@ public class AffectationResponsableAgence extends EntiteDeBase {
 
     @Column(name = "actif", nullable = false)
     private Boolean actif;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public ResponsableAgenceImmobiliere getResponsableAgenceImmobiliere() {
-        return responsableAgenceImmobiliere;
-    }
-
-    public void setResponsableAgenceImmobiliere(ResponsableAgenceImmobiliere responsableAgenceImmobiliere) {
-        this.responsableAgenceImmobiliere = responsableAgenceImmobiliere;
-    }
-
-    public AgenceImmobiliere getAgenceImmobiliere() {
-        return agenceImmobiliere;
-    }
-
-    public void setAgenceImmobiliere(AgenceImmobiliere agenceImmobiliere) {
-        this.agenceImmobiliere = agenceImmobiliere;
-    }
-
-    public Date getDateDebut() {
-        return dateDebut;
-    }
-
-    public void setDateDebut(Date dateDebut) {
-        this.dateDebut = dateDebut;
-    }
-
-    public Date getDateFin() {
-        return dateFin;
-    }
-
-    public void setDateFin(Date dateFin) {
-        this.dateFin = dateFin;
-    }
-
-    public Boolean getActif() {
-        return actif;
-    }
-
-    public void setActif(Boolean actif) {
-        this.actif = actif;
-    }
-
-    @Override
-    public String toString() {
-        return "AffectationResponsableAgence{" +
-                "id=" + id +
-                ", responsableAgenceImmobiliere=" + responsableAgenceImmobiliere +
-                ", agenceImmobiliere=" + agenceImmobiliere +
-                ", dateDebut=" + dateDebut +
-                ", dateFin=" + dateFin +
-                ", actif=" + actif +
-                '}';
-    }
 }

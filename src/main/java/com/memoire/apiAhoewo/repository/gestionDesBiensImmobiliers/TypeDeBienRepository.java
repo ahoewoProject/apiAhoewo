@@ -14,6 +14,8 @@ public interface TypeDeBienRepository extends JpaRepository<TypeDeBien, Long> {
 
     TypeDeBien findByDesignation(String designation);
 
+    TypeDeBien findByCode(String code);
+
     List<TypeDeBien> findByEtat(Boolean etat);
 
     List<TypeDeBien> findByDesignationInAndEtat(List<String> designations, Boolean etat);

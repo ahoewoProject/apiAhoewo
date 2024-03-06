@@ -32,7 +32,7 @@ public class BienImmAssocieController {
     private PersonneService personneService;
 
     @RequestMapping(value = "/biens-imm-associes/pagines/{id}", method = RequestMethod.GET)
-    public Page<BienImmAssocie> getBiensAssociesPaginesByBienImmobilier(@PathVariable Long id, Principal principal,
+    public Page<BienImmAssocie> getBiensAssociesPaginesByBienImmobilier(@PathVariable Long id,
                                                               @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
                                                               @RequestParam(value = "elementsParPage") int elementsParPage) {
 
@@ -129,7 +129,7 @@ public class BienImmAssocieController {
                     String nomImageDuBien = imagesBienImmobilierService.enregistrerImageDuBien(image);
                     imagesBienImmobilier.setNomImage(nomImageDuBien);
                     imagesBienImmobilier.setBienImmobilier(bienImmAssocie);
-                    imagesBienImmobilierService.update(imagesBienImmobilier, principal);
+                    imagesBienImmobilierService.save(imagesBienImmobilier, principal);
                 }
             }
 

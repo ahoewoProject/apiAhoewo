@@ -35,7 +35,7 @@ public class BienImmAssocieServiceImpl implements BienImmobilierAssocieService {
 
     @Override
     public List<BienImmAssocie> getBiensAssocies(BienImmobilier bienImmobilier) {
-        return bienImmAssocieRepository.findByBienImmobilier(bienImmobilier);
+        return bienImmAssocieRepository.findAllByBienImmobilier(bienImmobilier);
     }
 
     @Override

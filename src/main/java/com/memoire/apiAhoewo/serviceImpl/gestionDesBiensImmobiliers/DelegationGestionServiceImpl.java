@@ -107,6 +107,16 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
     }
 
     @Override
+    public DelegationGestion getDelegationByBienImmobilier(BienImmobilier bienImmobilier) {
+        return delegationGestionRepository.findByBienImmobilier(bienImmobilier);
+    }
+
+    @Override
+    public DelegationGestion getDelegationByBienImmobilierAndEtatDelegation(BienImmobilier bienImmobilier, Boolean etatDelegation) {
+        return delegationGestionRepository.findByBienImmobilierAndEtatDelegation(bienImmobilier, etatDelegation);
+    }
+
+    @Override
     public DelegationGestion findById(Long id) {
         return delegationGestionRepository.findById(id).orElse(null);
     }
@@ -119,7 +129,6 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
         delegationGestion.setStatutDelegation(0);
         delegationGestion.setCreerLe(new Date());
         delegationGestion.setCreerPar(personne.getId());
-        delegationGestion.setStatut(true);
         DelegationGestion delegationGestionAdd = delegationGestionRepository.save(delegationGestion);
 
         String delegationGestionLink = "";
@@ -171,7 +180,6 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
                 notification.setUrl("/agences-immobilieres/delegations-gestions");
                 notification.setCreerPar(personne.getId());
                 notification.setCreerLe(new Date());
-                notification.setStatut(true);
                 notificationService.save(notification);
             }
 
@@ -222,7 +230,6 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
             notification.setUrl("/delegations-gestions");
             notification.setCreerPar(personne.getId());
             notification.setCreerLe(new Date());
-            notification.setStatut(true);
             notificationService.save(notification);
 
             String contenu = "Bonjour M./Mlle " + delegationGestion.getBienImmobilier().getPersonne().getPrenom() + " " + delegationGestion.getBienImmobilier().getPersonne().getNom() + ",\n\n" +
@@ -247,7 +254,6 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
             notification.setUrl("/delegations-gestions");
             notification.setCreerPar(personne.getId());
             notification.setCreerLe(new Date());
-            notification.setStatut(true);
             notificationService.save(notification);
 
             String contenu = "Bonjour M./Mlle " + delegationGestion.getBienImmobilier().getPersonne().getPrenom() + " " + delegationGestion.getBienImmobilier().getPersonne().getNom() + ",\n\n" +
@@ -278,7 +284,7 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
         List<BienImmAssocie> bienImmAssocies = bienImmoAssocieService.getBiensAssocies(delegationGestion.getBienImmobilier());
 
         for (BienImmAssocie bienImmAssocie : bienImmAssocies) {
-            List<DelegationGestion> delegationGestions = delegationGestionRepository.findByBienImmobilier(bienImmAssocie);
+            List<DelegationGestion> delegationGestions = delegationGestionRepository.findAllByBienImmobilier(bienImmAssocie);
 
             for (DelegationGestion delegationGestionBienImmAssocie : delegationGestions) {
                 if (!delegationGestionBienImmAssocie.getPorteeGestion()) {
@@ -306,7 +312,6 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
             notification.setUrl("/delegations-gestions");
             notification.setCreerPar(delegationGestion.getGestionnaire().getId());
             notification.setCreerLe(new Date());
-            notification.setStatut(true);
             notificationService.save(notification);
 
              contenu = "Bonjour M./Mlle " + delegationGestion.getBienImmobilier().getPersonne().getPrenom() + " " + delegationGestion.getBienImmobilier().getPersonne().getNom() + ",\n\n" +
@@ -327,7 +332,6 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
             notification.setUrl("/delegations-gestions");
             notification.setCreerPar(delegationGestion.getAgenceImmobiliere().getId());
             notification.setCreerLe(new Date());
-            notification.setStatut(true);
             notificationService.save(notification);
 
              contenu = "Bonjour M./Mlle " + delegationGestion.getBienImmobilier().getPersonne().getPrenom() + " " + delegationGestion.getBienImmobilier().getPersonne().getNom() + ",\n\n" +
@@ -352,7 +356,7 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
         List<BienImmAssocie> bienImmAssocies = bienImmoAssocieService.getBiensAssocies(delegationGestion.getBienImmobilier());
 
         for (BienImmAssocie bienImmAssocie : bienImmAssocies) {
-            List<DelegationGestion> delegationGestions = delegationGestionRepository.findByBienImmobilier(bienImmAssocie);
+            List<DelegationGestion> delegationGestions = delegationGestionRepository.findAllByBienImmobilier(bienImmAssocie);
 
             for (DelegationGestion delegationGestionBienImmAssocie : delegationGestions) {
                 if (!delegationGestionBienImmAssocie.getPorteeGestion()) {
@@ -378,7 +382,6 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
             notification.setUrl("/delegations-gestions");
             notification.setCreerPar(delegationGestion.getGestionnaire().getId());
             notification.setCreerLe(new Date());
-            notification.setStatut(true);
             notificationService.save(notification);
 
             contenu = "Bonjour M./Mlle " + delegationGestion.getBienImmobilier().getPersonne().getPrenom() + " " + delegationGestion.getBienImmobilier().getPersonne().getNom() + ",\n\n" +
@@ -399,7 +402,6 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
             notification.setUrl("/delegations-gestions");
             notification.setCreerPar(delegationGestion.getAgenceImmobiliere().getId());
             notification.setCreerLe(new Date());
-            notification.setStatut(true);
             notificationService.save(notification);
 
             contenu = "Bonjour M./Mlle " + delegationGestion.getBienImmobilier().getPersonne().getPrenom() + " " + delegationGestion.getBienImmobilier().getPersonne().getNom() + ",\n\n" +
@@ -453,7 +455,6 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
             notification.setUrl("/delegations-gestions");
             notification.setCreerPar(personne.getId());
             notification.setCreerLe(new Date());
-            notification.setStatut(true);
             notificationService.save(notification);
 
             if ("ROLE_DEMARCHEUR".equals(delegationGestion.getGestionnaire().getRole().getCode())) {
@@ -488,7 +489,6 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
                 notification.setUrl("/agences-immobilieres/delegations-gestions");
                 notification.setCreerPar(personne.getId());
                 notification.setCreerLe(new Date());
-                notification.setStatut(true);
                 notificationService.save(notification);
             }
 
@@ -528,7 +528,6 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
             notification.setUrl("/delegations-gestions");
             notification.setCreerPar(personne.getId());
             notification.setCreerLe(new Date());
-            notification.setStatut(true);
             notificationService.save(notification);
 
             if ("ROLE_DEMARCHEUR".equals(delegationGestion.getGestionnaire().getRole().getCode())) {
@@ -563,7 +562,6 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
                 notification.setUrl("/agences-immobilieres/delegations-gestions");
                 notification.setCreerPar(personne.getId());
                 notification.setCreerLe(new Date());
-                notification.setStatut(true);
                 notificationService.save(notification);
             }
 

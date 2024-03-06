@@ -3,9 +3,15 @@ package com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers;
 import com.memoire.apiAhoewo.model.EntiteDeBase;
 import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.AgenceImmobiliere;
 import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "biens_immobiliers")
 @DiscriminatorColumn(name = "type_bien")
@@ -64,150 +70,4 @@ public class BienImmobilier extends EntiteDeBase {
     @ManyToOne
     @JoinColumn(name = "agence_immobiliere_id")
     protected AgenceImmobiliere agenceImmobiliere;
-
-    public BienImmobilier() {
-    }
-
-    @Override
-    public Long getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getCodeBien() {
-        return codeBien;
-    }
-
-    public void setCodeBien(String codeBien) {
-        this.codeBien = codeBien;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getAdresse() {
-        return adresse;
-    }
-
-    public void setAdresse(String adresse) {
-        this.adresse = adresse;
-    }
-
-    public Integer getSurface() {
-        return surface;
-    }
-
-    public void setSurface(Integer surface) {
-        this.surface = surface;
-    }
-
-    public TypeDeBien getTypeDeBien() {
-        return typeDeBien;
-    }
-
-    public void setTypeDeBien(TypeDeBien typeDeBien) {
-        this.typeDeBien = typeDeBien;
-    }
-
-    public String getCategorie() {
-        return categorie;
-    }
-
-    public void setCategorie(String categorie) {
-        this.categorie = categorie;
-    }
-
-    public String getStatutBien() {
-        return statutBien;
-    }
-
-    public void setStatutBien(String statutBien) {
-        this.statutBien = statutBien;
-    }
-
-    public Boolean getEtatBien() {
-        return etatBien;
-    }
-
-    public void setEtatBien(Boolean etatBien) {
-        this.etatBien = etatBien;
-    }
-
-    public Pays getPays() {
-        return pays;
-    }
-
-    public void setPays(Pays pays) {
-        this.pays = pays;
-    }
-
-    public Region getRegion() {
-        return region;
-    }
-
-    public void setRegion(Region region) {
-        this.region = region;
-    }
-
-    public Ville getVille() {
-        return ville;
-    }
-
-    public void setVille(Ville ville) {
-        this.ville = ville;
-    }
-
-    public Quartier getQuartier() {
-        return quartier;
-    }
-
-    public void setQuartier(Quartier quartier) {
-        this.quartier = quartier;
-    }
-
-    public Personne getPersonne() {
-        return personne;
-    }
-
-    public void setPersonne(Personne personne) {
-        this.personne = personne;
-    }
-
-    public AgenceImmobiliere getAgenceImmobiliere() {
-        return agenceImmobiliere;
-    }
-
-    public void setAgenceImmobiliere(AgenceImmobiliere agenceImmobiliere) {
-        this.agenceImmobiliere = agenceImmobiliere;
-    }
-
-    @Override
-    public String toString() {
-        return "BienImmobilier{" +
-                "id=" + id +
-                ", codeBien='" + codeBien + '\'' +
-                ", description='" + description + '\'' +
-                ", adresse='" + adresse + '\'' +
-                ", surface=" + surface +
-                ", typeDeBien=" + typeDeBien +
-                ", categorie='" + categorie + '\'' +
-                ", statutBien='" + statutBien + '\'' +
-                ", etatBien=" + etatBien +
-                ", pays=" + pays +
-                ", region=" + region +
-                ", ville=" + ville +
-                ", quartier=" + quartier +
-                ", personne=" + personne +
-                ", agenceImmobiliere=" + agenceImmobiliere +
-                '}';
-    }
 }

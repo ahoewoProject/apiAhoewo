@@ -49,6 +49,20 @@ public class ServicesAgenceImmobilierController {
         }
     }
 
+    @RequestMapping(value = "/services/agence/{nomAgence}", method = RequestMethod.GET)
+    public Page<ServicesAgenceImmobiliere> getServicesByNomAgence(@PathVariable String nomAgence,
+                                                                      @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+                                                                      @RequestParam(value = "elementsParPage") int elementsParPage) {
+
+        try {
+            return this.servicesAgenceImmobiliereService.getServicesByNomAgence(nomAgence, numeroDeLaPage, elementsParPage);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des services de l'agence.", e);
+        }
+    }
+
     @RequestMapping(value = "/service/agence-immobiliere/{id}", method = RequestMethod.GET)
     public ServicesAgenceImmobiliere findById(@PathVariable Long id) {
 

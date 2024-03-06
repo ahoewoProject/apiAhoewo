@@ -19,5 +19,7 @@ public interface RegionRepository extends JpaRepository<Region, Long> {
 
     Region findByLibelle(String libelle);
 
+    Region findByCodeRegion(String code);
+
     boolean existsByLibelleAndPays(String libelle, Pays pays);
 }

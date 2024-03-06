@@ -1,9 +1,15 @@
 package com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres;
 
 import com.memoire.apiAhoewo.model.EntiteDeBase;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name="services_agences_immobilieres")
 public class ServicesAgenceImmobiliere extends EntiteDeBase {
@@ -22,56 +28,4 @@ public class ServicesAgenceImmobiliere extends EntiteDeBase {
 
     @Column(name = "etat")
     private Integer etat;
-
-    public ServicesAgenceImmobiliere() {
-    }
-
-    public ServicesAgenceImmobiliere(Long id, Services services, AgenceImmobiliere agenceImmobiliere, Integer etat) {
-        this.id = id;
-        this.services = services;
-        this.agenceImmobiliere = agenceImmobiliere;
-        this.etat = etat;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Services getServices() {
-        return services;
-    }
-
-    public void setServices(Services services) {
-        this.services = services;
-    }
-
-    public AgenceImmobiliere getAgenceImmobiliere() {
-        return agenceImmobiliere;
-    }
-
-    public void setAgenceImmobiliere(AgenceImmobiliere agenceImmobiliere) {
-        this.agenceImmobiliere = agenceImmobiliere;
-    }
-
-    public Integer getEtat() {
-        return etat;
-    }
-
-    public void setEtat(Integer etat) {
-        this.etat = etat;
-    }
-
-    @Override
-    public String toString() {
-        return "ServicesAgenceImmobiliere{" +
-                "id=" + id +
-                ", services=" + services +
-                ", agenceImmobiliere=" + agenceImmobiliere +
-                ", etat=" + etat +
-                '}';
-    }
 }

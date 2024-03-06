@@ -25,11 +25,19 @@ public interface DelegationGestionRepository extends JpaRepository<DelegationGes
 
     List<DelegationGestion> findByAgenceImmobiliereIn(List<AgenceImmobiliere> agenceImmobiliereList);
 
-    List<DelegationGestion> findByBienImmobilier(BienImmobilier bienImmobilier);
+    List<DelegationGestion> findAllByBienImmobilier(BienImmobilier bienImmobilier);
+
+    DelegationGestion findByBienImmobilier(BienImmobilier bienImmobilier);
+
+    DelegationGestion findByBienImmobilierAndEtatDelegation(BienImmobilier bienImmobilier, Boolean etatDelegation);
 
     boolean existsByBienImmobilierAndAgenceImmobiliere(BienImmobilier bienImmobilier, AgenceImmobiliere agenceImmobiliere);
 
     boolean existsByBienImmobilierAndGestionnaire(BienImmobilier bienImmobilier, Personne personne);
 
     boolean existsByBienImmobilierAndStatutDelegationAndEtatDelegation(BienImmobilier bienImmobilier, Integer statutDelegation, Boolean etatDelegation);
+
+    List<DelegationGestion> findByGestionnaireAndStatutDelegation(Personne personne, int i);
+
+    List<DelegationGestion> findByAgenceImmobiliereInAndStatutDelegation(List<AgenceImmobiliere> agenceImmobiliereList, int i);
 }

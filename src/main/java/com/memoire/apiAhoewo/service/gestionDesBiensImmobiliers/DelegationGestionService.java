@@ -29,6 +29,10 @@ public interface DelegationGestionService {
 
     List<DelegationGestion> getDelegationsOfAgencesByAgent(Principal principal);
 
+    DelegationGestion getDelegationByBienImmobilier(BienImmobilier bienImmobilier);
+
+    DelegationGestion getDelegationByBienImmobilierAndEtatDelegation(BienImmobilier bienImmobilier, Boolean etatDelegation);
+
     DelegationGestion findById(Long id);
 
     public DelegationGestion save(DelegationGestion delegationGestion, Principal principal);

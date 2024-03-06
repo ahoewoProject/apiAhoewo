@@ -18,7 +18,7 @@ public interface ServicesAgenceImmobiliereRepository extends JpaRepository<Servi
 
     Page<ServicesAgenceImmobiliere> findAllByAgenceImmobiliereAndEtatInOrderByCreerLeDesc(AgenceImmobiliere agenceImmobiliere, Pageable pageable, List<Integer> etatList);
 
-    List<ServicesAgenceImmobiliere> findByAgenceImmobiliere(AgenceImmobiliere agenceImmobiliere);
+    Page<ServicesAgenceImmobiliere> findByAgenceImmobiliere_NomAgenceAndEtatOrderByIdDesc(String nomAgence, int etat, Pageable pageable);
 
     ServicesAgenceImmobiliere findByServices(Services services);
 

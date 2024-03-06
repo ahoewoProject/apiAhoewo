@@ -124,8 +124,8 @@ public class CaracteristiquesServiceImpl implements CaracteristiquesService {
             caracteristiques1.setPlacard(caracteristiques.getPlacard());
         } else if (caracteristiques.getDalle() != null) {
             caracteristiques1.setDalle(caracteristiques.getDalle());
-        } else if (caracteristiques.getaLetage() != null) {
-            caracteristiques1.setaLetage(caracteristiques.getaLetage());
+        } else if (caracteristiques.getALetage() != null) {
+            caracteristiques1.setALetage(caracteristiques.getALetage());
         } else if (caracteristiques.getNombrePlacards() != null) {
             caracteristiques1.setNombrePlacards(caracteristiques.getNombrePlacards());
         } else if (caracteristiques.getToiletteVisiteur() != null) {
@@ -208,8 +208,8 @@ public class CaracteristiquesServiceImpl implements CaracteristiquesService {
             caracteristiques.setPlacard(caracteristiques.getPlacard());
         } else if (caracteristiques.getDalle() != null) {
             caracteristiques.setDalle(caracteristiques.getDalle());
-        } else if (caracteristiques.getaLetage() != null) {
-            caracteristiques.setaLetage(caracteristiques.getaLetage());
+        } else if (caracteristiques.getALetage() != null) {
+            caracteristiques.setALetage(caracteristiques.getALetage());
         } else if (caracteristiques.getNombrePlacards() != null) {
             caracteristiques.setNombrePlacards(caracteristiques.getNombrePlacards());
         } else if (caracteristiques.getToiletteVisiteur() != null) {

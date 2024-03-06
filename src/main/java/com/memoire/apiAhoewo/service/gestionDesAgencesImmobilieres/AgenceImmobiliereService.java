@@ -8,6 +8,14 @@ import java.security.Principal;
 import java.util.List;
 
 public interface AgenceImmobiliereService {
+    public Page<AgenceImmobiliere> getAgencesActives(int numeroDeLaPage, int elementsParPage);
+
+    public Page<AgenceImmobiliere> getAgencesActivesByRegionId(Long id, int numeroDeLaPage, int elementsParPage);
+
+    public Page<AgenceImmobiliere> getAgencesActivesByVilleId(Long id, int numeroDeLaPage, int elementsParPage);
+
+    public Page<AgenceImmobiliere> getAgencesActivesByQuartierId(Long id, int numeroDeLaPage, int elementsParPage);
+
     public List<AgenceImmobiliere> getAgencesByResponsable(Principal principal);
 
     public Page<AgenceImmobiliere> getAgencesByResponsablePaginees(Principal principal, int numeroDeLaPage, int elementsParPage);

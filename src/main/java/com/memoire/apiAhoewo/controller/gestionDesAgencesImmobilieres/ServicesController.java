@@ -109,13 +109,14 @@ public class ServicesController {
     @RequestMapping(value = "/services/modifier/{id}", method = RequestMethod.PUT, headers = "accept=Application/json")
     public ResponseEntity<?> modifierServices(Principal principal, @RequestBody Services servicesModifie, @PathVariable  Long id) {
         Services services = servicesService.findById(id);
-        Services servicesExistant = servicesService.findByNomService(servicesModifie.getNomService());
+//        Services servicesExistant = servicesService.findByNomService(servicesModifie.getNomService());
         try {
-            if (servicesExistant != null) {
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body("Un type de bien avec cette désignation " + servicesExistant.getNomService() + " existe déjà.");
-            }
+//            if (servicesExistant != null) {
+//                return ResponseEntity.status(HttpStatus.CONFLICT)
+//                        .body("Un type de bien avec cette désignation " + servicesExistant.getNomService() + " existe déjà.");
+//            }
             services.setNomService(servicesModifie.getNomService());
+            services.setDescription(servicesModifie.getDescription());
             services = this.servicesService.update(services, principal);
             return ResponseEntity.ok(services);
         } catch (Exception e) {

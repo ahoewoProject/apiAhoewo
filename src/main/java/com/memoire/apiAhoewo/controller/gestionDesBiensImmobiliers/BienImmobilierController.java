@@ -122,6 +122,19 @@ public class BienImmobilierController {
         return bienImmobiliers;
     }
 
+    @RequestMapping(value = "/biens-immobiliers/propres-delegues", method = RequestMethod.GET)
+    public List<BienImmobilier> getBiensPropresAndBiensDelegues(Principal principal) {
+
+        List<BienImmobilier> bienImmobiliers = new ArrayList<>();
+        try {
+            bienImmobiliers = this.bienImmobilierService.getBiensPropresAndBiensDelegues(principal);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return bienImmobiliers;
+    }
+
     @RequestMapping(value = "/bien-immobilier/{id}", method = RequestMethod.GET)
     public BienImmobilier findById(@PathVariable Long id) {
 
@@ -203,7 +216,7 @@ public class BienImmobilierController {
                     String nomImageDuBien = imagesBienImmobilierService.enregistrerImageDuBien(image);
                     imagesBienImmobilier.setNomImage(nomImageDuBien);
                     imagesBienImmobilier.setBienImmobilier(bienImmobilier);
-                    imagesBienImmobilierService.update(imagesBienImmobilier, principal);
+                    imagesBienImmobilierService.save(imagesBienImmobilier, principal);
                 }
             }
 

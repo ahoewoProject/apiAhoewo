@@ -13,9 +13,6 @@ public class ApiAhoewoApplication {
 		SpringApplication.run(ApiAhoewoApplication.class, args);
 	}
 
-	@Bean
-	PasswordEncoder passwordEncoder(){
-		return new BCryptPasswordEncoder();
-	}
+
 
 }

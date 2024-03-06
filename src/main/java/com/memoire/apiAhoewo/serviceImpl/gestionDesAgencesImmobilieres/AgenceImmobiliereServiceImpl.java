@@ -48,6 +48,30 @@ public class AgenceImmobiliereServiceImpl implements AgenceImmobiliereService {
 
 
     @Override
+    public Page<AgenceImmobiliere> getAgencesActives(int numeroDeLaPage, int elementsParPage) {
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return agenceImmobiliereRepository.findByEtatAgenceOrderByIdDesc(true, pageRequest);
+    }
+
+    @Override
+    public Page<AgenceImmobiliere> getAgencesActivesByRegionId(Long id, int numeroDeLaPage, int elementsParPage) {
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return agenceImmobiliereRepository.findByQuartier_Ville_Region_IdAndEtatAgenceOrderByIdDesc(id, true, pageRequest);
+    }
+
+    @Override
+    public Page<AgenceImmobiliere> getAgencesActivesByVilleId(Long id, int numeroDeLaPage, int elementsParPage) {
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return agenceImmobiliereRepository.findByQuartier_Ville_IdAndEtatAgenceOrderByIdDesc(id, true, pageRequest);
+    }
+
+    @Override
+    public Page<AgenceImmobiliere> getAgencesActivesByQuartierId(Long id, int numeroDeLaPage, int elementsParPage) {
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return agenceImmobiliereRepository.findByQuartier_IdAndEtatAgenceOrderByIdDesc(id, true, pageRequest);
+    }
+
+    @Override
     public List<AgenceImmobiliere> getAgencesByResponsable(Principal principal) {
         ResponsableAgenceImmobiliere responsableAgenceImmobiliere =
                 (ResponsableAgenceImmobiliere) personneService.findByUsername(principal.getName());

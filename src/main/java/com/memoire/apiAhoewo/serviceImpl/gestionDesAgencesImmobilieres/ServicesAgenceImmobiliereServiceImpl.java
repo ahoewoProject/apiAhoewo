@@ -58,6 +58,12 @@ public class ServicesAgenceImmobiliereServiceImpl implements ServicesAgenceImmob
     }
 
     @Override
+    public Page<ServicesAgenceImmobiliere> getServicesByNomAgence(String nomAgence, int numeroDeLaPage, int elementsParPage) {
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return servicesAgenceImmobiliereRepository.findByAgenceImmobiliere_NomAgenceAndEtatOrderByIdDesc(nomAgence, 1, pageRequest);
+    }
+
+    @Override
     public ServicesAgenceImmobiliere findById(Long id) {
         return servicesAgenceImmobiliereRepository.findById(id).orElse(null);
     }
@@ -108,7 +114,6 @@ public class ServicesAgenceImmobiliereServiceImpl implements ServicesAgenceImmob
         notification.setUrl("/autres-services");
         notification.setCreerPar(personne.getId());
         notification.setCreerLe(new Date());
-        notification.setStatut(true);
         notificationService.save(notification);
 
 
