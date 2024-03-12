@@ -137,8 +137,8 @@ public class ServicesServiceImpl implements ServicesService {
                 "Description : " + services.getDescription() + "\n\n" +
                 "Vous pouvez désormais accéder à ce service via la plateforme.\n\n" +
                 "Si vous avez des questions ou avez besoin de plus d'informations, n'hésitez pas à nous contacter.\n\n" +
-                "Cordialement,\n\n" +
-                "L'équipe support technique - ahoewo !";
+                "Cordialement,\n" +
+                "L'équipe Ahoewo";
 
         String contenu2 = "Bonjour " + servicesAgenceImmobiliere.getAgenceImmobiliere().getNomAgence() + ",\n\n" +
                 "Nous sommes heureux de vous informer que la demande de nouveau service pour votre agence immobilière a été validée.\n\n" +
@@ -147,8 +147,8 @@ public class ServicesServiceImpl implements ServicesService {
                 "Description : " + services.getDescription() + "\n\n" +
                 "Vous pouvez désormais accéder à ce service via la plateforme.\n\n" +
                 "Si vous avez des questions ou avez besoin de plus d'informations, n'hésitez pas à nous contacter.\n\n" +
-                "Cordialement,\n\n" +
-                "L'équipe support technique - ahoewo !";
+                "Cordialement,\n" +
+                "L'équipe Ahoewo";
 
         CompletableFuture.runAsync(()->{
             emailSenderService.sendMail(env.getProperty("spring.mail.username"), personne.getEmail(), "Demande d'ajout de nouveau service validé", contenu1);
@@ -192,8 +192,8 @@ public class ServicesServiceImpl implements ServicesService {
                 "Description : " + services.getDescription() + "\n\n" +
                 "Motif du rejet : " + motifRejetServiceForm.getMotifRejet() + "\n\n" +
                 "Si vous avez des questions ou avez besoin de plus d'informations, n'hésitez pas à nous contacter.\n\n" +
-                "Cordialement,\n\n" +
-                "L'équipe support technique - ahoewo !";
+                "Cordialement,\n" +
+                "L'équipe Ahoewo";
 
         String contenu2 = "Bonjour " + servicesAgenceImmobiliere.getAgenceImmobiliere().getNomAgence() + ",\n\n" +
                 "Nous sommes désolés de vous informer que la demande de nouveau service pour votre agence immobilière a été rejetée.\n\n" +
@@ -202,8 +202,8 @@ public class ServicesServiceImpl implements ServicesService {
                 "Description : " + services.getDescription() + "\n\n" +
                 "Motif du rejet : " + motifRejetServiceForm.getMotifRejet() + "\n\n" +
                 "Si vous avez des questions ou avez besoin de plus d'informations, n'hésitez pas à nous contacter.\n\n" +
-                "Cordialement,\n\n" +
-                "L'équipe support technique - ahoewo !";
+                "Cordialement,\n" +
+                "L'équipe Ahoewo";
 
         CompletableFuture.runAsync(()->{
             emailSenderService.sendMail(env.getProperty("spring.mail.username"), personne.getEmail(), "Demande d'ajout de nouveau service rejeté", contenu1);

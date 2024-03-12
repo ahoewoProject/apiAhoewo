@@ -86,7 +86,7 @@ public class ResponsableAgenceImmobiliereServiceImpl implements ResponsableAgenc
                 "Mot de passe : " + motDePasse + "\n\n" +
                 "Vous pouvez dès à présent vous connecter à votre compte.\n\n" +
                 "Cordialement,\n" +
-                "\nL'équipe support technique - ahoewo !";
+                "L'équipe Ahoewo";
 
         CompletableFuture.runAsync(() -> {
             emailSenderService.sendMail(env.getProperty("spring.mail.username"), newResponsable.getEmail(), "Informations de connexion", contenu);

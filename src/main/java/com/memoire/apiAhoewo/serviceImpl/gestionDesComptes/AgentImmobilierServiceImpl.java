@@ -81,7 +81,7 @@ public class AgentImmobilierServiceImpl implements AgentImmobilierService {
                 "Mot de passe : " + motDePasse + "\n\n" +
                 "Vous pouvez maintenant vous connecter à votre compte.\n\n" +
                 "Cordialement,\n" +
-                "\nL'équipe support technique - ahoewo !";
+                "L'équipe Ahoewo";
         CompletableFuture.runAsync(() -> {
             emailSenderService.sendMail(env.getProperty("spring.mail.username"), agentImmobilier.getEmail(), "Informations de connexion", contenu);
         });

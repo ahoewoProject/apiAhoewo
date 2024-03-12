@@ -11,6 +11,6 @@ public class ContactezNousForm {
     private String nomPrenoms;
     private String telephone;
     private String emetteurEmail;
-    private String receptionEmail;
+    private String recepteurEmail;
     private String message;
 }

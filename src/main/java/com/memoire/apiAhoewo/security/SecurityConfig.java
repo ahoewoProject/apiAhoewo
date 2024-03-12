@@ -68,7 +68,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/api/publications/actives/region-list/**",
                 "/api/publications/actives/type-de-bien-list/**",
                 "/api/publication/{id}/**",
-                "/api/publication/code/{code}/**").permitAll();
+                "/api/publication/code/{code}/**",
+                "/api/contactez-nous/**").permitAll();
         //http.authorizeRequests().antMatchers(GET,"/api/user/**").hasAnyAuthority("ROLE_USER");
         //http.authorizeRequests().antMatchers(POST,"/api/user/save/**").hasAnyAuthority("ROLE_ADMIN");
         http.authorizeRequests().anyRequest().authenticated();

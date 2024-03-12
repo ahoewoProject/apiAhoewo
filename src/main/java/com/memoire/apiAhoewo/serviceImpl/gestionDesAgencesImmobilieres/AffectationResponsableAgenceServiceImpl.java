@@ -111,9 +111,9 @@ public class AffectationResponsableAgenceServiceImpl implements AffectationRespo
         if (responsable.getMatricule().isEmpty()) {
             String contenu = "Bonjour " + responsable.getPrenom() + " " + responsable.getNom() + ",\n\n" +
                     "Vous avez été affecté à l'agence immobilière " + agenceImmobiliere.getNomAgence() + " par le responsable " + personne.getPrenom() + " " + personne.getNom() + " en tant que co-responsable" +
-                    "." +
-                    "\n\nCordialement," +
-                    "\n\nL'équipe support technique - ahoewo !";
+                    "." + "\n\n" +
+                    "Cordialement,\n" +
+                    "L'équipe Ahoewo";
 
             ResponsableAgenceImmobiliere finalResponsable = responsable;
             CompletableFuture.runAsync(() -> {

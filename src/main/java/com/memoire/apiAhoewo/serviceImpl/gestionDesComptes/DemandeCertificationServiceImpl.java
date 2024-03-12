@@ -96,7 +96,7 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
                 "Nous avons le plaisir de vous informer que votre compte vient d'être certifié conformément à votre demande de certification.\n" +
                 "\n\n" +
                 "Cordialement,\n" +
-                "\nL'équipe support technique - ahoewo !";
+                "L'équipe Ahoewo";
 
         CompletableFuture.runAsync(() -> {
             emailSenderService.sendMail(env.getProperty("spring.mail.username"), personne.getEmail(), "Certification de compte", contenu);
@@ -123,7 +123,7 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
                 "N'hésitez pas à explorer toutes les fonctionnalités offertes par notre plateforme pour optimiser votre travail et offrir le meilleur service à vos clients.\n\n" +
                 "Si vous avez des questions ou avez besoin d'assistance, n'hésitez pas à nous contacter. Nous sommes là pour vous aider.\n\n" +
                 "Cordialement,\n" +
-                "\nL'équipe support technique - ahoewo !";
+                "L'équipe Ahoewo";
         CompletableFuture.runAsync(() -> {
             emailSenderService.sendMail(env.getProperty("spring.mail.username"), agenceImmobiliere.getAdresseEmail(), "Certification d'une agence", contenu1);
         });
@@ -134,7 +134,7 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
                 "N'hésitez pas à explorer toutes les fonctionnalités offertes par notre plateforme pour optimiser votre travail et offrir le meilleur service à vos clients.\n\n" +
                 "Si vous avez des questions ou avez besoin d'assistance, n'hésitez pas à nous contacter. Nous sommes là pour vous aider.\n\n" +
                 "Cordialement,\n" +
-                "\nL'équipe support technique - ahoewo !";
+                "L'équipe Ahoewo";
         CompletableFuture.runAsync(() -> {
             emailSenderService.sendMail(env.getProperty("spring.mail.username"), personne.getEmail(), "Certification de compte", contenu2);
         });
@@ -171,7 +171,7 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
                         "N'hésitez pas à explorer toutes les fonctionnalités offertes par notre plateforme pour optimiser votre travail et offrir le meilleur service à vos clients.\n\n" +
                         "Si vous avez des questions ou avez besoin d'assistance, n'hésitez pas à nous contacter. Nous sommes là pour vous aider.\n\n" +
                         "Cordialement,\n" +
-                        "\nL'équipe support technique - ahoewo !";
+                        "L'équipe Ahoewo";
                 CompletableFuture.runAsync(() -> {
                     emailSenderService.sendMail(env.getProperty("spring.mail.username"), agent.getEmail(), "Certification de compte", contenu3);
                 });

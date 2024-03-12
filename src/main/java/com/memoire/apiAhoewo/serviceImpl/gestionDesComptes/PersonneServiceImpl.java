@@ -185,7 +185,7 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
                 resetLink + "\n\n" +
                 "Si vous n'avez pas demandé de réinitialisation de mot de passe, veuillez ignorer cet email.\n\n" +
                 "Cordialement,\n" +
-                "\nL'équipe support technique - ahoewo !";
+                "L'équipe Ahoewo";
 
         // Envoyer l'email
         emailSenderService.sendMail(env.getProperty("spring.mail.username"), personne.getEmail(), "Réinitialisation du mot de passe", contenu);

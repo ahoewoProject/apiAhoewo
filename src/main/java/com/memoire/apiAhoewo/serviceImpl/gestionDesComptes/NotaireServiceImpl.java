@@ -76,8 +76,8 @@ public class NotaireServiceImpl implements NotaireService {
                 "Nom d'utilisateur : " + username + "\n" +
                 "Mot de passe : " + motDePasse + "\n\n" +
                 "Vous pouvez maintenant vous connecter à votre compte.\n\n" +
-                "Cordialement,\n\n" +
-                "L'équipe support technique - ahoewo !";
+                "Cordialement,\n" +
+                "L'équipe Ahoewo";
         CompletableFuture.runAsync(() -> {
             emailSenderService.sendMail(env.getProperty("spring.mail.username"), notaire.getEmail(), "Informations de connexion", contenu);
         });

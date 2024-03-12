@@ -160,7 +160,7 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
                     "Cliquez sur le lien suivant pour accéder à la délégation de la gestion de bien : " + delegationGestionLink + "\n" +
                     "\n\n" +
                     "Cordialement,\n" +
-                    "\nL'équipe de support technique - ahoewo !";
+                    "L'équipe Ahoewo";
 
             CompletableFuture.runAsync(() -> {
                 emailSenderService.sendMail(env.getProperty("spring.mail.username"), delegationGestion.getGestionnaire().getEmail(), "Délégation de la gestion de bien", contenu);
@@ -190,7 +190,7 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
                     "Cliquez sur le lien suivant pour accéder à la délégation de la gestion de bien : " + delegationGestionLink + "\n" +
                     "\n\n" +
                     "Cordialement,\n" +
-                    "\nL'équipe de support technique - ahoewo !";
+                    "L'équipe Ahoewo";
 
             CompletableFuture.runAsync(() -> {
                 emailSenderService.sendMail(env.getProperty("spring.mail.username"), delegationGestion.getAgenceImmobiliere().getAdresseEmail(), "Délégation de la gestion de bien", contenu);
@@ -238,7 +238,7 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
                     "Cliquez sur le lien suivant pour accéder à la délégation de la gestion de bien : " + delegationGestionLink + "\n" +
                     "\n\n" +
                     "Cordialement,\n" +
-                    "\nL'équipe de support technique - ahoewo !";
+                    "L'équipe Ahoewo";
 
             CompletableFuture.runAsync(() -> {
                 emailSenderService.sendMail(env.getProperty("spring.mail.username"), delegationGestion.getGestionnaire().getEmail(), "Délégation de la gestion de bien", contenu);
@@ -262,7 +262,7 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
                     "Cliquez sur le lien suivant pour accéder à la délégation de la gestion de bien : " + delegationGestionLink + "\n" +
                     "\n\n" +
                     "Cordialement,\n" +
-                    "\nL'équipe de support technique - ahoewo !";
+                    "L'équipe Ahoewo";
 
             CompletableFuture.runAsync(() -> {
                 emailSenderService.sendMail(env.getProperty("spring.mail.username"), delegationGestion.getAgenceImmobiliere().getAdresseEmail(), "Délégation de la gestion de bien", contenu);
@@ -319,8 +319,8 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
                     "\n\n" +
                     "Cliquez sur le lien suivant pour accéder à la délégation de la gestion de bien : " + delegationGestionLink + "\n" +
                     "\n\n" +
-                    "Cordialement,\n" +
-                    "\nL'équipe de support technique - ahoewo !";
+                     "Cordialement,\n" +
+                     "L'équipe Ahoewo";
         } else {
 
             Notification notification = new Notification();
@@ -339,8 +339,8 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
                     "\n\n" +
                     "Cliquez sur le lien suivant pour accéder à la délégation de la gestion de bien : " + delegationGestionLink + "\n" +
                     "\n\n" +
-                    "Cordialement,\n" +
-                    "\nL'équipe de support technique - ahoewo !";
+                     "Cordialement,\n" +
+                     "L'équipe Ahoewo";
         }
 
 
@@ -390,7 +390,7 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
                     "Cliquez sur le lien suivant pour accéder à la délégation de la gestion de bien : " + delegationGestionLink + "\n" +
                     "\n\n" +
                     "Cordialement,\n" +
-                    "\nL'équipe de support technique - ahoewo !";
+                    "L'équipe Ahoewo";
         } else {
 
             Notification notification = new Notification();
@@ -410,7 +410,7 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
                     "Cliquez sur le lien suivant pour accéder à la délégation de la gestion de bien : " + delegationGestionLink + "\n" +
                     "\n\n" +
                     "Cordialement,\n" +
-                    "\nL'équipe de support technique - ahoewo !";
+                    "L'équipe Ahoewo";
         }
 
 
@@ -469,7 +469,7 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
                     "Cliquez sur le lien suivant pour accéder à la délégation de la gestion de bien : " + delegationGestionLink + "\n" +
                     "\n\n" +
                     "Cordialement,\n" +
-                    "\nL'équipe de support technique - ahoewo !";
+                    "L'équipe Ahoewo";
 
             CompletableFuture.runAsync(() -> {
                 emailSenderService.sendMail(env.getProperty("spring.mail.username"), delegationGestion.getGestionnaire().getEmail(), "Activation d'une délégation de la gestion de bien", contenu);
@@ -499,7 +499,7 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
                     "Cliquez sur le lien suivant pour accéder à la délégation de la gestion de bien : " + delegationGestionLink + "\n" +
                     "\n\n" +
                     "Cordialement,\n" +
-                    "\nL'équipe de support technique - ahoewo !";
+                    "L'équipe Ahoewo";
 
             CompletableFuture.runAsync(() -> {
                 emailSenderService.sendMail(env.getProperty("spring.mail.username"), delegationGestion.getAgenceImmobiliere().getAdresseEmail(), "Activation d'une délégation de la gestion de bien", contenu);
@@ -542,7 +542,7 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
                     "Cliquez sur le lien suivant pour accéder à la délégation de la gestion de bien : " + delegationGestionLink + "\n" +
                     "\n\n" +
                     "Cordialement,\n" +
-                    "\nL'équipe de support technique - ahoewo !";
+                    "L'équipe Ahoewo";
 
             CompletableFuture.runAsync(() -> {
                 emailSenderService.sendMail(env.getProperty("spring.mail.username"), delegationGestion.getGestionnaire().getEmail(), "Désactivation d'une délégation de la gestion de bien", contenu);
@@ -572,7 +572,7 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
                     "Cliquez sur le lien suivant pour accéder à la délégation de la gestion de bien : " + delegationGestionLink + "\n" +
                     "\n\n" +
                     "Cordialement,\n" +
-                    "\nL'équipe de support technique - ahoewo !";
+                    "L'équipe Ahoewo";
 
             CompletableFuture.runAsync(() -> {
                 emailSenderService.sendMail(env.getProperty("spring.mail.username"), delegationGestion.getAgenceImmobiliere().getAdresseEmail(), "Désactivation d'un délégation de la gestion de bien", contenu);
