@@ -1,12 +1,14 @@
 package com.memoire.apiAhoewo.serviceImpl.gestionDesAgencesImmobilieres;
 
+import com.memoire.apiAhoewo.model.MotifRejet;
 import com.memoire.apiAhoewo.model.Notification;
 import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.Services;
 import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.ServicesAgenceImmobiliere;
 import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
 import com.memoire.apiAhoewo.repository.gestionDesAgencesImmobilieres.ServicesRepository;
-import com.memoire.apiAhoewo.requestForm.MotifRejetServiceForm;
+import com.memoire.apiAhoewo.requestForm.MotifRejetForm;
 import com.memoire.apiAhoewo.service.EmailSenderService;
+import com.memoire.apiAhoewo.service.MotifRejetService;
 import com.memoire.apiAhoewo.service.NotificationService;
 import com.memoire.apiAhoewo.service.gestionDesAgencesImmobilieres.ServicesAgenceImmobiliereService;
 import com.memoire.apiAhoewo.service.gestionDesAgencesImmobilieres.ServicesService;
@@ -35,6 +37,8 @@ public class ServicesServiceImpl implements ServicesService {
     private ServicesAgenceImmobiliereService servicesAgenceImmobiliereService;
     @Autowired
     private EmailSenderService emailSenderService;
+    @Autowired
+    private MotifRejetService motifRejetService;
     @Autowired
     private Environment env;
 
@@ -121,11 +125,11 @@ public class ServicesServiceImpl implements ServicesService {
 
         Notification notification = new Notification();
         notification.setTitre("Nouveau service validé");
-        notification.setMessage("La demande d'ajout du nouveau service à été validé.");
+        notification.setMessage("La demande d'ajout du nouveau service " + services.getNomService() + " à été validé.");
         notification.setSendTo(String.valueOf(services.getCreerPar()));
         notification.setLu(false);
         notification.setDateNotification(new Date());
-        notification.setUrl("/agences-immobilieres/services");
+        notification.setUrl("/agences-immobilieres/service/" + services.getId());
         notification.setCreerPar(personne.getId());
         notification.setCreerLe(new Date());
         notificationService.save(notification);
@@ -162,8 +166,8 @@ public class ServicesServiceImpl implements ServicesService {
     }
 
     @Override
-    public void rejeterServices(MotifRejetServiceForm motifRejetServiceForm, Principal principal) {
-        Services services = servicesRepository.findById(motifRejetServiceForm.getId()).orElse(null);
+    public void rejeterServices(MotifRejetForm motifRejetForm, Principal principal) {
+        Services services = servicesRepository.findById(motifRejetForm.getId()).orElse(null);
         services.setEtat(3);
 
         ServicesAgenceImmobiliere servicesAgenceImmobiliere = servicesAgenceImmobiliereService.findByServices(services);
@@ -176,21 +180,26 @@ public class ServicesServiceImpl implements ServicesService {
 
         Notification notification = new Notification();
         notification.setTitre("Nouveau service rejeté");
-        notification.setMessage("La demande d'ajout du nouveau service à été rejeté.");
+        notification.setMessage("La demande d'ajout du nouveau service " + services.getNomService() + " à été rejeté.");
         notification.setSendTo(String.valueOf(services.getCreerPar()));
         notification.setLu(false);
         notification.setDateNotification(new Date());
-        notification.setUrl("/agences-immobilieres/services");
+        notification.setUrl("/agences-immobilieres/service/" + services.getId());
         notification.setCreerPar(personne.getId());
         notification.setCreerLe(new Date());
         notificationService.save(notification);
+
+        MotifRejet motifRejet = new MotifRejet();
+        motifRejet.setCode(services.getCodeService());
+        motifRejet.setMotif(motifRejetForm.getMotif());
+        motifRejetService.save(motifRejet, principal);
 
         String contenu1 = "Bonjour " + personneSave.getPrenom() + " " + personneSave.getNom() + ",\n\n" +
                 "Nous sommes désolés de vous informer que la demande de nouveau service pour votre agence immobilière a été rejetée.\n\n" +
                 "Détails du service :\n" +
                 "Nom du service : " + services.getNomService() + "\n" +
                 "Description : " + services.getDescription() + "\n\n" +
-                "Motif du rejet : " + motifRejetServiceForm.getMotifRejet() + "\n\n" +
+                "Motif du rejet : " + motifRejetForm.getMotif() + "\n\n" +
                 "Si vous avez des questions ou avez besoin de plus d'informations, n'hésitez pas à nous contacter.\n\n" +
                 "Cordialement,\n" +
                 "L'équipe Ahoewo";
@@ -200,7 +209,7 @@ public class ServicesServiceImpl implements ServicesService {
                 "Détails du service :\n" +
                 "Nom du service : " + services.getNomService() + "\n" +
                 "Description : " + services.getDescription() + "\n\n" +
-                "Motif du rejet : " + motifRejetServiceForm.getMotifRejet() + "\n\n" +
+                "Motif du rejet : " + motifRejetForm.getMotif() + "\n\n" +
                 "Si vous avez des questions ou avez besoin de plus d'informations, n'hésitez pas à nous contacter.\n\n" +
                 "Cordialement,\n" +
                 "L'équipe Ahoewo";

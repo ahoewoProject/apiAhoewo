@@ -20,10 +20,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -111,11 +109,10 @@ public class ServicesAgenceImmobiliereServiceImpl implements ServicesAgenceImmob
         notification.setSendTo("ADMIN");
         notification.setLu(false);
         notification.setDateNotification(new Date());
-        notification.setUrl("/autres-services");
+        notification.setUrl("/autre-service/" + services.getId());
         notification.setCreerPar(personne.getId());
         notification.setCreerLe(new Date());
         notificationService.save(notification);
-
 
         String contenu = "Bonjour Le Support Technique ahoewo,\n\n" +
                 "Nous souhaitons vous informer qu'un service que nous désirons ajouter à notre agence " + agenceImmobiliere.getNomAgence() + " n'est pas actuellement disponible dans la liste des services de la plateforme.\n\n" +

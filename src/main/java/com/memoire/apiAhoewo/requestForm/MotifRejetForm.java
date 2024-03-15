@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MotifRejetServiceForm {
+public class MotifRejetForm {
     Long id;
-    String motifRejet;
+    String motif;
 }
