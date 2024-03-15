@@ -70,4 +70,7 @@ public class BienImmobilier extends EntiteDeBase {
     @ManyToOne
     @JoinColumn(name = "agence_immobiliere_id")
     protected AgenceImmobiliere agenceImmobiliere;
+
+    @Column(name = "est_delegue")
+    private Boolean estDelegue;
 }

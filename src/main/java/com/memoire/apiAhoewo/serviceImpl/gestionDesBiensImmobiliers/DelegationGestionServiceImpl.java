@@ -598,6 +598,7 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
         bienImmobilier.setAdresse(delegationGestionForm2.getAdresse());
         bienImmobilier.setSurface(delegationGestionForm2.getSurface());
         bienImmobilier.setDescription(delegationGestionForm2.getDescription());
+        bienImmobilier.setEstDelegue(true);
 
         BienImmobilier bienImmobilierAdd = bienImmobilierService.save(bienImmobilier, principal);
 
@@ -651,6 +652,7 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
         bienImmAssocie.setAdresse(bienImmobilier.getAdresse());
         bienImmAssocie.setSurface(delegationGestionForm2.getSurface());
         bienImmAssocie.setDescription(delegationGestionForm2.getDescription());
+        bienImmAssocie.setEstDelegue(true);
 
         BienImmAssocie bienImmAssocieAdd = bienImmoAssocieService.save(bienImmAssocie, principal);
 

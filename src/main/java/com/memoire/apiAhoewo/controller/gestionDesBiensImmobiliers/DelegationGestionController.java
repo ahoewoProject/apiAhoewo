@@ -185,6 +185,8 @@ public class DelegationGestionController {
                             bienImmAssocie, 1, true)) {
                         return new ResponseEntity<>("Un bien immobilier se trouvant dans cette propriété a été déjà délégué à un gestionnaire !", HttpStatus.CONFLICT);
                     }
+                    bienImmAssocie.setEstDelegue(true);
+                    bienImmobilierService.update(bienImmAssocie, principal);
                     DelegationGestion delegationGestion = new DelegationGestion();
                     delegationGestion.setGestionnaire(personne);
                     delegationGestion.setBienImmobilier(bienImmAssocie);
@@ -193,6 +195,8 @@ public class DelegationGestionController {
                 }
             }
 
+            delegationGestionForm.getBienImmobilier().setEstDelegue(true);
+            bienImmobilierService.update(delegationGestionForm.getBienImmobilier(), principal);
             DelegationGestion delegationGestion = new DelegationGestion();
             delegationGestion.setGestionnaire(personne);
             delegationGestion.setBienImmobilier(delegationGestionForm.getBienImmobilier());
@@ -234,6 +238,9 @@ public class DelegationGestionController {
                                 bienImmAssocie, 1, true)) {
                             return new ResponseEntity<>("Un bien immobilier se trouvant dans cette propriété a été déjà délégué à une agence immobilière !", HttpStatus.CONFLICT);
                         } else {
+                            bienImmAssocie.setEstDelegue(true);
+                            bienImmobilierService.update(bienImmAssocie, principal);
+
                             DelegationGestion delegationGestion = new DelegationGestion();
                             delegationGestion.setAgenceImmobiliere(agenceImmobiliere);
                             delegationGestion.setBienImmobilier(bienImmAssocie);
@@ -242,6 +249,9 @@ public class DelegationGestionController {
                         }
                     }
                 }
+
+                delegationGestionForm.getBienImmobilier().setEstDelegue(true);
+                bienImmobilierService.update(delegationGestionForm.getBienImmobilier(), principal);
 
                 DelegationGestion delegationGestion = new DelegationGestion();
                 delegationGestion.setAgenceImmobiliere(agenceImmobiliere);
