@@ -109,7 +109,7 @@ public class ServicesAgenceImmobiliereServiceImpl implements ServicesAgenceImmob
         notification.setSendTo("ADMIN");
         notification.setLu(false);
         notification.setDateNotification(new Date());
-        notification.setUrl("/autre-service/" + services.getId());
+        notification.setUrl("/autres-services/" + services.getId());
         notification.setCreerPar(personne.getId());
         notification.setCreerLe(new Date());
         notificationService.save(notification);
