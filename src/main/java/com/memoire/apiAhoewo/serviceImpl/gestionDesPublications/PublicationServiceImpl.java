@@ -224,12 +224,12 @@ public class PublicationServiceImpl implements PublicationService {
                 notification.setSendTo(String.valueOf(publication.getBienImmobilier().getPersonne().getId()));
                 notification.setDateNotification(new Date());
                 notification.setLu(false);
-                notification.setUrl("/publications");
+                notification.setUrl("/publications/" + publicationAdd.getId() + "?idBien=" + publicationAdd.getBienImmobilier().getId());
                 notification.setCreerPar(personne.getId());
                 notification.setCreerLe(new Date());
                 notificationService.save(notification);
 
-                publicationLink = "http://localhost:4200/proprietaire/publications";
+                publicationLink = "http://localhost:4200/proprietaire/publications/" + publicationAdd.getId() + "?idBien=" + publicationAdd.getBienImmobilier().getId();
 
                 String contenu = "Bonjour M./Mlle " + publication.getBienImmobilier().getPersonne().getNom() + " " + publication.getBienImmobilier().getPersonne().getPrenom() + ",\n" +
                         "Le bien immobilier " + publication.getBienImmobilier().getCodeBien() + " que vous avez délégué à l'agence " + delegationGestion.getAgenceImmobiliere().getNomAgence() + " a été publié avec succès.\n" +
@@ -254,12 +254,12 @@ public class PublicationServiceImpl implements PublicationService {
                 notification.setSendTo(String.valueOf(publication.getBienImmobilier().getPersonne().getId()));
                 notification.setDateNotification(new Date());
                 notification.setLu(false);
-                notification.setUrl("/publications");
+                notification.setUrl("/publications/" + publicationAdd.getId() + "?idBien=" + publicationAdd.getBienImmobilier().getId());
                 notification.setCreerPar(personne.getId());
                 notification.setCreerLe(new Date());
                 notificationService.save(notification);
 
-                publicationLink = "http://localhost:4200/proprietaire/publications";
+                publicationLink = "http://localhost:4200/proprietaire/publications/" + publicationAdd.getId() + "?idBien=" + publicationAdd.getBienImmobilier().getId();
 
                 String contenu = "Bonjour M./Mlle " + publication.getBienImmobilier().getPersonne().getNom() + " " + publication.getBienImmobilier().getPersonne().getPrenom() +
                         "Le bien immobilier " + publication.getBienImmobilier().getCodeBien() + " délégué à M./Mlle " + delegationGestion.getGestionnaire().getNom() +
@@ -296,12 +296,12 @@ public class PublicationServiceImpl implements PublicationService {
                 notification.setSendTo(String.valueOf(publication.getBienImmobilier().getPersonne().getId()));
                 notification.setDateNotification(new Date());
                 notification.setLu(false);
-                notification.setUrl("/publications");
+                notification.setUrl("/publications/" + publication.getId() + "?idBien=" + publication.getBienImmobilier().getId());
                 notification.setCreerPar(personne.getId());
                 notification.setCreerLe(new Date());
                 notificationService.save(notification);
 
-                publicationLink = "http://localhost:4200/proprietaire/publications";
+                publicationLink = "http://localhost:4200/proprietaire/publications/" + publication.getId() + "?idBien=" + publication.getBienImmobilier().getId();
 
                 String contenu = "Bonjour M./Mlle " + publication.getBienImmobilier().getPersonne().getNom() + " " + publication.getBienImmobilier().getPersonne().getPrenom() + ",\n" +
                         "Le bien immobilier " + publication.getBienImmobilier().getCodeBien() + " que vous avez délégué à l'agence " + delegationGestion.getAgenceImmobiliere().getNomAgence() + " a été modifié avec succès.\n" +
@@ -324,12 +324,12 @@ public class PublicationServiceImpl implements PublicationService {
                 notification.setSendTo(String.valueOf(publication.getBienImmobilier().getPersonne().getId()));
                 notification.setDateNotification(new Date());
                 notification.setLu(false);
-                notification.setUrl("/publications");
+                notification.setUrl("/publications/" + publication.getId() + "?idBien=" + publication.getBienImmobilier().getId());
                 notification.setCreerPar(personne.getId());
                 notification.setCreerLe(new Date());
                 notificationService.save(notification);
 
-                publicationLink = "http://localhost:4200/proprietaire/publications";
+                publicationLink = "http://localhost:4200/proprietaire/publications/" + publication.getId() + "?idBien=" + publication.getBienImmobilier().getId();
 
                 String contenu = "Bonjour M./Mlle " + publication.getBienImmobilier().getPersonne().getNom() + " " + publication.getBienImmobilier().getPersonne().getPrenom() +
                         "Le bien immobilier " + publication.getBienImmobilier().getCodeBien() + " délégué à M./Mlle " + delegationGestion.getGestionnaire().getNom() +
