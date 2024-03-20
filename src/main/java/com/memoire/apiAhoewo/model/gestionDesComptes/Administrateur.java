@@ -13,7 +13,6 @@ import javax.persistence.*;
 @Table(name="administrateurs")
 @DiscriminatorValue("Administrateur")
 public class Administrateur extends Personne {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

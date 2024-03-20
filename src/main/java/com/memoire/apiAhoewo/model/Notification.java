@@ -1,9 +1,17 @@
 package com.memoire.apiAhoewo.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.util.Date;
 
-@Entity(name = "notifications")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "notifications")
 public class Notification extends EntiteDeBase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,82 +37,4 @@ public class Notification extends EntiteDeBase {
 
     @Column(name = "date_notification")
     private Date dateNotification;
-
-    public Notification() {
-    }
-
-    public Notification(Long id, String codeNotification, String titre, String message, String url, String sendTo, Boolean lu, Date dateNotification) {
-        this.id = id;
-        this.codeNotification = codeNotification;
-        this.titre = titre;
-        this.message = message;
-        this.url = url;
-        this.sendTo = sendTo;
-        this.lu = lu;
-        this.dateNotification = dateNotification;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getCodeNotification() {
-        return codeNotification;
-    }
-
-    public void setCodeNotification(String codeNotification) {
-        this.codeNotification = codeNotification;
-    }
-
-    public String getTitre() {
-        return titre;
-    }
-
-    public void setTitre(String titre) {
-        this.titre = titre;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getSendTo() {
-        return sendTo;
-    }
-
-    public void setSendTo(String sendTo) {
-        this.sendTo = sendTo;
-    }
-
-    public Boolean getLu() {
-        return lu;
-    }
-
-    public void setLu(Boolean lu) {
-        this.lu = lu;
-    }
-
-    public Date getDateNotification() {
-        return dateNotification;
-    }
-
-    public void setDateNotification(Date dateNotification) {
-        this.dateNotification = dateNotification;
-    }
 }

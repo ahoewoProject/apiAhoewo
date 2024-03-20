@@ -16,7 +16,6 @@ import javax.persistence.*;
 @DiscriminatorColumn(name = "type_personne")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Personne extends EntiteDeBase {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

@@ -13,7 +13,6 @@ import javax.persistence.*;
 @Table(name="agents_immobiliers")
 @DiscriminatorValue("AgentImmobilier")
 public class AgentImmobilier extends Personne {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

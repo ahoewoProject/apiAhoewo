@@ -6,9 +6,15 @@ import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.Quartier;
 import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.Region;
 import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.Ville;
 import com.memoire.apiAhoewo.model.gestionDesComptes.ResponsableAgenceImmobiliere;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name="agences_immobilieres")
 public class AgenceImmobiliere extends EntiteDeBase {
@@ -53,128 +59,4 @@ public class AgenceImmobiliere extends EntiteDeBase {
 
     @Column(name = "etat_agence", nullable = false)
     private Boolean etatAgence;
-
-    @Override
-    public Long getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getLogoAgence() {
-        return logoAgence;
-    }
-
-    public void setLogoAgence(String logoAgence) {
-        this.logoAgence = logoAgence;
-    }
-
-    public String getCodeAgence() {
-        return codeAgence;
-    }
-
-    public void setCodeAgence(String codeAgence) {
-        this.codeAgence = codeAgence;
-    }
-
-    public String getNomAgence() {
-        return nomAgence;
-    }
-
-    public void setNomAgence(String nomAgence) {
-        this.nomAgence = nomAgence;
-    }
-
-    public Quartier getQuartier() {
-        return quartier;
-    }
-
-    public void setQuartier(Quartier quartier) {
-        this.quartier = quartier;
-    }
-
-    public String getAdresse() {
-        return adresse;
-    }
-
-    public void setAdresse(String adresse) {
-        this.adresse = adresse;
-    }
-
-    public String getAdresseEmail() {
-        return adresseEmail;
-    }
-
-    public void setAdresseEmail(String adresseEmail) {
-        this.adresseEmail = adresseEmail;
-    }
-
-    public String getTelephone() {
-        return telephone;
-    }
-
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
-    }
-
-    public String getHeureOuverture() {
-        return heureOuverture;
-    }
-
-    public void setHeureOuverture(String heureOuverture) {
-        this.heureOuverture = heureOuverture;
-    }
-
-    public String getHeureFermeture() {
-        return heureFermeture;
-    }
-
-    public void setHeureFermeture(String heureFermeture) {
-        this.heureFermeture = heureFermeture;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Boolean getEstCertifie() {
-        return estCertifie;
-    }
-
-    public void setEstCertifie(Boolean estCertifie) {
-        this.estCertifie = estCertifie;
-    }
-
-    public Boolean getEtatAgence() {
-        return etatAgence;
-    }
-
-    public void setEtatAgence(Boolean etatAgence) {
-        this.etatAgence = etatAgence;
-    }
-
-    @Override
-    public String toString() {
-        return "AgenceImmobiliere{" +
-                "id=" + id +
-                ", logoAgence='" + logoAgence + '\'' +
-                ", codeAgence='" + codeAgence + '\'' +
-                ", nomAgence='" + nomAgence + '\'' +
-                ", quartier=" + quartier +
-                ", adresse='" + adresse + '\'' +
-                ", adresseEmail='" + adresseEmail + '\'' +
-                ", telephone='" + telephone + '\'' +
-                ", heureOuverture='" + heureOuverture + '\'' +
-                ", heureFermeture='" + heureFermeture + '\'' +
-                ", estCertifie=" + estCertifie +
-                ", etatAgence=" + etatAgence +
-                '}';
-    }
 }

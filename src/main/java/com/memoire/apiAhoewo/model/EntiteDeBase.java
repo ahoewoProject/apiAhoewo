@@ -1,14 +1,17 @@
 package com.memoire.apiAhoewo.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 import java.util.Date;
 
 @MappedSuperclass
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class  EntiteDeBase {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @Column(name = "creer_par", nullable = false)
     protected Long creerPar;
 
@@ -23,52 +26,4 @@ public class  EntiteDeBase {
 
     @Column(name = "statut")
     protected Boolean statut;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getCreerPar() {
-        return creerPar;
-    }
-
-    public void setCreerPar(Long creerPar) {
-        this.creerPar = creerPar;
-    }
-
-    public Date getCreerLe() {
-        return creerLe;
-    }
-
-    public void setCreerLe(Date creerLe) {
-        this.creerLe = creerLe;
-    }
-
-    public Long getModifierPar() {
-        return modifierPar;
-    }
-
-    public void setModifierPar(Long modifierPar) {
-        this.modifierPar = modifierPar;
-    }
-
-    public Date getModifierLe() {
-        return modifierLe;
-    }
-
-    public void setModifierLe(Date modifierLe) {
-        this.modifierLe = modifierLe;
-    }
-
-    public boolean isStatut() {
-        return statut;
-    }
-
-    public void setStatut(boolean statut) {
-        this.statut = statut;
-    }
 }
