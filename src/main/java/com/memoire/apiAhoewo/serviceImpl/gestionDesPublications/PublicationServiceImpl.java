@@ -27,10 +27,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -198,6 +195,51 @@ public class PublicationServiceImpl implements PublicationService {
     }
 
     @Override
+    public List<Publication> getPublications(Principal principal) {
+
+        Personne personne = personneService.findByUsername(principal.getName());
+        List<BienImmobilier> bienImmobilierList = new ArrayList<>();
+
+        if (personne.getRole().getCode().equals("ROLE_PROPRIETAIRE")) {
+            bienImmobilierList = bienImmobilierRepository.findByPersonne(personne);
+        } else if (personne.getRole().getLibelle().equals("ROLE_GERANT")) {
+            List<DelegationGestion> delegationGestionList = delegationGestionRepository.findByGestionnaireAndStatutDelegation(personne, 1);
+
+            bienImmobilierList = delegationGestionList.stream()
+                    .map(DelegationGestion::getBienImmobilier)
+                    .collect(Collectors.toList());
+        } else if (personne.getRole().getCode().equals("ROLE_DEMARCHEUR")) {
+            List<BienImmobilier> bienImmobiliers = bienImmobilierRepository.findByPersonne(personne);
+            List<DelegationGestion> delegationGestions = delegationGestionRepository.findByGestionnaireAndStatutDelegation(personne, 1);
+
+            bienImmobilierList = new ArrayList<>(bienImmobiliers);
+            bienImmobilierList.addAll(delegationGestions.stream()
+                    .map(DelegationGestion::getBienImmobilier)
+                    .collect(Collectors.toList()));
+        } else if (personne.getRole().getCode().equals("ROLE_RESPONSABLE")) {
+            List<AgenceImmobiliere> agenceImmobiliereList = agenceImmobiliereService.getAgencesByResponsable(principal);
+            List<BienImmobilier> bienImmobiliers = bienImmobilierRepository.findByAgenceImmobiliereIn(agenceImmobiliereList);
+            List<DelegationGestion> delegationGestionList = delegationGestionRepository.findByAgenceImmobiliereInAndStatutDelegation(agenceImmobiliereList, 1);
+
+            bienImmobilierList = new ArrayList<>(bienImmobiliers);
+            bienImmobilierList.addAll(delegationGestionList.stream()
+                    .map(DelegationGestion::getBienImmobilier)
+                    .collect(Collectors.toList()));
+        } else if (personne.getRole().getCode().equals("ROLE_AGENTIMMOBILIER")) {
+            List<AgenceImmobiliere> agenceImmobiliereList = agenceImmobiliereService.getAgencesByAgent(principal);
+            List<BienImmobilier> bienImmobiliers = bienImmobilierRepository.findByAgenceImmobiliereIn(agenceImmobiliereList);
+            List<DelegationGestion> delegationGestionList = delegationGestionRepository.findByAgenceImmobiliereInAndStatutDelegation(agenceImmobiliereList, 1);
+
+            bienImmobilierList = new ArrayList<>(bienImmobiliers);
+            bienImmobilierList.addAll(delegationGestionList.stream()
+                    .map(DelegationGestion::getBienImmobilier)
+                    .collect(Collectors.toList()));
+        }
+
+        return publicationRepository.findByBienImmobilierInOrderByIdDesc(bienImmobilierList);
+    }
+
+    @Override
     public Publication save(Publication publication, Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
 
@@ -273,8 +315,24 @@ public class PublicationServiceImpl implements PublicationService {
                 });
             }
         }
-        publicationAdd.setCodePublication("PUB-" + new SimpleDateFormat("yyyy-MM-dd").format(publicationAdd.getDatePublication()) + "-00" + publicationAdd.getId());
+        publicationAdd.setCodePublication(generatePublicationCode("PUB", new SimpleDateFormat("yyyy-MM-dd").format(publicationAdd.getDatePublication()), publicationAdd.getId()));
         return publicationRepository.save(publicationAdd);
+    }
+
+    public String generatePublicationCode(String prefix, String datePart, Long id) {
+        String randomPart = generateRandomString(3);
+        return prefix + datePart + randomPart + id;
+    }
+
+    private String generateRandomString(int length) {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        StringBuilder stringBuilder = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i < length; i++) {
+            char randomChar = characters.charAt(random.nextInt(characters.length()));
+            stringBuilder.append(randomChar);
+        }
+        return stringBuilder.toString();
     }
 
     @Override

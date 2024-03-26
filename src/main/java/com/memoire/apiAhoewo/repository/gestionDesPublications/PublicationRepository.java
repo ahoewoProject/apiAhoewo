@@ -40,7 +40,9 @@ public interface PublicationRepository extends JpaRepository<Publication, Long> 
 
     Publication findByCodePublication(String codePublication);
 
-    Page<Publication> findByBienImmobilierInOrderByIdDesc(List<BienImmobilier> bienImmobilier, Pageable pageable);
+    Page<Publication> findByBienImmobilierInOrderByIdDesc(List<BienImmobilier> bienImmobilierList, Pageable pageable);
+
+    List<Publication> findByBienImmobilierInOrderByIdDesc(List<BienImmobilier> bienImmobilierList);
 
     boolean existsByBienImmobilierAndEtat(BienImmobilier bienImmobilier, Boolean etat);
 }

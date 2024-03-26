@@ -33,7 +33,8 @@ public class EmailSenderServiceImpl implements EmailSenderService {
 
     @Override
     public void contactezNous(ContactezNousForm contactezNousForm) {
-        String contenu = "Nom & Prénoms : " + contactezNousForm.getNomPrenoms() + "\n" +
+        String contenu = "Bonjour M./Mlle, Message de contact d'un utilisateur " + "\n" +
+                "Nom & Prénoms : " + contactezNousForm.getNomPrenoms() + "\n" +
                 "Email: " + contactezNousForm.getEmetteurEmail() + "\n" +
                 "Téléphone: " + contactezNousForm.getTelephone() + "\n" +
                 "Message: " + contactezNousForm.getMessage() + "\n\n" +

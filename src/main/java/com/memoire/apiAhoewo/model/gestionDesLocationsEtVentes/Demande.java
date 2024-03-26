@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -19,6 +20,9 @@ public class Demande extends EntiteDeBase {
     @Column(name = "id")
     protected Long id;
 
+    @Column(name = "code_demande", unique = true, nullable = false)
+    protected String codeDemande;
+
     @ManyToOne()
     @JoinColumn(name = "client_id")
     protected Client client;
@@ -27,6 +31,9 @@ public class Demande extends EntiteDeBase {
     @JoinColumn(name = "publication_id", nullable = false)
     protected Publication publication;
 
+    @Column(name = "date_demande")
+    protected Date dateDemande;
+
     @Column(name = "etat_demande")
-    protected Boolean etatDemande;
+    protected Integer etatDemande;
 }

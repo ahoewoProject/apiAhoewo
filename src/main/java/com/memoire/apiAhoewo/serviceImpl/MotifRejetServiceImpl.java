@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class MotifRejetServiceImpl implements MotifRejetService {
@@ -17,6 +18,11 @@ public class MotifRejetServiceImpl implements MotifRejetService {
     private MotifRejetRepository motifRejetRepository;
     @Autowired
     private PersonneService personneService;
+
+    @Override
+    public List<MotifRejet> getMotifsByCodeAndCreerPar(String code, Long creerPar) {
+        return motifRejetRepository.findByCodeAndCreerPar(code, creerPar);
+    }
 
     @Override
     public MotifRejet findByCode(String code) {

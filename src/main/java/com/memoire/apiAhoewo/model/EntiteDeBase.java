@@ -24,6 +24,18 @@ public class  EntiteDeBase {
     @Column(name = "modifier_le")
     protected Date modifierLe;
 
+    @Column(name = "annuler_par")
+    protected Long annulerPar;
+
+    @Column(name = "annuler_le")
+    protected Date annulerLe;
+
+    @Column(name = "refuser_par")
+    protected Long refuserPar;
+
+    @Column(name = "refuser_le")
+    protected Date refuserLe;
+
     @Column(name = "statut")
     protected Boolean statut;
 }

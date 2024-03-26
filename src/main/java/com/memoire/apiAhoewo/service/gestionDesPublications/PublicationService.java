@@ -39,6 +39,8 @@ public interface PublicationService {
 
     Page<Publication> getPublications(int numeroDeLaPage, int elementsParPage, Principal principal);
 
+    List<Publication> getPublications(Principal principal);
+
     Publication save(Publication publication, Principal principal);
 
     Publication update(Publication publication, Principal principal);
