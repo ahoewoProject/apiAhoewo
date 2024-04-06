@@ -16,5 +16,9 @@ public interface DemandeAchatRepository extends JpaRepository<DemandeAchat, Long
 
     Page<DemandeAchat> findByPublicationInOrderByIdDesc(List<Publication> publicationList, Pageable pageable);
 
+    List<DemandeAchat> findByPublicationInOrderByIdDesc(List<Publication> publicationList);
+
+    List<DemandeAchat> findByClientOrderByIdDesc(Client client);
+
     boolean existsByClientAndPublication(Client client, Publication publication);
 }

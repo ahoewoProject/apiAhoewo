@@ -157,7 +157,7 @@ public class PublicationServiceImpl implements PublicationService {
 
         if (personne.getRole().getCode().equals("ROLE_PROPRIETAIRE")) {
             bienImmobilierList = bienImmobilierRepository.findByPersonne(personne);
-        } else if (personne.getRole().getLibelle().equals("ROLE_GERANT")) {
+        } else if (personne.getRole().getCode().equals("ROLE_GERANT")) {
             List<DelegationGestion> delegationGestionList = delegationGestionRepository.findByGestionnaireAndStatutDelegation(personne, 1);
 
             bienImmobilierList = delegationGestionList.stream()
@@ -202,7 +202,7 @@ public class PublicationServiceImpl implements PublicationService {
 
         if (personne.getRole().getCode().equals("ROLE_PROPRIETAIRE")) {
             bienImmobilierList = bienImmobilierRepository.findByPersonne(personne);
-        } else if (personne.getRole().getLibelle().equals("ROLE_GERANT")) {
+        } else if (personne.getRole().getCode().equals("ROLE_GERANT")) {
             List<DelegationGestion> delegationGestionList = delegationGestionRepository.findByGestionnaireAndStatutDelegation(personne, 1);
 
             bienImmobilierList = delegationGestionList.stream()

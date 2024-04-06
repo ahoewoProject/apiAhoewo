@@ -1,5 +1,9 @@
 package com.memoire.apiAhoewo.serviceImpl;
 
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
 import com.memoire.apiAhoewo.model.MotifRejet;
 import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
 import com.memoire.apiAhoewo.repository.MotifRejetRepository;
@@ -8,6 +12,7 @@ import com.memoire.apiAhoewo.service.gestionDesComptes.PersonneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;

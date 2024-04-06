@@ -19,6 +19,9 @@ public class MotifRejet extends EntiteDeBase {
     @Column(name = "code")
     private String code;
 
+    @Column(name = "libelle")
+    private String libelle;
+
     @Column(name = "motif", columnDefinition = "TEXT")
     protected String motif;
 }

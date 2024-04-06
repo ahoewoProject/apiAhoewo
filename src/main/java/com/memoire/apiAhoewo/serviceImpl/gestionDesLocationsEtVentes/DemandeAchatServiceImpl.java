@@ -59,6 +59,20 @@ public class DemandeAchatServiceImpl implements DemandeAchatService {
     }
 
     @Override
+    public List<DemandeAchat> getDemandesAchats(Principal principal) {
+        Personne personne = personneService.findByUsername(principal.getName());
+
+        if (personne.getRole().getCode().equals("ROLE_PROPRIETAIRE") || personne.getRole().getCode().equals("ROLE_RESPONSABLE") ||
+                personne.getRole().getCode().equals("ROLE_AGENTIMMOBILIER") || personne.getRole().getCode().equals("ROLE_DEMARCHEUR") ||
+                personne.getRole().getCode().equals("ROLE_GERANT")) {
+            List<Publication> publicationList = publicationService.getPublications(principal);
+            return demandeAchatRepository.findByPublicationInOrderByIdDesc(publicationList);
+        } else {
+            return demandeAchatRepository.findByClientOrderByIdDesc((Client) personne);
+        }
+    }
+
+    @Override
     public DemandeAchat findById(Long id) {
         return demandeAchatRepository.findById(id).orElse(null);
     }

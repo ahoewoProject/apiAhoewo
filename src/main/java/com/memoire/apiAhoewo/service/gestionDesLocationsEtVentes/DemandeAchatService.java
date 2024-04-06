@@ -7,9 +7,12 @@ import com.memoire.apiAhoewo.requestForm.MotifRejetForm;
 import org.springframework.data.domain.Page;
 
 import java.security.Principal;
+import java.util.List;
 
 public interface DemandeAchatService {
     Page<DemandeAchat> getDemandesAchats(Principal principal, int numeroDeLaPage, int elementsParPage);
+
+    List<DemandeAchat> getDemandesAchats(Principal principal);
 
     DemandeAchat findById(Long id);
 

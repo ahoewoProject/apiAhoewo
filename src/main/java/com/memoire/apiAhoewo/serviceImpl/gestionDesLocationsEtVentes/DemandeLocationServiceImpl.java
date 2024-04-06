@@ -59,6 +59,20 @@ public class DemandeLocationServiceImpl implements DemandeLocationService {
     }
 
     @Override
+    public List<DemandeLocation> getDemandesLocations(Principal principal) {
+        Personne personne = personneService.findByUsername(principal.getName());
+
+        if (personne.getRole().getCode().equals("ROLE_PROPRIETAIRE") || personne.getRole().getCode().equals("ROLE_RESPONSABLE") ||
+                personne.getRole().getCode().equals("ROLE_AGENTIMMOBILIER") || personne.getRole().getCode().equals("ROLE_DEMARCHEUR") ||
+                personne.getRole().getCode().equals("ROLE_GERANT")) {
+            List<Publication> publicationList = publicationService.getPublications(principal);
+            return demandeLocationRepository.findByPublicationInOrderByIdDesc(publicationList);
+        } else {
+            return demandeLocationRepository.findByClientOrderByIdDesc((Client) personne);
+        }
+    }
+
+    @Override
     public DemandeLocation findById(Long id) {
         return demandeLocationRepository.findById(id).orElse(null);
     }

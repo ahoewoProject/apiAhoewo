@@ -7,9 +7,12 @@ import com.memoire.apiAhoewo.requestForm.MotifRejetForm;
 import org.springframework.data.domain.Page;
 
 import java.security.Principal;
+import java.util.List;
 
 public interface DemandeLocationService {
     Page<DemandeLocation> getDemandesLocations(Principal principal, int numeroDeLaPage, int elementsParPage);
+
+    List<DemandeLocation> getDemandesLocations(Principal principal);
 
     DemandeLocation findById(Long id);
 

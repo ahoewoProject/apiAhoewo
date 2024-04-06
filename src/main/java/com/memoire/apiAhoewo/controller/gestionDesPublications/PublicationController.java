@@ -239,16 +239,23 @@ public class PublicationController {
 
             if (typeDeBienService.isTypeBienSupport(publication.getBienImmobilier().getTypeDeBien().getDesignation())) {
                 List<BienImmAssocie> bienImmAssocieList = bienImmAssocieService.getBiensAssocies(publication.getBienImmobilier());
-                for (BienImmAssocie bienImmAssocie : bienImmAssocieList) {
-                    if (publicationService.existsByBienImmobilierAndEtat(bienImmAssocie, true)) {
-                        return ResponseEntity.status(HttpStatus.CONFLICT)
-                                .body("Une publication avec un des biens associés à ce bien support est toujours active. Veuillez désactiver la publication avant d'en ajouter une autre.");
-                    } else if (publicationService.existsByBienImmobilierAndEtat(publication.getBienImmobilier(), true)) {
-                        return ResponseEntity.status(HttpStatus.CONFLICT)
-                                .body("Une publication avec ce bien est toujours active. Veuillez désactiver la publication avant d'en ajouter une autre.");
-                    }
-                }
 
+                if (!bienImmAssocieList.isEmpty()) {
+                    for (BienImmAssocie bienImmAssocie : bienImmAssocieList) {
+                        if (publicationService.existsByBienImmobilierAndEtat(bienImmAssocie, true)) {
+                            return ResponseEntity.status(HttpStatus.CONFLICT)
+                                    .body("Une publication avec un des biens associés à ce bien support est toujours active. Veuillez désactiver la publication avant d'en ajouter une autre.");
+                        } else if (publicationService.existsByBienImmobilierAndEtat(publication.getBienImmobilier(), true)) {
+                            return ResponseEntity.status(HttpStatus.CONFLICT)
+                                    .body("Une publication avec ce bien est toujours active. Veuillez désactiver la publication avant d'en ajouter une autre.");
+                        }
+                    }
+                } else {
+                    if (publicationService.existsByBienImmobilierAndEtat(publication.getBienImmobilier(), true)) {
+                                            return ResponseEntity.status(HttpStatus.CONFLICT)
+                                                    .body("Une publication avec ce bien est toujours active. Veuillez désactiver la publication avant d'en ajouter une autre.");
+                                        }
+                }
             } else if (typeDeBienService.isTypeBienAssocie(publication.getBienImmobilier().getTypeDeBien().getDesignation())) {
                 BienImmAssocie bienImmAssocie = bienImmAssocieService.findById(publication.getBienImmobilier().getId());
                 if (publicationService.existsByBienImmobilierAndEtat(bienImmAssocie.getBienImmobilier(), true)) {
@@ -335,7 +342,7 @@ public class PublicationController {
                 publicationExistante.setPersonne(personne);
             }
 
-            publicationExistante = publicationService.save(publicationExistante, principal);
+            publicationExistante = publicationService.update(publicationExistante, principal);
             return ResponseEntity.ok().body(publicationExistante);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());

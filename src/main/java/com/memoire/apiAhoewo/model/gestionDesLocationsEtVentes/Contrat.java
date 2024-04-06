@@ -1,0 +1,65 @@
+package com.memoire.apiAhoewo.model.gestionDesLocationsEtVentes;
+
+import com.memoire.apiAhoewo.model.EntiteDeBase;
+import com.memoire.apiAhoewo.model.gestionDesAgencesImmobilieres.AgenceImmobiliere;
+import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.BienImmobilier;
+import com.memoire.apiAhoewo.model.gestionDesComptes.Client;
+import com.memoire.apiAhoewo.model.gestionDesComptes.Demarcheur;
+import com.memoire.apiAhoewo.model.gestionDesComptes.Gerant;
+import com.memoire.apiAhoewo.model.gestionDesComptes.Proprietaire;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import java.util.Date;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@MappedSuperclass
+public class Contrat extends EntiteDeBase {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    protected Long id;
+
+    @Column(name = "code_contrat", unique = true, nullable = false)
+    protected String codeContrat;
+
+    @ManyToOne()
+    @JoinColumn(name = "client_id", nullable = false)
+    protected Client client;
+
+    @ManyToOne()
+    @JoinColumn(name = "proprietaire_id")
+    protected Proprietaire proprietaire;
+
+    @ManyToOne()
+    @JoinColumn(name = "demarcheur_id")
+    protected Demarcheur demarcheur;
+
+    @ManyToOne()
+    @JoinColumn(name = "gerant_id")
+    protected Gerant gerant;
+
+    @ManyToOne()
+    @JoinColumn(name = "agence_immobiliere_id")
+    protected AgenceImmobiliere agenceImmobiliere;
+
+    @ManyToOne()
+    @JoinColumn(name = "bien_immobilier_id", nullable = false)
+    protected BienImmobilier bienImmobilier;
+
+    @Column(name = "commission")
+    protected Integer commission;
+
+    @Column(name = "frais_de_visite")
+    protected Double fraisDeVisite;
+
+    @Column(name = "date_signature")
+    protected Date dateSignature;
+
+    @Column(name = "etat_contrat")
+    protected String etatContrat;
+}

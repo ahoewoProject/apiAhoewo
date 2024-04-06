@@ -16,5 +16,9 @@ public interface DemandeLocationRepository extends JpaRepository<DemandeLocation
 
     Page<DemandeLocation> findByPublicationInOrderByIdDesc(List<Publication> publicationList, Pageable pageable);
 
+    List<DemandeLocation> findByPublicationInOrderByIdDesc(List<Publication> publicationList);
+
+    List<DemandeLocation> findByClientOrderByIdDesc(Client client);
+
     boolean existsByClientAndPublication(Client client, Publication publication);
 }

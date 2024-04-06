@@ -14,9 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -48,9 +46,9 @@ public class PersonneController {
     @RequestMapping(value = "/modifier/profil/{id}", method = RequestMethod.PUT, headers = "accept=Application/json")
     public ResponseEntity<?> modifierProfil(@RequestBody RegisterForm registerForm, Principal principal, @PathVariable Long id) {
         // Vérification de l'existence du nom d'utilisateur
-        if (personneService.usernameExists(registerForm.getUsername())) {
-            return new ResponseEntity<>("Un utilisateur avec nom d'utilisateur existe déjà", HttpStatus.CONFLICT);
-        }
+//        if (personneService.usernameExists(registerForm.getUsername())) {
+//            return new ResponseEntity<>("Un utilisateur avec nom d'utilisateur existe déjà", HttpStatus.CONFLICT);
+//        }
         Personne personne = personneService.modifierProfil(registerForm, principal, id);
         return ResponseEntity.ok(personne);
     }
