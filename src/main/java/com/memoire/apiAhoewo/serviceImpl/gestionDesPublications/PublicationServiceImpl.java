@@ -85,6 +85,7 @@ public class PublicationServiceImpl implements PublicationService {
                 .filter(p -> (rechercheAvancePublicationForm.getTypeDeTransaction() == null || p.getTypeDeTransaction().equals(rechercheAvancePublicationForm.getTypeDeTransaction())))
                 .filter(p -> (rechercheAvancePublicationForm.getTypeDeBien() == null || rechercheAvancePublicationForm.getTypeDeBien().estNull() || p.getBienImmobilier().getTypeDeBien().equals(rechercheAvancePublicationForm.getTypeDeBien())))
                 .filter(p -> (rechercheAvancePublicationForm.getQuartier() == null || rechercheAvancePublicationForm.getQuartier().estNull() || p.getBienImmobilier().getQuartier().equals(rechercheAvancePublicationForm.getQuartier())))
+                .filter(p -> (rechercheAvancePublicationForm.getCategorie() == null || p.getBienImmobilier().getCategorie().equals(rechercheAvancePublicationForm.getCategorie())))
                 .filter(publication ->
                         (rechercheAvancePublicationForm.getPrixMin() == null || publication.getPrixDuBien() >= rechercheAvancePublicationForm.getPrixMin())
                         && (rechercheAvancePublicationForm.getPrixMax() == null || publication.getPrixDuBien() <= rechercheAvancePublicationForm.getPrixMax()))
@@ -554,7 +555,7 @@ public class PublicationServiceImpl implements PublicationService {
             if (rechercheAvancePublicationForm.getPlacard() == null || rechercheAvancePublicationForm.getPlacard() == caracteristiques.getPlacard()) {
                 return true;
             }
-            if (rechercheAvancePublicationForm.getALetage() == null || rechercheAvancePublicationForm.getALetage() == caracteristiques.getALetage()) {
+            if (rechercheAvancePublicationForm.getALetage() == null || rechercheAvancePublicationForm.getALetage() == caracteristiques.getEtage()) {
                 return true;
             }
             if (rechercheAvancePublicationForm.getToiletteVisiteur() == null || rechercheAvancePublicationForm.getToiletteVisiteur() == caracteristiques.getToiletteVisiteur()) {

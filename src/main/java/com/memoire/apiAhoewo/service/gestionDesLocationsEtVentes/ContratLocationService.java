@@ -8,9 +8,12 @@ import org.springframework.data.domain.Page;
 
 import java.net.MalformedURLException;
 import java.security.Principal;
+import java.util.List;
 
 public interface ContratLocationService {
     Page<ContratLocation> getContratLocations(Principal principal, int numeroDeLaPage, int elementsParPage);
+
+    List<ContratLocation> getContratLocations(Principal principal);
 
     ContratLocation findById(Long id);
 

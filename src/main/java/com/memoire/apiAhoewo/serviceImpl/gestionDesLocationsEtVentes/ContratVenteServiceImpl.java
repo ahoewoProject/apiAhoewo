@@ -19,6 +19,7 @@ import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.BienImmobilier;
 import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
 import com.memoire.apiAhoewo.model.gestionDesLocationsEtVentes.ContratVente;
 import com.memoire.apiAhoewo.model.gestionDesLocationsEtVentes.DemandeAchat;
+import com.memoire.apiAhoewo.repository.gestionDesBiensImmobiliers.BienImmobilierRepository;
 import com.memoire.apiAhoewo.repository.gestionDesLocationsEtVentes.ContratVenteRepository;
 import com.memoire.apiAhoewo.requestForm.MotifRejetForm;
 import com.memoire.apiAhoewo.service.MotifRejetService;
@@ -54,6 +55,8 @@ public class ContratVenteServiceImpl implements ContratVenteService {
     private PublicationService publicationService;
     @Autowired
     private MotifRejetService motifRejetService;
+    @Autowired
+    private BienImmobilierRepository bienImmobilierRepository;
 
     @Override
     public Page<ContratVente> getContratVentes(Principal principal, int numeroDeLaPage, int elementsParPage) {
@@ -61,6 +64,13 @@ public class ContratVenteServiceImpl implements ContratVenteService {
         List<DemandeAchat> demandeAchatList = demandeAchatService.getDemandesAchats(principal);
 
         return contratVenteRepository.findByDemandeAchatInOrderByIdDesc(demandeAchatList, pageRequest);
+    }
+
+    @Override
+    public List<ContratVente> getContratVentes(Principal principal) {
+        List<DemandeAchat> demandeAchatList = demandeAchatService.getDemandesAchats(principal);
+
+        return contratVenteRepository.findByDemandeAchatIn(demandeAchatList);
     }
 
     @Override
@@ -186,6 +196,9 @@ public class ContratVenteServiceImpl implements ContratVenteService {
                     notificationService.save(notification2);
                 }
             }
+
+            contratVente.getDemandeAchat().getPublication().getBienImmobilier().setStatutBien("Vendu");
+            bienImmobilierRepository.save(contratVente.getDemandeAchat().getPublication().getBienImmobilier());
 
             publicationService.desactiverPublication(contratVente.getDemandeAchat().getPublication().getId());
 

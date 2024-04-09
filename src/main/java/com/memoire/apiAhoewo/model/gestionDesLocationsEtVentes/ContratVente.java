@@ -12,6 +12,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Entity
 @Table(name = "contrats_ventes")
+@DiscriminatorValue("CONTRAT_VENTE")
 public class ContratVente extends Contrat {
     @ManyToOne()
     @JoinColumn(name = "demande_achat_id", nullable = false)

@@ -42,11 +42,13 @@ public class CaracteristiquesServiceImpl implements CaracteristiquesService {
     @Override
     public Caracteristiques update(Long id, Caracteristiques caracteristiques, Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
-        Caracteristiques caracteristiques1 = findByBienImmobilier(id);
-        existsCaracteristiquesToUpdate(caracteristiques, caracteristiques1);
-        caracteristiques1.setModifierLe(new Date());
-        caracteristiques1.setModifierPar(personne.getId());
-        return caracteristiquesRepository.save(caracteristiques1);
+        BienImmobilier bienImmobilier = bienImmobilierService.findById(id);
+        caracteristiques.setBienImmobilier(bienImmobilier);
+//        Caracteristiques caracteristiques1 = findByBienImmobilier(id);
+//       existsCaracteristiquesToUpdate(caracteristiques, caracteristiques1);
+        caracteristiques.setModifierLe(new Date());
+        caracteristiques.setModifierPar(personne.getId());
+        return caracteristiquesRepository.save(caracteristiques);
     }
 
     private void existsCaracteristiquesToUpdate(Caracteristiques caracteristiques, Caracteristiques caracteristiques1) {
@@ -124,8 +126,8 @@ public class CaracteristiquesServiceImpl implements CaracteristiquesService {
             caracteristiques1.setPlacard(caracteristiques.getPlacard());
         } else if (caracteristiques.getDalle() != null) {
             caracteristiques1.setDalle(caracteristiques.getDalle());
-        } else if (caracteristiques.getALetage() != null) {
-            caracteristiques1.setALetage(caracteristiques.getALetage());
+        } else if (caracteristiques.getEtage() != null) {
+            caracteristiques1.setEtage(caracteristiques.getEtage());
         } else if (caracteristiques.getNombrePlacards() != null) {
             caracteristiques1.setNombrePlacards(caracteristiques.getNombrePlacards());
         } else if (caracteristiques.getToiletteVisiteur() != null) {
@@ -208,8 +210,8 @@ public class CaracteristiquesServiceImpl implements CaracteristiquesService {
             caracteristiques.setPlacard(caracteristiques.getPlacard());
         } else if (caracteristiques.getDalle() != null) {
             caracteristiques.setDalle(caracteristiques.getDalle());
-        } else if (caracteristiques.getALetage() != null) {
-            caracteristiques.setALetage(caracteristiques.getALetage());
+        } else if (caracteristiques.getEtage() != null) {
+            caracteristiques.setEtage(caracteristiques.getEtage());
         } else if (caracteristiques.getNombrePlacards() != null) {
             caracteristiques.setNombrePlacards(caracteristiques.getNombrePlacards());
         } else if (caracteristiques.getToiletteVisiteur() != null) {

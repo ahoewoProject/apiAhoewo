@@ -137,8 +137,8 @@ public class Caracteristiques extends EntiteDeBase {
     @Column(name = "placard")
     private Boolean placard;
 
-    @Column(name = "a_letage")
-    private Boolean aLetage;
+    @Column(name = "etage")
+    private Boolean etage;
 
     @Column(name = "toilette_visiteur")
     private Boolean toiletteVisiteur;

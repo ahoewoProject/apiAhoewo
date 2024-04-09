@@ -17,7 +17,10 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@MappedSuperclass
+@Entity
+@Table(name = "contrats")
+@DiscriminatorColumn(name = "type")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Contrat extends EntiteDeBase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

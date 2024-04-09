@@ -8,9 +8,12 @@ import org.springframework.data.domain.Page;
 
 import java.net.MalformedURLException;
 import java.security.Principal;
+import java.util.List;
 
 public interface ContratVenteService {
     Page<ContratVente> getContratVentes(Principal principal, int numeroDeLaPage, int elementsParPage);
+
+    List<ContratVente> getContratVentes(Principal principal);
 
     ContratVente findById(Long id);
 

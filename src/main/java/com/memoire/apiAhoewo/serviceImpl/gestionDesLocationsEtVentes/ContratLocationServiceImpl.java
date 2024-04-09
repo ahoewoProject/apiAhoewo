@@ -19,6 +19,7 @@ import com.memoire.apiAhoewo.model.gestionDesBiensImmobiliers.BienImmobilier;
 import com.memoire.apiAhoewo.model.gestionDesComptes.Personne;
 import com.memoire.apiAhoewo.model.gestionDesLocationsEtVentes.ContratLocation;
 import com.memoire.apiAhoewo.model.gestionDesLocationsEtVentes.DemandeLocation;
+import com.memoire.apiAhoewo.repository.gestionDesBiensImmobiliers.BienImmobilierRepository;
 import com.memoire.apiAhoewo.repository.gestionDesLocationsEtVentes.ContratLocationRepository;
 import com.memoire.apiAhoewo.requestForm.MotifRejetForm;
 import com.memoire.apiAhoewo.service.MotifRejetService;
@@ -55,6 +56,8 @@ public class ContratLocationServiceImpl implements ContratLocationService {
     private MotifRejetService motifRejetService;
     @Autowired
     private PublicationService publicationService;
+    @Autowired
+    private BienImmobilierRepository bienImmobilierRepository;
 
     @Override
     public Page<ContratLocation> getContratLocations(Principal principal, int numeroDeLaPage, int elementsParPage) {
@@ -63,6 +66,20 @@ public class ContratLocationServiceImpl implements ContratLocationService {
 
         return contratLocationRepository.findByDemandeLocationInOrderByIdDesc(demandeLocationList, pageRequest);
     }
+
+    @Override
+    public List<ContratLocation> getContratLocations(Principal principal) {
+        List<DemandeLocation> demandeLocationList = demandeLocationService.getDemandesLocations(principal);
+
+        return contratLocationRepository.findByDemandeLocationIn(demandeLocationList);
+    }
+
+    private boolean verifyRoleCode(String roleCode) {
+        return roleCode.equals("ROLE_PROPRIETAIRE") || roleCode.equals("ROLE_RESPONSABLE") ||
+                roleCode.equals("ROLE_AGENTIMMOBILIER") || roleCode.equals("ROLE_DEMARCHEUR") ||
+                roleCode.equals("ROLE_GERANT");
+    }
+
 
     @Override
     public ContratLocation findById(Long id) {
@@ -189,6 +206,9 @@ public class ContratLocationServiceImpl implements ContratLocationService {
                 }
             }
 
+            contratLocation.getDemandeLocation().getPublication().getBienImmobilier().setStatutBien("Loué");
+            bienImmobilierRepository.save(contratLocation.getDemandeLocation().getPublication().getBienImmobilier());
+
             publicationService.desactiverPublication(contratLocation.getDemandeLocation().getPublication().getId());
 
             contratLocationRepository.save(contratLocation);
@@ -215,6 +235,9 @@ public class ContratLocationServiceImpl implements ContratLocationService {
             notification.setCreerLe(new Date());
             notificationService.save(notification);
         }
+
+        contratLocation.getBienImmobilier().setStatutBien("Disponible");
+        bienImmobilierRepository.save(contratLocation.getBienImmobilier());
 
         publicationService.activerPublication(contratLocation.getDemandeLocation().getPublication().getId());
 

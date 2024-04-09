@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -34,6 +36,19 @@ public class ContratLocationController {
             System.out.println("Erreur " + e.getMessage());
             throw new RuntimeException("Une erreur s'est produite lors de la récupération des contrats de locations.", e);
         }
+    }
+
+    @RequestMapping(value = "/contrats/locations", method = RequestMethod.GET)
+    public List<ContratLocation> getContratLocations(Principal principal) {
+
+        List<ContratLocation> contratLocations = new ArrayList<>();
+        try {
+            contratLocations = this.contratLocationService.getContratLocations(principal);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return contratLocations;
     }
 
     @RequestMapping(value = "/contrat-location/{id}", method = RequestMethod.GET)

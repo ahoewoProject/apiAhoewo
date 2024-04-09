@@ -16,6 +16,7 @@ public class RechercheAvanceePublicationForm {
     private Double prixMin;
     private Double prixMax;
     private Double fraisDeVisite;
+    private String categorie;
     private Integer avance;
     private Integer caution;
     private Integer commission;
