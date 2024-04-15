@@ -1,6 +1,6 @@
 package com.memoire.apiAhoewo.fileManager;
 
-import com.memoire.apiAhoewo.exception.UnsupportedFileTypeException;
+import com.memoire.apiAhoewo.exceptions.UnsupportedFileTypeException;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Component;
 

@@ -1,0 +1,37 @@
+package com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers;
+
+import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.TypeDeBien;
+import org.springframework.data.domain.Page;
+
+import java.security.Principal;
+import java.util.List;
+
+public interface TypeDeBienService {
+    public List<TypeDeBien> getAll();
+
+    public Page<TypeDeBien> getTypesDeBienPagines(int numeroDeLaPage, int elementsParPage);
+
+    public List<TypeDeBien> findTypeDeBienActifs();
+
+    public List<TypeDeBien> findTypeDeBienActifsByLibelle(List<String> libelles);
+
+    public TypeDeBien findById(Long id);
+
+    public TypeDeBien findByDesignation(String designation);
+
+    public TypeDeBien findByCode(String code);
+
+    public TypeDeBien save(TypeDeBien typeDeBien, Principal principal);
+
+    public TypeDeBien update(TypeDeBien typeDeBien, Principal principal);
+
+    public void activerTypeDeBien(Long id);
+
+    public void desactiverTypeDeBien(Long id);
+
+    public void deleteById(Long id);
+
+    boolean isTypeBienSupport(String designation);
+
+    boolean isTypeBienAssocie(String designation);
+}
