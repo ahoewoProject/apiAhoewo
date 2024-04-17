@@ -62,10 +62,7 @@ public class ContratVenteController {
     @RequestMapping(value = "/contrat-vente/ajouter", method = RequestMethod.POST)
     public ResponseEntity<?> ajouterContratVente(Principal principal, @RequestBody ContratVente contratVente) {
         try {
-            if (contratVenteService.existingContratLocationByDemandeAchat(contratVente.getDemandeAchat())) {
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body("Un contrat de vente existe déjà pour cette demande d'achat.");
-            } else if (contratVenteService.existingContratLocationByBienImmobilierAndEtatContrat(
+            if (contratVenteService.existingContratLocationByBienImmobilierAndEtatContrat(
                     contratVente.getBienImmobilier(), "Validé")) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                         .body("Un contrat de vente est déjà validé pour ce bien immobilier.");

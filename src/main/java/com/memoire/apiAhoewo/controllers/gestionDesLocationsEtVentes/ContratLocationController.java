@@ -76,10 +76,7 @@ public class ContratLocationController {
     @RequestMapping(value = "/contrat-location/ajouter", method = RequestMethod.POST)
     public ResponseEntity<?> ajouterContratLocation(Principal principal, @RequestBody ContratLocation contratLocation) {
         try {
-            if (contratLocationService.existingContratLocationByDemandeLocation(contratLocation.getDemandeLocation())) {
-                return ResponseEntity.status(HttpStatus.CONFLICT)
-                        .body("Un contrat de location existe déjà pour cette demande de location.");
-            } else if (contratLocationService.existingContratLocationByBienImmobilierAndEtatContrat(
+            if (contratLocationService.existingContratLocationByBienImmobilierAndEtatContrat(
                     contratLocation.getBienImmobilier(), "En cours")) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                         .body("Un contrat de location est déjà en cours pour ce bien immobilier.");
