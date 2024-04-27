@@ -21,6 +21,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -247,16 +250,24 @@ public class AgenceImmobiliereServiceImpl implements AgenceImmobiliereService {
     @Override
     public String enregistrerLogo(MultipartFile file) {
         String nomLogo = null;
+        int nouvelleLargeur = 5262;
+        int nouvelleHauteur = 3543;
 
         try {
             String repertoireImage = "src/main/resources/logos";
             File repertoire = creerRepertoire(repertoireImage);
 
             String logo = file.getOriginalFilename();
-            nomLogo = FilenameUtils.getBaseName(logo) + "." + FilenameUtils.getExtension(logo);
+            nomLogo = FilenameUtils.
+                    getBaseName(logo) + "." + FilenameUtils.getExtension(logo);
+
             File ressourceImage = new File(repertoire, nomLogo);
 
-            FileUtils.writeByteArrayToFile(ressourceImage, file.getBytes());
+            // Redimensionner l'image avant de l'enregistrer
+            File tempFile = new File(repertoire, "temp_" + nomLogo);
+            FileUtils.writeByteArrayToFile(tempFile, file.getBytes());
+            redimensionnerImage(tempFile, ressourceImage, nouvelleLargeur, nouvelleHauteur);
+            tempFile.delete(); // Supprimer le fichier temporaire
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -274,6 +285,19 @@ public class AgenceImmobiliereServiceImpl implements AgenceImmobiliereService {
             }
         }
         return repertoire;
+    }
+
+    /* Fonction pour redimensionner l'image avant son enregistrement */
+    private void redimensionnerImage(File imageSource, File imageDest, int newWidth, int newHeight) throws Exception {
+        BufferedImage image = ImageIO.read(imageSource);
+        Image resizedImage = image.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+        BufferedImage bufferedResizedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+
+        Graphics2D graphics2D = bufferedResizedImage.createGraphics();
+        graphics2D.drawImage(resizedImage, 0, 0, null);
+        graphics2D.dispose();
+
+        ImageIO.write(bufferedResizedImage, FilenameUtils.getExtension(imageDest.getName()), imageDest);
     }
 
     /* Fonction pour construire le chemin vers le logo d'une agence immobilière */
