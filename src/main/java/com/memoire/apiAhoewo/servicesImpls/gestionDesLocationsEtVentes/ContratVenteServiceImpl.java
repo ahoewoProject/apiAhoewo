@@ -15,21 +15,19 @@ import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
+import com.memoire.apiAhoewo.dto.MotifRejetForm;
 import com.memoire.apiAhoewo.models.MotifRejet;
 import com.memoire.apiAhoewo.models.Notification;
 import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.BienImmobilier;
 import com.memoire.apiAhoewo.models.gestionDesComptes.Personne;
 import com.memoire.apiAhoewo.models.gestionDesLocationsEtVentes.ContratVente;
 import com.memoire.apiAhoewo.models.gestionDesLocationsEtVentes.DemandeAchat;
-import com.memoire.apiAhoewo.repositories.gestionDesBiensImmobiliers.BienImmobilierRepository;
 import com.memoire.apiAhoewo.repositories.gestionDesLocationsEtVentes.ContratVenteRepository;
-import com.memoire.apiAhoewo.dto.MotifRejetForm;
 import com.memoire.apiAhoewo.services.MotifRejetService;
 import com.memoire.apiAhoewo.services.NotificationService;
 import com.memoire.apiAhoewo.services.gestionDesComptes.PersonneService;
 import com.memoire.apiAhoewo.services.gestionDesLocationsEtVentes.ContratVenteService;
 import com.memoire.apiAhoewo.services.gestionDesLocationsEtVentes.DemandeAchatService;
-import com.memoire.apiAhoewo.services.gestionDesPublications.PublicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -38,7 +36,6 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.Principal;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
@@ -57,11 +54,7 @@ public class ContratVenteServiceImpl implements ContratVenteService {
     @Autowired
     private NotificationService notificationService;
     @Autowired
-    private PublicationService publicationService;
-    @Autowired
     private MotifRejetService motifRejetService;
-    @Autowired
-    private BienImmobilierRepository bienImmobilierRepository;
 
     @Override
     public Page<ContratVente> getContratVentes(Principal principal, int numeroDeLaPage, int elementsParPage) {
@@ -167,6 +160,11 @@ public class ContratVenteServiceImpl implements ContratVenteService {
     }
 
     @Override
+    public ContratVente setEtatContrat(ContratVente contratVente) {
+        return contratVenteRepository.save(contratVente);
+    }
+
+    @Override
     public void valider(Principal principal, Long id) {
         ContratVente contratVente = contratVenteRepository.findById(id).orElse(null);
         Personne personne = personneService.findByUsername(principal.getName());
@@ -201,11 +199,6 @@ public class ContratVenteServiceImpl implements ContratVenteService {
                     notificationService.save(notification2);
                 }
             }
-
-            contratVente.getDemandeAchat().getPublication().getBienImmobilier().setStatutBien("Vendu");
-            bienImmobilierRepository.save(contratVente.getDemandeAchat().getPublication().getBienImmobilier());
-
-            publicationService.desactiverPublication(contratVente.getDemandeAchat().getPublication().getId());
 
             contratVenteRepository.save(contratVente);
         }
@@ -304,8 +297,6 @@ public class ContratVenteServiceImpl implements ContratVenteService {
     @Override
     public byte[] generateContratVentePdf(Long id) throws IOException {
         ContratVente contratVente = contratVenteRepository.findById(id).orElse(null);
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
 
         LocalDateTime now = LocalDateTime.now();
 
@@ -611,7 +602,7 @@ public class ContratVenteServiceImpl implements ContratVenteService {
             }
 
             if (contratVente.getDemarcheur() != null) {
-                autreDetail.addCell(getCell10fLeft(new Paragraph("Demarcheur").setMarginTop(20), true));
+                autreDetail.addCell(getCell10fLeft(new Paragraph("Démarcheur").setMarginTop(20), true));
                 autreDetail.addCell(getCell10fLeft(new Paragraph(contratVente.getDemarcheur().getNom() + " " + contratVente.getDemarcheur().getPrenom() + " " + contratVente.getDemarcheur().getTelephone()).setMarginTop(10), false));
             }
 

@@ -15,20 +15,22 @@ import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
+import com.memoire.apiAhoewo.dto.MotifRejetForm;
 import com.memoire.apiAhoewo.models.MotifRejet;
 import com.memoire.apiAhoewo.models.Notification;
 import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.BienImmobilier;
 import com.memoire.apiAhoewo.models.gestionDesComptes.Personne;
 import com.memoire.apiAhoewo.models.gestionDesLocationsEtVentes.ContratLocation;
 import com.memoire.apiAhoewo.models.gestionDesLocationsEtVentes.DemandeLocation;
+import com.memoire.apiAhoewo.models.gestionDesPaiements.PlanificationPaiement;
 import com.memoire.apiAhoewo.repositories.gestionDesLocationsEtVentes.ContratLocationRepository;
-import com.memoire.apiAhoewo.dto.MotifRejetForm;
 import com.memoire.apiAhoewo.services.MotifRejetService;
 import com.memoire.apiAhoewo.services.NotificationService;
 import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.BienImmobilierService;
 import com.memoire.apiAhoewo.services.gestionDesComptes.PersonneService;
 import com.memoire.apiAhoewo.services.gestionDesLocationsEtVentes.ContratLocationService;
 import com.memoire.apiAhoewo.services.gestionDesLocationsEtVentes.DemandeLocationService;
+import com.memoire.apiAhoewo.services.gestionDesPaiements.PlanificationPaiementService;
 import com.memoire.apiAhoewo.services.gestionDesPublications.PublicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -59,6 +61,8 @@ public class ContratLocationServiceImpl implements ContratLocationService {
     private PublicationService publicationService;
     @Autowired
     private BienImmobilierService bienImmobilierService;
+    @Autowired
+    private PlanificationPaiementService planificationPaiementService;
 
     @Override
     public Page<ContratLocation> getContratLocations(Principal principal, int numeroDeLaPage, int elementsParPage) {
@@ -172,13 +176,18 @@ public class ContratLocationServiceImpl implements ContratLocationService {
     }
 
     @Override
+    public ContratLocation setEtatContrat(ContratLocation contratLocation) {
+        return contratLocationRepository.save(contratLocation);
+    }
+
+    @Override
     public void valider(Principal principal, Long id) {
         ContratLocation contratLocation = contratLocationRepository.findById(id).orElse(null);
         Personne personne = personneService.findByUsername(principal.getName());
 
         if (contratLocation != null) {
             contratLocation.setDateSignature(new Date());
-            contratLocation.setEtatContrat("En cours");
+            contratLocation.setEtatContrat("Validé");
 
             Notification notification = new Notification();
             notification.setTitre("Validation d'une proposition de contrat de location");
@@ -207,10 +216,15 @@ public class ContratLocationServiceImpl implements ContratLocationService {
                 }
             }
 
-            contratLocation.getDemandeLocation().getPublication().getBienImmobilier().setStatutBien("Loué");
-            bienImmobilierService.setBienImmobilier(contratLocation.getDemandeLocation().getPublication().getBienImmobilier());
+            Double montantDu = (contratLocation.getLoyer() * contratLocation.getAvance()) + (contratLocation.getLoyer() * contratLocation.getCaution());
 
-            publicationService.desactiverPublication(contratLocation.getDemandeLocation().getPublication().getId());
+            PlanificationPaiement planificationPaiement = new PlanificationPaiement();
+            planificationPaiement.setTypePlanification("Paiement de location");
+            planificationPaiement.setContrat(contratLocation);
+            planificationPaiement.setLibelle("Avance/Caution");
+            planificationPaiement.setMontantDu(montantDu);
+            planificationPaiement.setDatePlanifiee(new Date());
+            planificationPaiementService.savePlanificationPaiementLocation(principal, planificationPaiement);
 
             contratLocationRepository.save(contratLocation);
         }
