@@ -434,6 +434,15 @@ public class PublicationServiceImpl implements PublicationService {
     }
 
     @Override
+    public void desactiverPublicationParBienImmobilier(Long id) {
+        Publication publication = publicationRepository.findByBienImmobilier_Id(id);
+        if (publication !=  null) {
+            publication.setEtat(false);
+            publicationRepository.save(publication);
+        }
+    }
+
+    @Override
     public boolean existsByBienImmobilierAndEtat(BienImmobilier bienImmobilier, Boolean etat) {
         return publicationRepository.existsByBienImmobilierAndEtat(bienImmobilier, etat);
     }
