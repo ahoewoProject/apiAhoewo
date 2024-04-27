@@ -39,6 +39,8 @@ public interface PublicationRepository extends JpaRepository<Publication, Long> 
 
     Publication findByCodePublication(String codePublication);
 
+    Publication findByBienImmobilier_Id(Long id);
+
     Page<Publication> findByBienImmobilierInOrderByIdDesc(List<BienImmobilier> bienImmobilierList, Pageable pageable);
 
     List<Publication> findByBienImmobilierInOrderByIdDesc(List<BienImmobilier> bienImmobilierList);

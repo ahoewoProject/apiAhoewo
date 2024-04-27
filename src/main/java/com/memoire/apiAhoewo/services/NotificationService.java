@@ -9,9 +9,13 @@ import java.util.List;
 public interface NotificationService {
     public List<Notification> getNotificationsNonLuesByAdmin();
 
+    public List<Notification> getNotificationsNonLuesByNotaire();
+
     public List<Notification> getNotificationsNonLuesByOwner(Principal principal);
 
     public Page<Notification> getNotificationsByAdmin(int numeroDeLaPage, int elementsParPage);
+
+    public Page<Notification> getNotificationsByNotaire(int numeroDeLaPage, int elementsParPage);
 
     public Page<Notification> getNotificationsByOwner(int numeroDeLaPage, int elementsParPage, Principal principal);
 

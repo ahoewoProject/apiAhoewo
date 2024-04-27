@@ -53,5 +53,7 @@ public interface PublicationService {
 
     void desactiverPublication(Long id);
 
+    void desactiverPublicationParBienImmobilier(Long id);
+
     boolean existsByBienImmobilierAndEtat(BienImmobilier bienImmobilier, Boolean etat);
 }

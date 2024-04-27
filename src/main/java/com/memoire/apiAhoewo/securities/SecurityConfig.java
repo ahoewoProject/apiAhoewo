@@ -71,6 +71,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/api/publication/code/{code}/**",
                 "/api/contrat-location/generer-pdf/{id}/**",
                 "/api/contrat-vente/generer-pdf/{id}/**",
+                "/api/paiement/generer-pdf/{id}/**",
                 "/api/contactez-nous/**").permitAll();
         //http.authorizeRequests().antMatchers(GET,"/api/user/**").hasAnyAuthority("ROLE_USER");
         //http.authorizeRequests().antMatchers(POST,"/api/user/save/**").hasAnyAuthority("ROLE_ADMIN");

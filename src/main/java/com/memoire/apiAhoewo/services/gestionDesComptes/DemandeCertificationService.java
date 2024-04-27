@@ -1,12 +1,13 @@
 package com.memoire.apiAhoewo.services.gestionDesComptes;
 
 import com.memoire.apiAhoewo.models.gestionDesComptes.DemandeCertification;
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 import java.util.List;
 public interface DemandeCertificationService {
-    public List<DemandeCertification> getAll();
+    public Page<DemandeCertification> getDemandesCertifications(int numeroDeLaPage, int elementsParPage, Principal principal);
 
     public DemandeCertification findById(Long id);
 

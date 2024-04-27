@@ -20,6 +20,9 @@ public class DemandeCertification extends EntiteDeBase {
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "code_certification", unique = true, nullable = false)
+    protected String codeCertification;
+
     @Column(name = "date_demande", nullable = false)
     private Date dateDemande;
 

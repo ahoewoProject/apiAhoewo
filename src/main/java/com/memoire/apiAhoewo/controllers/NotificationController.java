@@ -29,6 +29,18 @@ public class NotificationController {
         }
     }
 
+    @RequestMapping(value = "/notifications/non-lues/notaire", method = RequestMethod.GET)
+    public List<Notification> getNotificationsNonLuesByNotaire() {
+
+        try {
+            return this.notificationService.getNotificationsNonLuesByNotaire();
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des notifications.", e);
+        }
+    }
+
     @RequestMapping(value = "/notifications/non-lues/owner", method = RequestMethod.GET)
     public List<Notification> getNotificationsNonLuesByOwner(Principal principal) {
 
@@ -48,6 +60,20 @@ public class NotificationController {
 
         try {
             return this.notificationService.getNotificationsByAdmin(numeroDeLaPage, elementsParPage);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des notifications.", e);
+        }
+    }
+
+    @RequestMapping(value = "/notifications/notaire", method = RequestMethod.GET)
+    public Page<Notification> getNotificationsByNotaire(
+            @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+            @RequestParam(value = "elementsParPage") int elementsParPage) {
+
+        try {
+            return this.notificationService.getNotificationsByNotaire(numeroDeLaPage, elementsParPage);
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Erreur " + e.getMessage());

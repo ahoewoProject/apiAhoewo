@@ -21,6 +21,8 @@ public interface ContratLocationService {
 
     ContratLocation modifier(Principal principal, ContratLocation contratLocation);
 
+    ContratLocation setEtatContrat(ContratLocation contratLocation);
+
     void valider(Principal principal, Long id);
 
     void mettreFin(Principal principal, Long id);

@@ -27,6 +27,11 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    public List<Notification> getNotificationsNonLuesByNotaire() {
+        return notificationRepository.findBySendToAndLuAndStatut("NOTAIRE", false, true);
+    }
+
+    @Override
     public List<Notification> getNotificationsNonLuesByOwner(Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
         return notificationRepository.findBySendToAndLuAndStatut(String.valueOf(personne.getId()), false, true);
@@ -36,6 +41,12 @@ public class NotificationServiceImpl implements NotificationService {
     public Page<Notification> getNotificationsByAdmin(int numeroDeLaPage, int elementsParPage) {
         PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
         return notificationRepository.findBySendToAndStatutOrderByIdDesc(pageRequest, "ADMIN", true);
+    }
+
+    @Override
+    public Page<Notification> getNotificationsByNotaire(int numeroDeLaPage, int elementsParPage) {
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+        return notificationRepository.findBySendToAndStatutOrderByIdDesc(pageRequest, "NOTAIRE", true);
     }
 
     @Override

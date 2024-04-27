@@ -9,6 +9,8 @@ import java.util.List;
 public interface NotaireService {
     public List<Notaire> getAll();
 
+    public List<Notaire> getNotaireActifs();
+
     Page<Notaire> getNotaires(int numeroDeLaPage, int elementsParPage);
 
     public Notaire findById(Long id);

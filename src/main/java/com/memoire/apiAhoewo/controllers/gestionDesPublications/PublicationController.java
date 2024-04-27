@@ -9,6 +9,7 @@ import com.memoire.apiAhoewo.services.gestionDesAgencesImmobilieres.AgenceImmobi
 import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.*;
 import com.memoire.apiAhoewo.services.gestionDesComptes.PersonneService;
 import com.memoire.apiAhoewo.services.gestionDesLocationsEtVentes.ContratLocationService;
+import com.memoire.apiAhoewo.services.gestionDesLocationsEtVentes.ContratVenteService;
 import com.memoire.apiAhoewo.services.gestionDesPublications.PublicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -37,6 +38,8 @@ public class PublicationController {
     private AgenceImmobiliereService agenceImmobiliereService;
     @Autowired
     private ContratLocationService contratLocationService;
+    @Autowired
+    private ContratVenteService contratVenteService;
 
     public PublicationController(PublicationService publicationService, PersonneService personneService,
                                  TypeDeBienService typeDeBienService, BienImmobilierAssocieService bienImmobilierAssocieService,
@@ -347,7 +350,10 @@ public class PublicationController {
         if (contratLocationService.existingContratLocationByBienImmobilierAndEtatContrat(publication.getBienImmobilier(), "En cours")) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body("Un contrat de location est toujours en cours pour ce bien immobilier.");
-        } else if (typeDeBienService.isTypeBienSupport(publication.getBienImmobilier().getTypeDeBien().getDesignation())) {
+        } else if (contratVenteService.existingContratLocationByBienImmobilierAndEtatContrat(publication.getBienImmobilier(), "Confirmé")) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body("Un contrat de vente a été confirmé pour ce bien immobilier");
+        }else if (typeDeBienService.isTypeBienSupport(publication.getBienImmobilier().getTypeDeBien().getDesignation())) {
             List<BienImmAssocie> bienImmAssocieList = bienImmAssocieService.getBiensAssocies(publication.getBienImmobilier());
 
             if (!bienImmAssocieList.isEmpty()) {

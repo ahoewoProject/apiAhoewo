@@ -1,9 +1,9 @@
 package com.memoire.apiAhoewo.controllers.gestionDesLocationsEtVentes;
 
 import com.itextpdf.io.exceptions.IOException;
+import com.memoire.apiAhoewo.dto.MotifRejetForm;
 import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.BienImmAssocie;
 import com.memoire.apiAhoewo.models.gestionDesLocationsEtVentes.ContratVente;
-import com.memoire.apiAhoewo.dto.MotifRejetForm;
 import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.BienImmobilierAssocieService;
 import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.BienImmobilierService;
 import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.TypeDeBienService;
@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,19 @@ public class ContratVenteController {
             System.out.println("Erreur " + e.getMessage());
             throw new RuntimeException("Une erreur s'est produite lors de la récupération des contrats de ventes.", e);
         }
+    }
+
+    @RequestMapping(value = "/contrats/ventes", method = RequestMethod.GET)
+    public List<ContratVente> getContratVentes(Principal principal) {
+
+        List<ContratVente> contratVenteList = new ArrayList<>();
+        try {
+            contratVenteList = this.contratVenteService.getContratVentes(principal);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return contratVenteList;
     }
 
     @RequestMapping(value = "/contrat-vente/{id}", method = RequestMethod.GET)

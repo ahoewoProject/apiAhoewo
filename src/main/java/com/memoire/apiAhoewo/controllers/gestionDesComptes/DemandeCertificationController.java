@@ -7,6 +7,7 @@ import com.memoire.apiAhoewo.models.gestionDesComptes.DemandeCertification;
 import com.memoire.apiAhoewo.services.FileManagerService;
 import com.memoire.apiAhoewo.services.gestionDesComptes.DemandeCertificationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,28 +28,17 @@ public class DemandeCertificationController {
     private FileManagerService fileManagerService;
 
     @RequestMapping(value = "/demandes-certifications", method = RequestMethod.GET)
-    public List<DemandeCertification> getAll(){
+    public Page<DemandeCertification> getDemandesCertifications(Principal principal,
+                                                @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+                                                @RequestParam(value = "elementsParPage") int elementsParPage) {
 
-        List<DemandeCertification> demandeCertifications = new ArrayList<>();
         try {
-            demandeCertifications = this.demandeCertificationService.getAll();
+            return this.demandeCertificationService.getDemandesCertifications(numeroDeLaPage, elementsParPage, principal);
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des contrats de ventes.", e);
         }
-        return demandeCertifications;
-    }
-
-    @RequestMapping(value = "/demande-certification/{id}", method = RequestMethod.GET)
-    public DemandeCertification findById(@PathVariable Long id) {
-
-        DemandeCertification demandeCertification = new DemandeCertification();
-        try {
-            demandeCertification = this.demandeCertificationService.findById(id);
-        } catch (Exception e) {
-            System.out.println("Erreur " + e.getMessage());
-        }
-        return demandeCertification;
     }
 
     @RequestMapping(value = "/user/demande-certification", method = RequestMethod.GET)
@@ -62,6 +52,18 @@ public class DemandeCertificationController {
             System.out.println("Erreur " + e.getMessage());
         }
         return demandeCertificationList;
+    }
+
+    @RequestMapping(value = "/demande-certification/{id}", method = RequestMethod.GET)
+    public DemandeCertification findById(@PathVariable Long id) {
+
+        DemandeCertification demandeCertification = new DemandeCertification();
+        try {
+            demandeCertification = this.demandeCertificationService.findById(id);
+        } catch (Exception e) {
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return demandeCertification;
     }
 
     @RequestMapping(value = "/compte/demande-certification/ajouter", method = RequestMethod.POST, headers = "accept=Application/json")

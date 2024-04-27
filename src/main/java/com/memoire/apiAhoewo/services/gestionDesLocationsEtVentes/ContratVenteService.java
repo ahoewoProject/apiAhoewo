@@ -1,9 +1,9 @@
 package com.memoire.apiAhoewo.services.gestionDesLocationsEtVentes;
 
+import com.memoire.apiAhoewo.dto.MotifRejetForm;
 import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.BienImmobilier;
 import com.memoire.apiAhoewo.models.gestionDesLocationsEtVentes.ContratVente;
 import com.memoire.apiAhoewo.models.gestionDesLocationsEtVentes.DemandeAchat;
-import com.memoire.apiAhoewo.dto.MotifRejetForm;
 import org.springframework.data.domain.Page;
 
 import java.io.IOException;
@@ -20,6 +20,8 @@ public interface ContratVenteService {
     ContratVente save(ContratVente contratVente, Principal principal);
 
     ContratVente modifier(Principal principal, ContratVente contratVente);
+
+    ContratVente setEtatContrat(ContratVente contratVente);
 
     void valider(Principal principal, Long id);
 
