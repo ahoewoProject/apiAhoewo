@@ -41,6 +41,11 @@ public class NotaireServiceImpl implements NotaireService {
     }
 
     @Override
+    public List<Notaire> getNotaireActifs() {
+        return notaireRepository.findAllByEtatCompte(true);
+    }
+
+    @Override
     public Page<Notaire> getNotaires(int numeroDeLaPage, int elementsParPage) {
         PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
         return notaireRepository.findAllByOrderByCreerLeDesc(pageRequest);
