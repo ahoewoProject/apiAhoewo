@@ -91,7 +91,6 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
         demandeCertification.setStatut(true);
         demandeCertification = demandeCertificationRepository.save(demandeCertification);
 
-
         List<Notaire> notaireList = notaireService.getNotaireActifs();
 
         if (!notaireList.isEmpty()) {
@@ -115,7 +114,7 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
 
         Notification notification = new Notification();
         notification.setTitre("Nouvelle demande de certification.");
-        notification.setMessage("M/Mlle. " + personne.getPrenom() + " " + personne.getNom() + " vient de soumettre une demande de certification pour l'agence du nom de : " + demandeCertification.getAgenceImmobiliere().getNomAgence());
+        notification.setMessage("M/Mlle. " + personne.getPrenom() + " " + personne.getNom() + " vient de soumettre une demande de certification pour son compte.");
         notification.setSendTo("NOTAIRE");
         notification.setDateNotification(new Date());
         notification.setLu(false);
@@ -124,7 +123,6 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
         notification.setCreerLe(new Date());
         notificationService.save(notification);
 
-        // Mise à jour du code de certification
         demandeCertification.setCodeCertification("DEMCER00" + demandeCertification.getId());
         return demandeCertificationRepository.save(demandeCertification);
     }

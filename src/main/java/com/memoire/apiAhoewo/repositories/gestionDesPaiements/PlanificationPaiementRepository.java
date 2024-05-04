@@ -18,5 +18,9 @@ public interface PlanificationPaiementRepository extends JpaRepository<Planifica
 
     PlanificationPaiement findByContrat_CodeContratOrderByCreerLeDesc(String codeContrat);
 
+    List<PlanificationPaiement> findByContrat_CodeContrat(String codeContrat);
+
+    List<PlanificationPaiement> findByStatutPlanification(String planification);
+
     boolean existsByContratAndDatePlanifiee(Contrat contrat, Date datePlanifiee);
 }

@@ -14,6 +14,8 @@ public interface DemandeLocationService {
 
     List<DemandeLocation> getDemandesLocations(Principal principal);
 
+    List<DemandeLocation> getDemandesLocationsEnAttente();
+
     DemandeLocation findById(Long id);
 
     DemandeLocation soumettre(DemandeLocation demandeLocation, Principal principal);

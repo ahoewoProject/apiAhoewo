@@ -61,6 +61,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 "/api/agences/actives/ville/{id}/**",
                 "/api/agences/actives/quartier/{id}/**",
                 "/api/publications/actives/**",
+                "/api/publications/actives/vente/**",
+                "/api/publications/actives/location/**",
                 "/api/publications/actives/recherche-simple/**",
                 "/api/publications/actives/recherche-avancee/**",
                 "/api/publications/actives/region/{libelle}/**",

@@ -13,6 +13,7 @@ import com.memoire.apiAhoewo.services.gestionDesLocationsEtVentes.ContratLocatio
 import com.memoire.apiAhoewo.services.gestionDesLocationsEtVentes.ContratVenteService;
 import com.memoire.apiAhoewo.services.gestionDesPaiements.PlanificationPaiementService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,9 @@ public class PlanificationPaiementServiceImpl implements PlanificationPaiementSe
     private PersonneService personneService;
     @Autowired
     private NotificationService notificationService;
+    @Autowired
+    private Environment env;
+    private static final String FEDAPAY_API_URL = "https://sandbox-api.fedapay.com/v1";
 
     @Override
     public Page<PlanificationPaiement> getPlanificationsPaiement(Principal principal, int numeroDeLaPage, int elementsParPage) {
@@ -62,6 +66,16 @@ public class PlanificationPaiementServiceImpl implements PlanificationPaiementSe
         contratList.addAll(contratVenteList);
 
         return planificationPaiementRepository.findByContratIn(contratList);
+    }
+
+    @Override
+    public List<PlanificationPaiement> getPlanificationsPaiementEnAttente() {
+        return planificationPaiementRepository.findByStatutPlanification("En attente");
+    }
+
+    @Override
+    public List<PlanificationPaiement> getPlanificationsByCodeContrat(String codeContrat) {
+        return planificationPaiementRepository.findByContrat_CodeContrat(codeContrat);
     }
 
     @Override
@@ -160,6 +174,11 @@ public class PlanificationPaiementServiceImpl implements PlanificationPaiementSe
     @Override
     public PlanificationPaiement dernierePlanificationPaiementAchat(String codeContrat) {
         return planificationPaiementRepository.findByContrat_CodeContratOrderByCreerLeDesc(codeContrat);
+    }
+
+    @Override
+    public void creerTransaction(PlanificationPaiement planificationPaiement) {
+
     }
 
     @Override

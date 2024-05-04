@@ -12,4 +12,6 @@ import java.util.List;
 @Repository
 public interface SuiviEntretienRepository extends JpaRepository<SuiviEntretien, Long> {
     Page<SuiviEntretien> findByContratLocationInOrderByIdDesc(List<ContratLocation> contratLocations, Pageable pageable);
+
+    Page<SuiviEntretien> findByContratLocation_CodeContrat(String codeBien, Pageable pageable);
 }

@@ -16,5 +16,7 @@ public interface DemandeVisiteRepository extends JpaRepository<DemandeVisite, Lo
 
     Page<DemandeVisite> findByPublicationInOrderByIdDesc(List<Publication> publicationList, Pageable pageable);
 
+    List<DemandeVisite> findByEtatDemande(Integer etatDemande);
+
     boolean existsByClientAndPublication(Client client, Publication publication);
 }

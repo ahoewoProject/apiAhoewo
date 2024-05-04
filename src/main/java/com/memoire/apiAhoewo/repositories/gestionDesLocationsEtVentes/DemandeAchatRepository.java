@@ -20,5 +20,7 @@ public interface DemandeAchatRepository extends JpaRepository<DemandeAchat, Long
 
     List<DemandeAchat> findByClientOrderByIdDesc(Client client);
 
+    List<DemandeAchat> findByEtatDemande(Integer etatDemande);
+
     boolean existsByClientAndPublication(Client client, Publication publication);
 }

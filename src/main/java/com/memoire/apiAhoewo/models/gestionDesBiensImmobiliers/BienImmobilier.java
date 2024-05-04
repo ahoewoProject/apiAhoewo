@@ -48,18 +48,6 @@ public class BienImmobilier extends EntiteDeBase {
     protected Boolean etatBien;
 
     @ManyToOne
-    @JoinColumn(name = "pays_id")
-    protected Pays pays;
-
-    @ManyToOne
-    @JoinColumn(name = "region_id")
-    protected Region region;
-
-    @ManyToOne
-    @JoinColumn(name = "ville_id")
-    protected Ville ville;
-
-    @ManyToOne
     @JoinColumn(name = "quartier_id")
     protected Quartier quartier;
 

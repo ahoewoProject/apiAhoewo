@@ -20,5 +20,7 @@ public interface DemandeLocationRepository extends JpaRepository<DemandeLocation
 
     List<DemandeLocation> findByClientOrderByIdDesc(Client client);
 
+    List<DemandeLocation> findByEtatDemande(Integer etatDemande);
+
     boolean existsByClientAndPublication(Client client, Publication publication);
 }

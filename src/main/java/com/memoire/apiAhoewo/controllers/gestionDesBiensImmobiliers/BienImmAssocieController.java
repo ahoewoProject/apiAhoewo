@@ -4,10 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.BienImmAssocie;
 import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.Caracteristiques;
 import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.ImagesBienImmobilier;
-import com.memoire.apiAhoewo.models.gestionDesComptes.Personne;
+import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.BienImmobilierAssocieService;
 import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.CaracteristiquesService;
 import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.ImagesBienImmobilierService;
-import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.BienImmobilierAssocieService;
 import com.memoire.apiAhoewo.services.gestionDesComptes.PersonneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -65,14 +64,14 @@ public class BienImmAssocieController {
     {
 
         try {
-            Personne personne = personneService.findByUsername(principal.getName());
+//            Personne personne = personneService.findByUsername(principal.getName());
             BienImmAssocie bienImmAssocie = new BienImmAssocie();
             Caracteristiques caracteristique;
 
             if (bienImmAssocieJson != null && !bienImmAssocieJson.isEmpty()) {
                 bienImmAssocie = new ObjectMapper().readValue(bienImmAssocieJson, BienImmAssocie.class);
             }
-            bienImmAssocie.setPersonne(personne);
+//            bienImmAssocie.setPersonne(personne);
             bienImmAssocie = this.bienImmobilierAssocieService.save(bienImmAssocie, principal);
 
             if (files != null) {
@@ -113,9 +112,6 @@ public class BienImmAssocieController {
                 bienImmAssocie.setDescription(bienImmAssocieUpdate.getDescription());
                 bienImmAssocie.setCategorie(bienImmAssocieUpdate.getCategorie());
                 bienImmAssocie.setAdresse(bienImmAssocieUpdate.getAdresse());
-                bienImmAssocie.setPays(bienImmAssocieUpdate.getPays());
-                bienImmAssocie.setRegion(bienImmAssocieUpdate.getRegion());
-                bienImmAssocie.setVille(bienImmAssocieUpdate.getVille());
                 bienImmAssocie.setQuartier(bienImmAssocieUpdate.getQuartier());
                 bienImmAssocie.setSurface(bienImmAssocieUpdate.getSurface());
                 bienImmAssocie.setBienImmobilier(bienImmAssocieUpdate.getBienImmobilier());

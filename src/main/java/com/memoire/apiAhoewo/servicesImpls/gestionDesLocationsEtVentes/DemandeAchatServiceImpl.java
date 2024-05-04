@@ -73,6 +73,11 @@ public class DemandeAchatServiceImpl implements DemandeAchatService {
     }
 
     @Override
+    public List<DemandeAchat> getDemandesAchatsEnAttente() {
+        return demandeAchatRepository.findByEtatDemande(0);
+    }
+
+    @Override
     public DemandeAchat findById(Long id) {
         return demandeAchatRepository.findById(id).orElse(null);
     }

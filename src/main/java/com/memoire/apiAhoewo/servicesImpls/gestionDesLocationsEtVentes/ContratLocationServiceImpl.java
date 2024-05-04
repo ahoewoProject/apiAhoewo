@@ -34,6 +34,7 @@ import com.memoire.apiAhoewo.services.gestionDesPaiements.PlanificationPaiementS
 import com.memoire.apiAhoewo.services.gestionDesPublications.PublicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +45,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ContratLocationServiceImpl implements ContratLocationService {
@@ -72,11 +74,61 @@ public class ContratLocationServiceImpl implements ContratLocationService {
         return contratLocationRepository.findByDemandeLocationInOrderByIdDesc(demandeLocationList, pageRequest);
     }
 
+    public Page<ContratLocation> getContratLocationsByCodeBienAndEtatContrat(String codeBien, int numeroDeLaPage, int elementsParPage) {
+
+        List<ContratLocation> contratLocationList = contratLocationRepository.findByBienImmobilier_CodeBienOrderByIdDesc(codeBien);
+
+        List<ContratLocation> contratLocationList1 = contratLocationList.stream()
+                .filter(contratLocation -> "En cours".equals(contratLocation.getEtatContrat()))
+                .collect(Collectors.toList());
+
+        List<ContratLocation> contratLocationList2 = contratLocationList.stream()
+                .filter(contratLocation -> "Modifié".equals(contratLocation.getEtatContrat()))
+                .collect(Collectors.toList());
+
+        List<ContratLocation> contratLocationList3 = contratLocationList.stream()
+                .filter(contratLocation -> "En attente".equals(contratLocation.getEtatContrat()))
+                .collect(Collectors.toList());
+
+        List<ContratLocation> contratLocationList4 = contratLocationList.stream()
+                .filter(contratLocation -> "Validé".equals(contratLocation.getEtatContrat()))
+                .collect(Collectors.toList());
+
+        List<ContratLocation> contratLocationList5 = contratLocationList.stream()
+                .filter(contratLocation -> "Terminé".equals(contratLocation.getEtatContrat()))
+                .collect(Collectors.toList());
+
+        List<ContratLocation> contratLocationList6 =  contratLocationList.stream()
+                .filter(contratLocation -> "Refusé".equals(contratLocation.getEtatContrat()))
+                .collect(Collectors.toList());
+
+        List<ContratLocation> contratLocationArrayList = new ArrayList<>();
+        contratLocationArrayList.addAll(contratLocationList1);
+        contratLocationArrayList.addAll(contratLocationList2);
+        contratLocationArrayList.addAll(contratLocationList3);
+        contratLocationArrayList.addAll(contratLocationList4);
+        contratLocationArrayList.addAll(contratLocationList5);
+        contratLocationArrayList.addAll(contratLocationList6);
+
+        int start = numeroDeLaPage * elementsParPage;
+        int end = Math.min(start + elementsParPage, contratLocationArrayList.size());
+        List<ContratLocation> paginatedContrats = contratLocationArrayList.subList(start, end);
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+
+        return new PageImpl<>(paginatedContrats, pageRequest, contratLocationArrayList.size());
+    }
+
+
     @Override
     public List<ContratLocation> getContratLocations(Principal principal) {
         List<DemandeLocation> demandeLocationList = demandeLocationService.getDemandesLocations(principal);
 
         return contratLocationRepository.findByDemandeLocationIn(demandeLocationList);
+    }
+
+    @Override
+    public List<ContratLocation> getContratLocationsEnAttente() {
+        return contratLocationRepository.findByEtatContrat("En attente");
     }
 
     private boolean verifyRoleCode(String roleCode) {
@@ -223,6 +275,8 @@ public class ContratLocationServiceImpl implements ContratLocationService {
             planificationPaiement.setContrat(contratLocation);
             planificationPaiement.setLibelle("Avance/Caution");
             planificationPaiement.setMontantDu(montantDu);
+            planificationPaiement.setMontantPaye(montantDu);
+            planificationPaiement.setRestePaye(montantDu);
             planificationPaiement.setDatePlanifiee(new Date());
             planificationPaiementService.savePlanificationPaiementLocation(principal, planificationPaiement);
 

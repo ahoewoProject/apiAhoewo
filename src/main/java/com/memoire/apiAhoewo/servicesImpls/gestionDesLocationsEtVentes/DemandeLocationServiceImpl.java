@@ -73,6 +73,11 @@ public class DemandeLocationServiceImpl implements DemandeLocationService {
     }
 
     @Override
+    public List<DemandeLocation> getDemandesLocationsEnAttente() {
+        return demandeLocationRepository.findByEtatDemande(0);
+    }
+
+    @Override
     public DemandeLocation findById(Long id) {
         return demandeLocationRepository.findById(id).orElse(null);
     }

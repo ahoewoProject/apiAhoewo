@@ -30,6 +30,7 @@ import com.memoire.apiAhoewo.services.gestionDesLocationsEtVentes.ContratVenteSe
 import com.memoire.apiAhoewo.services.gestionDesLocationsEtVentes.DemandeAchatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -38,10 +39,8 @@ import java.io.IOException;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ContratVenteServiceImpl implements ContratVenteService {
@@ -65,10 +64,55 @@ public class ContratVenteServiceImpl implements ContratVenteService {
     }
 
     @Override
+    public Page<ContratVente> getContratVentesByCodeBienAndEtatContrat(String codeBien, int numeroDeLaPage, int elementsParPage) {
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+
+        List<ContratVente> contratVenteList = contratVenteRepository.findByBienImmobilier_CodeBienOrderByIdDesc(codeBien);
+
+        List<ContratVente> contratVenteList1 =  contratVenteList.stream()
+                .filter(contratVente -> "Confirmé".equals(contratVente.getEtatContrat()))
+                .collect(Collectors.toList());
+
+        List<ContratVente> contratVenteList2 = contratVenteList.stream()
+                .filter(contratVente -> "Modifié".equals(contratVente.getEtatContrat()))
+                .collect(Collectors.toList());
+
+        List<ContratVente> contratVenteList3 = contratVenteList.stream()
+                .filter(contratVente -> "En attente".equals(contratVente.getEtatContrat()))
+                .collect(Collectors.toList());
+
+        List<ContratVente> contratVenteList4 = contratVenteList.stream()
+                .filter(contratVente -> "Validé".equals(contratVente.getEtatContrat()))
+                .collect(Collectors.toList());
+
+        List<ContratVente> contratVenteList5 =  contratVenteList.stream()
+                .filter(contratVente -> "Refusé".equals(contratVente.getEtatContrat()))
+                .collect(Collectors.toList());
+
+        List<ContratVente> contratVenteArrayList = new ArrayList<>();
+        contratVenteArrayList.addAll(contratVenteList1);
+        contratVenteArrayList.addAll(contratVenteList2);
+        contratVenteArrayList.addAll(contratVenteList3);
+        contratVenteArrayList.addAll(contratVenteList4);
+        contratVenteArrayList.addAll(contratVenteList5);
+
+        int start = numeroDeLaPage * elementsParPage;
+        int end = Math.min(start + elementsParPage, contratVenteArrayList.size());
+        List<ContratVente> paginatedContrats = contratVenteArrayList.subList(start, end);
+
+        return new PageImpl<>(paginatedContrats, pageRequest, contratVenteArrayList.size());
+    }
+
+    @Override
     public List<ContratVente> getContratVentes(Principal principal) {
         List<DemandeAchat> demandeAchatList = demandeAchatService.getDemandesAchats(principal);
 
         return contratVenteRepository.findByDemandeAchatIn(demandeAchatList);
+    }
+
+    @Override
+    public List<ContratVente> getContratVentesEnAttente() {
+        return contratVenteRepository.findByEtatContrat("En attente");
     }
 
     @Override

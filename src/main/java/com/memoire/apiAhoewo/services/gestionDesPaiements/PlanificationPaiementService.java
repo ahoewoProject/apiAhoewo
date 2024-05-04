@@ -13,6 +13,10 @@ public interface PlanificationPaiementService {
 
     List<PlanificationPaiement> getPlanificationsPaiement(Principal principal);
 
+    List<PlanificationPaiement> getPlanificationsPaiementEnAttente();
+
+    List<PlanificationPaiement> getPlanificationsByCodeContrat(String codeContrat);
+
     PlanificationPaiement findById(Long id);
 
     PlanificationPaiement savePlanificationPaiementLocation(Principal principal, PlanificationPaiement planificationPaiement);
@@ -20,6 +24,8 @@ public interface PlanificationPaiementService {
     PlanificationPaiement savePlanificationPaiementAchat(Principal principal, PlanificationPaiement planificationPaiement);
 
     PlanificationPaiement dernierePlanificationPaiementAchat(String codeContrat);
+
+    void creerTransaction(PlanificationPaiement planificationPaiement);
 
     void setStatutPlanification(PlanificationPaiement planificationPaiement);
 

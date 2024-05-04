@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -52,6 +54,18 @@ public class PlanificationPaiementController {
             System.out.println("Erreur " + e.getMessage());
         }
         return planificationPaiement;
+    }
+
+    @RequestMapping(value = "planifications-paiements/{codeContrat}", method = RequestMethod.GET)
+    public List<PlanificationPaiement> getPlanificationsByCodeContrat(@PathVariable String codeContrat) {
+
+        List<PlanificationPaiement> planificationPaiementList =  new ArrayList<>();
+        try {
+            planificationPaiementList = this.planificationPaiementService.getPlanificationsByCodeContrat(codeContrat);
+        } catch (Exception e) {
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return planificationPaiementList;
     }
 
     @RequestMapping(value = "/planification-paiement/location/ajouter", method = RequestMethod.POST)

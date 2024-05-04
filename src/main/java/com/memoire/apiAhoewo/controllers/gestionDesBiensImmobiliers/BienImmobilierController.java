@@ -1,9 +1,12 @@
 package com.memoire.apiAhoewo.controllers.gestionDesBiensImmobiliers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.*;
-import com.memoire.apiAhoewo.models.gestionDesComptes.Personne;
-import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.*;
+import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.BienImmobilier;
+import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.Caracteristiques;
+import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.ImagesBienImmobilier;
+import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.BienImmobilierService;
+import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.CaracteristiquesService;
+import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.ImagesBienImmobilierService;
 import com.memoire.apiAhoewo.services.gestionDesComptes.PersonneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -155,14 +158,14 @@ public class BienImmobilierController {
                                                    @RequestParam(value = "caracteristiquesJson", required = false) String caracteristiquesJson         ) {
 
         try {
-            Personne personne = personneService.findByUsername(principal.getName());
+//            Personne personne = personneService.findByUsername(principal.getName());
             BienImmobilier bienImmobilier = new BienImmobilier();
             Caracteristiques caracteristique;
 
             if (bienImmobilierJson != null && !bienImmobilierJson.isEmpty()) {
                 bienImmobilier = new ObjectMapper().readValue(bienImmobilierJson, BienImmobilier.class);
             }
-            bienImmobilier.setPersonne(personne);
+//            bienImmobilier.setPersonne(personne);
             bienImmobilier = this.bienImmobilierService.save(bienImmobilier, principal);
 
             if (files != null) {
@@ -202,9 +205,6 @@ public class BienImmobilierController {
             bienImmobilier.setDescription(bienImmobilierUpdate.getDescription());
             bienImmobilier.setCategorie(bienImmobilierUpdate.getCategorie());
             bienImmobilier.setAdresse(bienImmobilierUpdate.getAdresse());
-            bienImmobilier.setPays(bienImmobilierUpdate.getPays());
-            bienImmobilier.setRegion(bienImmobilierUpdate.getRegion());
-            bienImmobilier.setVille(bienImmobilierUpdate.getVille());
             bienImmobilier.setQuartier(bienImmobilierUpdate.getQuartier());
             bienImmobilier.setSurface(bienImmobilierUpdate.getSurface());
 

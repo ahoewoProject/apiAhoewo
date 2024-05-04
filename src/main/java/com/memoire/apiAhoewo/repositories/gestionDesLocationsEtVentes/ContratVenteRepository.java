@@ -14,7 +14,11 @@ import java.util.List;
 public interface ContratVenteRepository extends JpaRepository<ContratVente, Long> {
     Page<ContratVente> findByDemandeAchatInOrderByIdDesc(List<DemandeAchat> demandeAchats, Pageable pageable);
 
+    List<ContratVente> findByBienImmobilier_CodeBienOrderByIdDesc(String codeBien);
+
     List<ContratVente> findByDemandeAchatIn(List<DemandeAchat> demandeAchatList);
+
+    List<ContratVente> findByEtatContrat(String etatContrat);
 
     boolean existsByDemandeAchat(DemandeAchat demandeAchat);
 

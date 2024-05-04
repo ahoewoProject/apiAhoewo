@@ -14,6 +14,8 @@ public interface DemandeAchatService {
 
     List<DemandeAchat> getDemandesAchats(Principal principal);
 
+    List<DemandeAchat> getDemandesAchatsEnAttente();
+
     DemandeAchat findById(Long id);
 
     DemandeAchat soumettre(DemandeAchat demandeAchat, Principal principal);

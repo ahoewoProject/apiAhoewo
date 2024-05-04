@@ -207,11 +207,8 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
         Personne personne = personneService.findByUsername(principal.getName());
 
         DelegationGestion delegationGestion;
-        if (delegationGestionForm2.getTypeDeBien().getDesignation().equals("Terrain")
-            || delegationGestionForm2.getTypeDeBien().getDesignation().equals("Maison")
-            || delegationGestionForm2.getTypeDeBien().getDesignation().equals("Immeuble")
-            || delegationGestionForm2.getTypeDeBien().getDesignation().equals("Villa")) {
-            delegationGestion = this.saveDelegationGestionTypeBien(delegationGestionForm2, caracteristiques, files, principal);
+        if (isBienSupport(delegationGestionForm2.getTypeDeBien().getDesignation())) {
+            delegationGestion = this.saveDelegationGestionBienSupport(delegationGestionForm2, caracteristiques, files, principal);
         } else  {
             delegationGestion = this.saveDelegationGestionBienImmAssocie(delegationGestionForm2, caracteristiques, files, principal);
         }
@@ -585,19 +582,17 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
         delegationGestionRepository.save(delegationGestion);
     }
 
-    private DelegationGestion saveDelegationGestionTypeBien(DelegationGestionForm2 delegationGestionForm2, Caracteristiques caracteristiques, List<MultipartFile> files, Principal principal) {
+    private DelegationGestion saveDelegationGestionBienSupport(DelegationGestionForm2 delegationGestionForm2, Caracteristiques caracteristiques, List<MultipartFile> files, Principal principal) {
         BienImmobilier bienImmobilier = new BienImmobilier();
         Personne personne = personneService.findByUsername(principal.getName());
         Proprietaire proprietaire = (Proprietaire) personneService.findByMatricule(delegationGestionForm2.getMatriculeProprietaire());
         DelegationGestion delegationGestion = new DelegationGestion();
         bienImmobilier.setTypeDeBien(delegationGestionForm2.getTypeDeBien());
         bienImmobilier.setPersonne(proprietaire);
-        if (!isTypeBienBoutiqueOrMagasinOrTerrain(delegationGestionForm2.getTypeDeBien().getDesignation())) {
-            bienImmobilier.setCategorie(delegationGestionForm2.getCategorie());
-        }
-        bienImmobilier.setPays(delegationGestionForm2.getPays());
-        bienImmobilier.setRegion(delegationGestionForm2.getRegion());
-        bienImmobilier.setVille(delegationGestionForm2.getVille());
+//        if (!isTypeBienBoutiqueOrMagasinOrTerrain(delegationGestionForm2.getTypeDeBien().getDesignation())) {
+//            bienImmobilier.setCategorie(delegationGestionForm2.getCategorie());
+//        }
+        bienImmobilier.setCategorie(delegationGestionForm2.getCategorie());
         bienImmobilier.setQuartier(delegationGestionForm2.getQuartier());
         bienImmobilier.setAdresse(delegationGestionForm2.getAdresse());
         bienImmobilier.setSurface(delegationGestionForm2.getSurface());
@@ -645,13 +640,11 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
         DelegationGestion delegationGestion = new DelegationGestion();
         bienImmAssocie.setTypeDeBien(delegationGestionForm2.getTypeDeBien());
         bienImmAssocie.setPersonne(bienImmobilier.getPersonne());
-        if (!isTypeBienBoutiqueOrMagasinOrTerrain(delegationGestionForm2.getTypeDeBien().getDesignation())) {
-            bienImmAssocie.setCategorie(delegationGestionForm2.getCategorie());
-        }
+//        if (!isTypeBienBoutiqueOrMagasinOrTerrain(delegationGestionForm2.getTypeDeBien().getDesignation())) {
+//            bienImmAssocie.setCategorie(delegationGestionForm2.getCategorie());
+//        }
+        bienImmAssocie.setCategorie(delegationGestionForm2.getCategorie());
         bienImmAssocie.setBienImmobilier(bienImmobilier);
-        bienImmAssocie.setPays(bienImmobilier.getPays());
-        bienImmAssocie.setRegion(bienImmobilier.getRegion());
-        bienImmAssocie.setVille(bienImmobilier.getVille());
         bienImmAssocie.setQuartier(bienImmobilier.getQuartier());
         bienImmAssocie.setAdresse(bienImmobilier.getAdresse());
         bienImmAssocie.setSurface(delegationGestionForm2.getSurface());
@@ -677,7 +670,7 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
         delegationGestion.setCodeDelegationGestion("DELGES" + UUID.randomUUID());
         delegationGestion.setBienImmobilier(bienImmAssocieAdd);
         if (personne.getRole().getCode().equals("ROLE_RESPONSABLE") || personne.getRole().getCode().equals("ROLE_AGENTIMMOBILIER")) {
-            delegationGestion.setAgenceImmobiliere(bienImmAssocieAdd.getAgenceImmobiliere());
+            delegationGestion.setAgenceImmobiliere(delegationGestionForm2.getAgenceImmobiliere());
         } else {
             delegationGestion.setGestionnaire(personne);
         }
@@ -697,4 +690,7 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
                 designation.equals("Magasin");
     }
 
+    private boolean isBienSupport(String designation) {
+        return designation.equals("Terrain") || designation.equals("Maison") || designation.equals("Immeuble") || designation.equals("Villa");
+    }
 }

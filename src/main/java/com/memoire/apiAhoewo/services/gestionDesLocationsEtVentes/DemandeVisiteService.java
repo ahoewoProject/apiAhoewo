@@ -7,9 +7,14 @@ import com.memoire.apiAhoewo.dto.MotifRejetForm;
 import org.springframework.data.domain.Page;
 
 import java.security.Principal;
+import java.util.List;
 
 public interface DemandeVisiteService {
     Page<DemandeVisite> getDemandesVisites(Principal principal, int numeroDeLaPage, int elementsParPage);
+
+    List<DemandeVisite> getDemandesVisitesEnAttente();
+
+    List<DemandeVisite> getDemandesVisitesValidees();
 
     DemandeVisite findById(Long id);
 

@@ -13,7 +13,11 @@ import java.util.List;
 public interface ContratLocationService {
     Page<ContratLocation> getContratLocations(Principal principal, int numeroDeLaPage, int elementsParPage);
 
+    Page<ContratLocation> getContratLocationsByCodeBienAndEtatContrat(String codeBien, int numeroDeLaPage, int elementsParPage);
+
     List<ContratLocation> getContratLocations(Principal principal);
+
+    List<ContratLocation> getContratLocationsEnAttente();
 
     ContratLocation findById(Long id);
 

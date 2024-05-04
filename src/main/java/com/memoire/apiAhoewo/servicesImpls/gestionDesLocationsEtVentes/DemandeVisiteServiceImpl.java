@@ -61,6 +61,16 @@ public class DemandeVisiteServiceImpl implements DemandeVisiteService {
     }
 
     @Override
+    public List<DemandeVisite> getDemandesVisitesEnAttente() {
+        return demandeVisiteRepository.findByEtatDemande(0);
+    }
+
+    @Override
+    public List<DemandeVisite> getDemandesVisitesValidees() {
+        return demandeVisiteRepository.findByEtatDemande(1);
+    }
+
+    @Override
     public DemandeVisite findById(Long id) {
         return demandeVisiteRepository.findById(id).orElse(null);
     }
@@ -97,20 +107,33 @@ public class DemandeVisiteServiceImpl implements DemandeVisiteService {
     public DemandeVisite modifier(DemandeVisite demandeVisite, Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
 
-        demandeVisite.setEtatDemande(4);
         demandeVisite.setModifierLe(new Date());
         demandeVisite.setModifierPar(personne.getId());
 
         Notification notification = new Notification();
-        notification.setTitre("Modification d'une demande de visite");
-        notification.setMessage("La demande de visite " + demandeVisite.getCodeDemande() + " a été modifiée pour la publication de " + demandeVisite.getPublication().getLibelle());
-        notification.setSendTo(String.valueOf(demandeVisite.getPublication().getCreerPar()));
-        notification.setDateNotification(new Date());
-        notification.setLu(false);
-        notification.setUrl("/demandes-visites/" + demandeVisite.getId());
-        notification.setCreerPar(personne.getId());
-        notification.setCreerLe(new Date());
-        notificationService.save(notification);
+        if (isClient(personne.getRole().getCode())) {
+            demandeVisite.setEtatDemande(4);
+            notification.setTitre("Modification d'une demande de visite");
+            notification.setMessage("La demande de visite " + demandeVisite.getCodeDemande() + " pour la publication de " + demandeVisite.getPublication().getLibelle() + " a été modifiée.");
+            notification.setSendTo(String.valueOf(demandeVisite.getPublication().getCreerPar()));
+            notification.setDateNotification(new Date());
+            notification.setLu(false);
+            notification.setUrl("/demandes-visites/" + demandeVisite.getId());
+            notification.setCreerPar(personne.getId());
+            notification.setCreerLe(new Date());
+            notificationService.save(notification);
+        } else {
+            demandeVisite.setEtatDemande(5);
+            notification.setTitre("Modification d'une demande de visite");
+            notification.setMessage("Votre demande de visite " + demandeVisite.getCodeDemande() + " pour la publication de " + demandeVisite.getPublication().getLibelle() + " a été modifiée.");
+            notification.setSendTo(String.valueOf(demandeVisite.getCreerPar()));
+            notification.setDateNotification(new Date());
+            notification.setLu(false);
+            notification.setUrl("/demandes-visites/" + demandeVisite.getId());
+            notification.setCreerPar(personne.getId());
+            notification.setCreerLe(new Date());
+            notificationService.save(notification);
+        }
 
         return demandeVisiteRepository.save(demandeVisite);
     }
@@ -136,6 +159,7 @@ public class DemandeVisiteServiceImpl implements DemandeVisiteService {
     @Override
     public void valider(Long id, Principal principal) {
         DemandeVisite demandeVisite = demandeVisiteRepository.findById(id).orElse(null);
+
         demandeVisite.setEtatDemande(1);
 
         Personne personne = personneService.findByUsername(principal.getName());
@@ -143,27 +167,39 @@ public class DemandeVisiteServiceImpl implements DemandeVisiteService {
         String demandeVisiteLink = "";
 
         Notification notification = new Notification();
-        notification.setTitre("Demande de visite " + demandeVisite.getCodeDemande() + " validée");
-        notification.setMessage("La demande de visite soumise pour la publication de " + demandeVisite.getPublication().getLibelle() + " a été validée.");
-        notification.setSendTo(String.valueOf(demandeVisite.getClient().getId()));
-        notification.setDateNotification(new Date());
-        notification.setLu(false);
-        notification.setUrl("/demandes-visites/" + demandeVisite.getId());
-        notification.setCreerPar(personne.getId());
-        notification.setCreerLe(new Date());
-        notificationService.save(notification);
+        if (isClient(personne.getRole().getCode())) {
+            notification.setTitre("Demande de visite " + demandeVisite.getCodeDemande() + " validée");
+            notification.setMessage("La demande de visite soumise pour la publication de " + demandeVisite.getPublication().getLibelle() + " a été validée suite à la modification que vous avez faite.");
+            notification.setSendTo(String.valueOf(demandeVisite.getModifierPar()));
+            notification.setDateNotification(new Date());
+            notification.setLu(false);
+            notification.setUrl("/demandes-visites/" + demandeVisite.getId());
+            notification.setCreerPar(personne.getId());
+            notification.setCreerLe(new Date());
+            notificationService.save(notification);
+        } else {
+            notification.setTitre("Demande de visite " + demandeVisite.getCodeDemande() + " validée");
+            notification.setMessage("La demande de visite soumise pour la publication de " + demandeVisite.getPublication().getLibelle() + " a été validée.");
+            notification.setSendTo(String.valueOf(demandeVisite.getClient().getId()));
+            notification.setDateNotification(new Date());
+            notification.setLu(false);
+            notification.setUrl("/demandes-visites/" + demandeVisite.getId());
+            notification.setCreerPar(personne.getId());
+            notification.setCreerLe(new Date());
+            notificationService.save(notification);
 
-        demandeVisiteLink = "http://localhost:4200/client/demandes-visites/" + demandeVisite.getId();
+            demandeVisiteLink = "http://localhost:4200/client/demandes-visites/" + demandeVisite.getId();
 
-        String contenu = "Bonjour M./Mlle " + demandeVisite.getClient().getNom() + " " + demandeVisite.getClient().getPrenom() + ",\n" +
-                "Votre demande de visite pour la publication de " + demandeVisite.getPublication().getLibelle() + " a été validée.\n" +
-                "Vous pouvez consulter les détails de la demande en cliquant sur le lien suivant : " + demandeVisiteLink + "\n" +
-                "Cordialement,\n" +
-                "L'équipe Ahoewo";
+            String contenu = "Bonjour M./Mlle " + demandeVisite.getClient().getNom() + " " + demandeVisite.getClient().getPrenom() + ",\n" +
+                    "Votre demande de visite pour la publication de " + demandeVisite.getPublication().getLibelle() + " a été validée.\n" +
+                    "Vous pouvez consulter les détails de la demande en cliquant sur le lien suivant : " + demandeVisiteLink + "\n" +
+                    "Cordialement,\n" +
+                    "L'équipe Ahoewo";
 
-        CompletableFuture.runAsync(() -> {
-            emailSenderService.sendMail(env.getProperty("spring.mail.username"), demandeVisite.getClient().getEmail(), "Demande de visite validée", contenu);
-        });
+            CompletableFuture.runAsync(() -> {
+                emailSenderService.sendMail(env.getProperty("spring.mail.username"), demandeVisite.getClient().getEmail(), "Demande de visite validée", contenu);
+            });
+        }
 
         demandeVisiteRepository.save(demandeVisite);
     }
@@ -244,5 +280,9 @@ public class DemandeVisiteServiceImpl implements DemandeVisiteService {
     @Override
     public boolean clientAndPublicationExist(Client client, Publication publication) {
         return demandeVisiteRepository.existsByClientAndPublication(client, publication);
+    }
+
+    private boolean isClient(String code) {
+        return code.equals("ROLE_CLIENT");
     }
 }

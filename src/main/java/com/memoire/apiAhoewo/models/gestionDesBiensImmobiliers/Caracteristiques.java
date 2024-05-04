@@ -19,7 +19,7 @@ public class Caracteristiques extends EntiteDeBase {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "bien_immobilier_id")
     private BienImmobilier bienImmobilier;
 
