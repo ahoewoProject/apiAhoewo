@@ -48,6 +48,20 @@ public class ContratVenteController {
         }
     }
 
+    @RequestMapping(value = "/contrats-ventes/par-code-bien/{codeBien}", method = RequestMethod.GET)
+    public Page<ContratVente> getContratsVentesByCodeBien(@PathVariable String codeBien,
+                                                @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+                                                @RequestParam(value = "elementsParPage") int elementsParPage) {
+
+        try {
+            return this.contratVenteService.getContratVentesByCodeBienAndEtatContrat(codeBien, numeroDeLaPage, elementsParPage);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des contrats de ventes.", e);
+        }
+    }
+
     @RequestMapping(value = "/contrats/ventes", method = RequestMethod.GET)
     public List<ContratVente> getContratVentes(Principal principal) {
 

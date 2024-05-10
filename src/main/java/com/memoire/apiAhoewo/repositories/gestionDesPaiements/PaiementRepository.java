@@ -14,4 +14,10 @@ public interface PaiementRepository extends JpaRepository<Paiement, Long> {
     Page<Paiement> findByPlanificationPaiementInOrderByIdDesc(List<PlanificationPaiement> planificationPaiementList, Pageable pageable);
 
     List<Paiement> findByPlanificationPaiement_Contrat_CodeContrat(String codeContrat);
+
+    Page<Paiement> findByPlanificationPaiement_CodePlanificationOrderByIdDesc(String codePlanification, Pageable pageable);
+
+    Paiement findByPlanificationPaiement_Contrat_Id(Long id);
+
+    Paiement findByPlanificationPaiement_CodePlanification(String codePlanification);
 }

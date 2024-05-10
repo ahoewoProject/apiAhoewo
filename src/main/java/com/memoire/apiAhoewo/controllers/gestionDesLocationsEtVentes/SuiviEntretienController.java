@@ -30,6 +30,19 @@ public class SuiviEntretienController {
         }
     }
 
+    @RequestMapping(value = "/suivis-entretiens/par-code-contrat/{codeContrat}", method = RequestMethod.GET)
+    public Page<SuiviEntretien> getSuiviEntretiensByCodeContratLocation(@PathVariable String codeContrat,
+                                                   @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+                                                   @RequestParam(value = "elementsParPage") int elementsParPage) {
+        try {
+            return this.suiviEntretienService.getSuivisEntretiensByCodeContratLocation(codeContrat, numeroDeLaPage, elementsParPage);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des suivis d'entretiens .", e);
+        }
+    }
+
     @RequestMapping(value = "/suivi-entretien/{id}", method = RequestMethod.GET)
     public SuiviEntretien findById(@PathVariable Long id) {
 

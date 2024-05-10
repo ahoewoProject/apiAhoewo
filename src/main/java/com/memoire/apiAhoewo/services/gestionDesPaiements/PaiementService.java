@@ -10,7 +10,13 @@ import java.util.List;
 public interface PaiementService {
     Page<Paiement> getPaiements(Principal principal, int numeroDeLaPage, int elementsParPage);
 
+    Page<Paiement> getPaiementsByCodePlanification(String codePlanification, int numeroDeLaPage, int elementsParPage);
+
     Paiement findById(Long id);
+
+    Paiement findByCodePlanification(String codePlanification);
+
+    Paiement findByContratId(Long id);
 
     List<Paiement> dernierePaiement(String codeContrat);
 

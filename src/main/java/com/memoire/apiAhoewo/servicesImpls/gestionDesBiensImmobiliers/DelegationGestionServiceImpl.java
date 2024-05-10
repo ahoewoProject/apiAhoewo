@@ -53,57 +53,40 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
     private Environment env;
 
     @Override
-    public Page<DelegationGestion> getDelegationsByProprietairePaginees(Principal principal, int numeroDeLaPage, int elementsParPage) {
+    public Page<DelegationGestion> getDelegationsGestions(Principal principal, int numeroDeLaPage, int elementsParPage) {
         Personne personne = personneService.findByUsername(principal.getName());
         PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
-        return delegationGestionRepository.findAllByBienImmobilier_PersonneOrderByCreerLeDesc(personne, pageRequest);
+
+        return personneService.estProprietaire(personne.getRole().getCode()) ?
+                delegationGestionRepository.findAllByBienImmobilier_PersonneOrderByCreerLeDesc(personne, pageRequest) :
+                personneService.estGerant(personne.getRole().getCode()) || personneService.estDemarcheur(personne.getRole().getCode()) ?
+                        delegationGestionRepository.findAllByGestionnaireOrderByCreerLeDesc(personne, pageRequest) :
+                        personneService.estResponsable(personne.getRole().getCode()) ?
+                                delegationGestionRepository.findAllByAgenceImmobiliereInOrderByCreerLeDesc(
+                                        agenceImmobiliereService.getAgencesByResponsable(principal), pageRequest) :
+                                personneService.estAgentImmobilier(personne.getRole().getCode()) ?
+                                        delegationGestionRepository.findAllByAgenceImmobiliereInOrderByCreerLeDesc(
+                                                agenceImmobiliereService.getAgencesByAgent(principal), pageRequest) :
+                                        null;
     }
 
     @Override
-    public Page<DelegationGestion> getDelegationsByGestionnairePaginees(Principal principal, int numeroDeLaPage, int elementsParPage) {
+    public List<DelegationGestion> getDelegationsGestions(Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
-        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
-        return delegationGestionRepository.findAllByGestionnaireOrderByCreerLeDesc(personne, pageRequest);
-    }
 
-    @Override
-    public Page<DelegationGestion> getDelegationsOfAgencesByResponsablePaginees(Principal principal, int numeroDeLaPage, int elementsParPage) {
-        List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereService.getAgencesByResponsable(principal);
-        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
-        return delegationGestionRepository.findAllByAgenceImmobiliereInOrderByCreerLeDesc(agenceImmobilieres, pageRequest);
-    }
+        if (personneService.estProprietaire(personne.getRole().getCode())) {
+            return delegationGestionRepository.findByBienImmobilier_Personne(personne);
+        } else if (personneService.estGerant(personne.getRole().getCode()) || personneService.estDemarcheur(personne.getRole().getCode())) {
+            return delegationGestionRepository.findByGestionnaire(personne);
+        } else if (personneService.estResponsable(personne.getRole().getCode())) {
+            List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereService.getAgencesByResponsable(principal);
+            return delegationGestionRepository.findByAgenceImmobiliereIn(agenceImmobilieres);
+        } else if (personneService.estAgentImmobilier(personne.getRole().getCode())) {
+            List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereService.getAgencesByAgent(principal);
+            return delegationGestionRepository.findByAgenceImmobiliereIn(agenceImmobilieres);
+        }
 
-    @Override
-    public Page<DelegationGestion> getDelegationsOfAgencesByAgentPaginees(Principal principal, int numeroDeLaPage, int elementsParPage) {
-        List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereService.getAgencesByAgent(principal);
-        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
-        return delegationGestionRepository.findAllByAgenceImmobiliereInOrderByCreerLeDesc(agenceImmobilieres, pageRequest);
-    }
-
-    @Override
-    public List<DelegationGestion> getDelegationsByProprietaire(Principal principal) {
-        Personne personne = personneService.findByUsername(principal.getName());
-        return delegationGestionRepository.findByBienImmobilier_Personne(personne);
-    }
-
-    @Override
-    public List<DelegationGestion> getDelegationsByGestionnaire(Principal principal) {
-        Personne personne = personneService.findByUsername(principal.getName());
-        return delegationGestionRepository.findByGestionnaire(personne);
-    }
-
-    @Override
-    public List<DelegationGestion> getDelegationsOfAgencesByResponsable(Principal principal) {
-        List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereService.getAgencesByResponsable(principal);
-
-        return delegationGestionRepository.findByAgenceImmobiliereIn(agenceImmobilieres);
-    }
-
-    @Override
-    public List<DelegationGestion> getDelegationsOfAgencesByAgent(Principal principal) {
-        List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereService.getAgencesByAgent(principal);
-
-        return delegationGestionRepository.findByAgenceImmobiliereIn(agenceImmobilieres);
+        return null;
     }
 
     @Override

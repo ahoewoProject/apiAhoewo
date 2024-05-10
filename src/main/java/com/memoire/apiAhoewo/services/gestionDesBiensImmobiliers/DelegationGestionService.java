@@ -1,11 +1,11 @@
 package com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers;
 
+import com.memoire.apiAhoewo.dto.DelegationGestionForm2;
 import com.memoire.apiAhoewo.models.gestionDesAgencesImmobilieres.AgenceImmobiliere;
 import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.BienImmobilier;
 import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.Caracteristiques;
 import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.DelegationGestion;
 import com.memoire.apiAhoewo.models.gestionDesComptes.Personne;
-import com.memoire.apiAhoewo.dto.DelegationGestionForm2;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,21 +13,9 @@ import java.security.Principal;
 import java.util.List;
 
 public interface DelegationGestionService {
-    Page<DelegationGestion> getDelegationsByProprietairePaginees(Principal principal, int numeroDeLaPage, int elementsParPage);
+    Page<DelegationGestion> getDelegationsGestions(Principal principal, int numeroDeLaPage, int elementsParPage);
 
-    Page<DelegationGestion> getDelegationsByGestionnairePaginees(Principal principal, int numeroDeLaPage, int elementsParPage);
-
-    Page<DelegationGestion> getDelegationsOfAgencesByResponsablePaginees(Principal principal, int numeroDeLaPage, int elementsParPage);
-
-    Page<DelegationGestion> getDelegationsOfAgencesByAgentPaginees(Principal principal, int numeroDeLaPage, int elementsParPage);
-
-    List<DelegationGestion> getDelegationsByProprietaire(Principal principal);
-
-    List<DelegationGestion> getDelegationsByGestionnaire(Principal principal);
-
-    List<DelegationGestion> getDelegationsOfAgencesByResponsable(Principal principal);
-
-    List<DelegationGestion> getDelegationsOfAgencesByAgent(Principal principal);
+    List<DelegationGestion> getDelegationsGestions(Principal principal);
 
     DelegationGestion getDelegationByBienImmobilier(BienImmobilier bienImmobilier);
 

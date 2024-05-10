@@ -124,7 +124,7 @@ public class ContratVenteServiceImpl implements ContratVenteService {
     public ContratVente save(ContratVente contratVente, Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
 
-        contratVente.setCodeContrat("CONACH" + UUID.randomUUID());
+        contratVente.setCodeContrat("CONVEN" + UUID.randomUUID());
         contratVente.setEtatContrat("En attente");
         contratVente.setCreerPar(personne.getId());
         contratVente.setCreerLe(new Date());
@@ -158,7 +158,7 @@ public class ContratVenteServiceImpl implements ContratVenteService {
             }
         }
 
-        contratVente.setCodeContrat("CONACH00" + contratVente.getId());
+        contratVente.setCodeContrat("CONVEN00" + contratVente.getId());
         return contratVenteRepository.save(contratVente);
     }
 

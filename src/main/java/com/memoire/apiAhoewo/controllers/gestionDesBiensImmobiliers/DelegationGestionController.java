@@ -1,14 +1,13 @@
 package com.memoire.apiAhoewo.controllers.gestionDesBiensImmobiliers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.memoire.apiAhoewo.dto.DelegationGestionForm1;
+import com.memoire.apiAhoewo.dto.DelegationGestionForm2;
 import com.memoire.apiAhoewo.models.gestionDesAgencesImmobilieres.AgenceImmobiliere;
 import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.BienImmAssocie;
 import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.Caracteristiques;
 import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.DelegationGestion;
 import com.memoire.apiAhoewo.models.gestionDesComptes.Personne;
-import com.memoire.apiAhoewo.repositories.gestionDesBiensImmobiliers.DelegationGestionRepository;
-import com.memoire.apiAhoewo.dto.DelegationGestionForm1;
-import com.memoire.apiAhoewo.dto.DelegationGestionForm2;
 import com.memoire.apiAhoewo.services.gestionDesAgencesImmobilieres.AgenceImmobiliereService;
 import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.BienImmobilierAssocieService;
 import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.BienImmobilierService;
@@ -38,16 +37,14 @@ public class DelegationGestionController {
     private AgenceImmobiliereService agenceImmobiliereService;
     @Autowired
     private BienImmobilierAssocieService bienImmAssocieService;
-    @Autowired
-    private DelegationGestionRepository delegationGestionRepository;
 
-    @RequestMapping(value = "/delegations-gestions/proprietaire/paginees", method = RequestMethod.GET)
-    public Page<DelegationGestion> getAllByProprietairePaginees(Principal principal,
+    @RequestMapping(value = "/delegations-gestions-paginees", method = RequestMethod.GET)
+    public Page<DelegationGestion> getDelegationsGestionsPaginees(Principal principal,
                                                                 @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
                                                                 @RequestParam(value = "elementsParPage") int elementsParPage) {
 
         try {
-            return this.delegationGestionService.getDelegationsByProprietairePaginees(principal, numeroDeLaPage, elementsParPage);
+            return this.delegationGestionService.getDelegationsGestions(principal, numeroDeLaPage, elementsParPage);
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Erreur " + e.getMessage());
@@ -55,93 +52,12 @@ public class DelegationGestionController {
         }
     }
 
-    @RequestMapping(value = "/delegations-gestions/gestionnaire/paginees", method = RequestMethod.GET)
-    public Page<DelegationGestion> getAllByGestionnairePaginees(Principal principal,
-                                                                @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
-                                                                @RequestParam(value = "elementsParPage") int elementsParPage) {
-
-        try {
-            return this.delegationGestionService.getDelegationsByGestionnairePaginees(principal, numeroDeLaPage, elementsParPage);
-        } catch (Exception e) {
-            // TODO: handle exception
-            System.out.println("Erreur " + e.getMessage());
-            throw new RuntimeException("Une erreur s'est produite lors de la récupération des délégations de gestions.", e);
-        }
-    }
-
-    @RequestMapping(value = "/delegations-gestions/agences/responsable/paginees", method = RequestMethod.GET)
-    public Page<DelegationGestion> getDelegationsGestionsOfAgencesByResponsablePaginees(Principal principal,
-                                                                @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
-                                                                @RequestParam(value = "elementsParPage") int elementsParPage) {
-
-        try {
-            return this.delegationGestionService.getDelegationsOfAgencesByResponsablePaginees(principal, numeroDeLaPage, elementsParPage);
-        } catch (Exception e) {
-            // TODO: handle exception
-            System.out.println("Erreur " + e.getMessage());
-            throw new RuntimeException("Une erreur s'est produite lors de la récupération des délégations de gestions.", e);
-        }
-    }
-
-    @RequestMapping(value = "/delegations-gestions/agences/agent/paginees", method = RequestMethod.GET)
-    public Page<DelegationGestion> getDelegationsGestionsOfAgencesByAgentPaginees(Principal principal,
-                                                                @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
-                                                                @RequestParam(value = "elementsParPage") int elementsParPage) {
-
-        try {
-            return this.delegationGestionService.getDelegationsOfAgencesByAgentPaginees(principal, numeroDeLaPage, elementsParPage);
-        } catch (Exception e) {
-            // TODO: handle exception
-            System.out.println("Erreur " + e.getMessage());
-            throw new RuntimeException("Une erreur s'est produite lors de la récupération des délégations de gestions.", e);
-        }
-    }
-
-    @RequestMapping(value = "/delegations-gestions/proprietaire", method = RequestMethod.GET)
-    public List<DelegationGestion> getAllByProprietaire(Principal principal) {
+    @RequestMapping(value = "/delegations-gestions-list", method = RequestMethod.GET)
+    public List<DelegationGestion> getDelegationsGestionsList(Principal principal) {
 
         List<DelegationGestion> delegationGestions = new ArrayList<>();
         try {
-            delegationGestions = this.delegationGestionService.getDelegationsByProprietaire(principal);
-        } catch (Exception e) {
-            // TODO: handle exception
-            System.out.println("Erreur " + e.getMessage());
-        }
-        return delegationGestions;
-    }
-
-    @RequestMapping(value = "/delegations-gestions/gestionnaire", method = RequestMethod.GET)
-    public List<DelegationGestion> getAllByGestionnaire(Principal principal) {
-
-        List<DelegationGestion> delegationGestions = new ArrayList<>();
-        try {
-            delegationGestions = this.delegationGestionService.getDelegationsByGestionnaire(principal);
-        } catch (Exception e) {
-            // TODO: handle exception
-            System.out.println("Erreur " + e.getMessage());
-        }
-        return delegationGestions;
-    }
-
-    @RequestMapping(value = "/delegations-gestions/agences/responsable", method = RequestMethod.GET)
-    public List<DelegationGestion> getDelegationsGestionsOfAgencesByResponsable(Principal principal) {
-
-        List<DelegationGestion> delegationGestions = new ArrayList<>();
-        try {
-            delegationGestions = this.delegationGestionService.getDelegationsOfAgencesByResponsable(principal);
-        } catch (Exception e) {
-            // TODO: handle exception
-            System.out.println("Erreur " + e.getMessage());
-        }
-        return delegationGestions;
-    }
-
-    @RequestMapping(value = "/delegations-gestions/agences/agent", method = RequestMethod.GET)
-    public List<DelegationGestion> getDelegationsGestionsOfAgencesByAgent(Principal principal) {
-
-        List<DelegationGestion> delegationGestions = new ArrayList<>();
-        try {
-            delegationGestions = this.delegationGestionService.getDelegationsOfAgencesByAgent(principal);
+            delegationGestions = this.delegationGestionService.getDelegationsGestions(principal);
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Erreur " + e.getMessage());

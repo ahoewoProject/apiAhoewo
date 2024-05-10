@@ -15,6 +15,7 @@ import com.memoire.apiAhoewo.services.gestionDesPaiements.PlanificationPaiementS
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class PlanificationPaiementServiceImpl implements PlanificationPaiementService {
@@ -38,7 +40,6 @@ public class PlanificationPaiementServiceImpl implements PlanificationPaiementSe
     private NotificationService notificationService;
     @Autowired
     private Environment env;
-    private static final String FEDAPAY_API_URL = "https://sandbox-api.fedapay.com/v1";
 
     @Override
     public Page<PlanificationPaiement> getPlanificationsPaiement(Principal principal, int numeroDeLaPage, int elementsParPage) {
@@ -53,6 +54,31 @@ public class PlanificationPaiementServiceImpl implements PlanificationPaiementSe
         contratList.addAll(contratVenteList);
 
         return planificationPaiementRepository.findByContratInOrderByIdDesc(contratList, pageRequest);
+    }
+
+    @Override
+    public Page<PlanificationPaiement> getPlanificationsPaiementByCodeContratAndStatutPlanification(String codeContrat, int numeroDeLaPage, int elementsParPage) {
+
+        List<PlanificationPaiement> planificationPaiementList = planificationPaiementRepository.findByContrat_CodeContratOrderByIdDesc(codeContrat);
+
+        List<PlanificationPaiement> planificationPaiementList1 = planificationPaiementList.stream()
+                .filter(planificationPaiement -> "Payé".equals(planificationPaiement.getStatutPlanification()))
+                .collect(Collectors.toList());
+
+        List<PlanificationPaiement> planificationPaiementList2 = planificationPaiementList.stream()
+                .filter(planificationPaiement -> "En attente".equals(planificationPaiement.getStatutPlanification()))
+                .collect(Collectors.toList());
+
+        List<PlanificationPaiement> planificationPaiementArrayList =  new ArrayList<>();
+        planificationPaiementArrayList.addAll(planificationPaiementList1);
+        planificationPaiementArrayList.addAll(planificationPaiementList2);
+
+        int start = numeroDeLaPage * elementsParPage;
+        int end = Math.min(start + elementsParPage, planificationPaiementArrayList.size());
+        List<PlanificationPaiement> paginatedPlanifications = planificationPaiementArrayList.subList(start, end);
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+
+        return new PageImpl<>(paginatedPlanifications, pageRequest, planificationPaiementArrayList.size());
     }
 
     @Override

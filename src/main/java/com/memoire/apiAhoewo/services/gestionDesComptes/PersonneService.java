@@ -37,4 +37,18 @@ public interface PersonneService {
     public void sendPasswordResetEmail(Personne personne);
 
     public boolean resetPassword(String token, String newPassword);
+
+    public boolean estNotaire(String code);
+
+    public boolean estProprietaire(String code);
+
+    public boolean estResponsable(String code);
+
+    public boolean estAgentImmobilier(String code);
+
+    public boolean estDemarcheur(String code);
+
+    public boolean estGerant(String code);
+
+    public boolean estAdministrateur(String code);
 }

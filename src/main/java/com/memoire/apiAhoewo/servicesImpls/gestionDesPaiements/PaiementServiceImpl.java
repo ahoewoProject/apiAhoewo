@@ -76,8 +76,25 @@ public class PaiementServiceImpl implements PaiementService {
     }
 
     @Override
+    public Page<Paiement> getPaiementsByCodePlanification(String codePlanification, int numeroDeLaPage, int elementsParPage) {
+        PageRequest pageRequest =  PageRequest.of(numeroDeLaPage, elementsParPage);
+
+        return paiementRepository.findByPlanificationPaiement_CodePlanificationOrderByIdDesc(codePlanification, pageRequest);
+    }
+
+    @Override
     public Paiement findById(Long id) {
         return paiementRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public Paiement findByCodePlanification(String codePlanification) {
+        return paiementRepository.findByPlanificationPaiement_CodePlanification(codePlanification);
+    }
+
+    @Override
+    public Paiement findByContratId(Long id) {
+        return paiementRepository.findByPlanificationPaiement_Contrat_Id(id);
     }
 
     @Override

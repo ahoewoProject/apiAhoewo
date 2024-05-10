@@ -11,6 +11,8 @@ import java.util.List;
 public interface PlanificationPaiementService {
     Page<PlanificationPaiement> getPlanificationsPaiement(Principal principal, int numeroDeLaPage, int elementsParPage);
 
+    Page<PlanificationPaiement> getPlanificationsPaiementByCodeContratAndStatutPlanification(String codeContrat, int numeroDeLaPage, int elementsParPage);
+
     List<PlanificationPaiement> getPlanificationsPaiement(Principal principal);
 
     List<PlanificationPaiement> getPlanificationsPaiementEnAttente();

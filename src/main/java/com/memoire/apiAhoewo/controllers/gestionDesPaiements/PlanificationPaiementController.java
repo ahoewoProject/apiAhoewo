@@ -32,6 +32,19 @@ public class PlanificationPaiementController {
         }
     }
 
+    @RequestMapping(value = "/planifications-paiements/par-code-contrat/{codeContrat}", method = RequestMethod.GET)
+    public Page<PlanificationPaiement> getPlanificationsPaiementsByCodeContrat(@PathVariable String codeContrat,
+                                                                               @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+                                                                               @RequestParam(value = "elementsParPage") int elementsParPage) {
+        try {
+            return this.planificationPaiementService.getPlanificationsPaiementByCodeContratAndStatutPlanification(codeContrat, numeroDeLaPage, elementsParPage);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des planifications de paiement .", e);
+        }
+    }
+
     @RequestMapping(value = "/planification-paiement/{id}", method = RequestMethod.GET)
     public PlanificationPaiement findById(@PathVariable Long id) {
 

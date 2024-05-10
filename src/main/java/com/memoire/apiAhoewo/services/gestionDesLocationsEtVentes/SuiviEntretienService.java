@@ -8,6 +8,8 @@ import java.security.Principal;
 public interface SuiviEntretienService {
     Page<SuiviEntretien> getSuivisEntretiens(Principal principal, int numeroDeLaPage, int elementsParPage);
 
+    Page<SuiviEntretien> getSuivisEntretiensByCodeContratLocation(String codeContrat, int numeroDeLaPage, int elementsParPage);
+
     SuiviEntretien findById(Long id);
 
     SuiviEntretien save(SuiviEntretien suiviEntretien, Principal principal);

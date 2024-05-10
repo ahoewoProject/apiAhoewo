@@ -45,6 +45,31 @@ public class PaiementController {
         return paiement;
     }
 
+    @RequestMapping(value = "paiement/code-planification/{codePlanification}", method = RequestMethod.GET)
+    public Paiement findByCodePlanification(@PathVariable String codePlanification) {
+
+        Paiement paiement = new Paiement();
+        try {
+            paiement = this.paiementService.findByCodePlanification(codePlanification);
+        } catch (Exception e) {
+            System.out.println("Erreur" + e.getMessage());
+        }
+        return paiement;
+    }
+
+    @RequestMapping(value = "paiement/contrat-id/{contratId}", method = RequestMethod.GET)
+    public Paiement findByContratId(@PathVariable Long contratId) {
+
+        Paiement paiement = new Paiement();
+        try {
+            paiement = this.paiementService.findByContratId(contratId);
+        } catch (Exception e) {
+            System.out.println("Erreur" + e.getMessage());
+        }
+        return paiement;
+    }
+
+
     @RequestMapping(value = "/paiement/ajouter", method = RequestMethod.POST)
     public ResponseEntity<?> ajouterPaiement(@RequestBody Paiement paiement, Principal principal) {
         try {

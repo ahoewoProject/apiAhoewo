@@ -11,14 +11,17 @@ import com.memoire.apiAhoewo.services.gestionDesLocationsEtVentes.ContratLocatio
 import com.memoire.apiAhoewo.services.gestionDesLocationsEtVentes.SuiviEntretienService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class SuiviEntretienServiceImpl implements SuiviEntretienService {
@@ -38,6 +41,36 @@ public class SuiviEntretienServiceImpl implements SuiviEntretienService {
         List<ContratLocation> contratLocations = contratLocationService.getContratLocations(principal);
 
         return suiviEntretienRepository.findByContratLocationInOrderByIdDesc(contratLocations, pageRequest);
+    }
+
+    @Override
+    public Page<SuiviEntretien> getSuivisEntretiensByCodeContratLocation(String codeContrat, int numeroDeLaPage, int elementsParPage) {
+
+        List<SuiviEntretien> suiviEntretienList = suiviEntretienRepository.findByContratLocation_CodeContratOrderByIdDesc(codeContrat);
+
+        List<SuiviEntretien> suiviEntretienList1 =  suiviEntretienList.stream()
+                .filter(suiviEntretien -> "Terminé".equals(suiviEntretien.getEtatSuiviEntretien()))
+                .collect(Collectors.toList());
+
+        List<SuiviEntretien> suiviEntretienList2 = suiviEntretienList.stream()
+                .filter(suiviEntretien -> "En cours".equals(suiviEntretien.getEtatSuiviEntretien()))
+                .collect(Collectors.toList());
+
+        List<SuiviEntretien> suiviEntretienList3 = suiviEntretienList.stream()
+                .filter(suiviEntretien -> "En attente".equals(suiviEntretien.getEtatSuiviEntretien()))
+                .collect(Collectors.toList());
+
+        List<SuiviEntretien> suiviEntretienArrayList = new ArrayList<>();
+        suiviEntretienArrayList.addAll(suiviEntretienList1);
+        suiviEntretienArrayList.addAll(suiviEntretienList2);
+        suiviEntretienArrayList.addAll(suiviEntretienList3);
+
+        int start = numeroDeLaPage * elementsParPage;
+        int end = Math.min(start + elementsParPage, suiviEntretienArrayList.size());
+        List<SuiviEntretien> paginedSuiviPaiement = suiviEntretienArrayList.subList(start, end);
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+
+        return new PageImpl<>(paginedSuiviPaiement, pageRequest, suiviEntretienArrayList.size());
     }
 
     @Override

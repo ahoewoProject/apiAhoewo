@@ -16,6 +16,8 @@ public interface PlanificationPaiementRepository extends JpaRepository<Planifica
 
     List<PlanificationPaiement> findByContratIn(List<Contrat> contratList);
 
+    List<PlanificationPaiement> findByContrat_CodeContratOrderByIdDesc(String codeContrat);
+
     PlanificationPaiement findByContrat_CodeContratOrderByCreerLeDesc(String codeContrat);
 
     List<PlanificationPaiement> findByContrat_CodeContrat(String codeContrat);

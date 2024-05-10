@@ -209,6 +209,41 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
     }
 
     @Override
+    public boolean estNotaire(String code) {
+        return code.equals("ROLE_NOTAIRE");
+    }
+
+    @Override
+    public boolean estProprietaire(String code) {
+        return code.equals("ROLE_PROPRIETAIRE");
+    }
+
+    @Override
+    public boolean estResponsable(String code) {
+        return code.equals("ROLE_RESPONSABLE");
+    }
+
+    @Override
+    public boolean estAgentImmobilier(String code) {
+        return code.equals("ROLE_AGENTIMMOBILIER");
+    }
+
+    @Override
+    public boolean estDemarcheur(String code) {
+        return code.equals("ROLE_DEMARCHEUR");
+    }
+
+    @Override
+    public boolean estGerant(String code) {
+        return code.equals("ROLE_GERANT");
+    }
+
+    @Override
+    public boolean estAdministrateur(String code) {
+        return code.equals("ROLE_ADMINISTRATEUR");
+    }
+
+    @Override
     public Personne modifierProfil(RegisterForm registerForm, Principal principal, Long id) {
         Personne personne = personneRepository.findByUsername(principal.getName());
         Role role = registerForm.getRole();
