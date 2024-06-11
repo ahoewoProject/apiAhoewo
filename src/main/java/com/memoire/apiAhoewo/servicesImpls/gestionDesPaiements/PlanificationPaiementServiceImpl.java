@@ -113,6 +113,8 @@ public class PlanificationPaiementServiceImpl implements PlanificationPaiementSe
     public PlanificationPaiement savePlanificationPaiementLocation(Principal principal, PlanificationPaiement planificationPaiement) {
         Personne personne = personneService.findByUsername(principal.getName());
 
+        String roleCode = personne.getRole().getCode();
+
         planificationPaiement.setCodePlanification("PLNPAI" + UUID.randomUUID());
         planificationPaiement.setCreerLe(new Date());
         planificationPaiement.setCreerPar(personne.getId());
@@ -127,21 +129,21 @@ public class PlanificationPaiementServiceImpl implements PlanificationPaiementSe
         notification.setSendTo(String.valueOf(planificationPaiement.getContrat().getClient().getId()));
         notification.setDateNotification(new Date());
         notification.setLu(false);
-        notification.setUrl("/planifications-paiements/" + planificationPaiement.getId());
+        notification.setUrl("/planification-paiement/" + planificationPaiement.getId());
         notification.setCreerPar(personne.getId());
         notification.setCreerLe(new Date());
         notificationService.save(notification);
 
         if (planificationPaiement.getContrat().getBienImmobilier().getEstDelegue()) {
-            if (personne.getRole().getCode().equals("ROLE_RESPONSABLE") || personne.getRole().getCode().equals("ROLE_AGENTIMMOBILIER") ||
-                    personne.getRole().getCode().equals("ROLE_DEMARCHEUR") || personne.getRole().getCode().equals("ROLE_GERANT")) {
+            if (personneService.estResponsable(roleCode) || personneService.estAgentImmobilier(roleCode) ||
+                    personneService.estDemarcheur(roleCode) || personneService.estGerant(roleCode)) {
                 Notification notification2 = new Notification();
                 notification2.setTitre("Nouvelle planification de paiement");
                 notification2.setMessage("Une nouvelle planification de paiement de loyer a été faite sur le contrat de location " + planificationPaiement.getContrat().getCodeContrat() + " du bien " + planificationPaiement.getContrat().getBienImmobilier().getCodeBien() + " que vous avez délégué");
                 notification2.setSendTo(String.valueOf(planificationPaiement.getContrat().getBienImmobilier().getPersonne().getId()));
                 notification2.setDateNotification(new Date());
                 notification2.setLu(false);
-                notification2.setUrl("/planifications-paiements/" + planificationPaiement.getId());
+                notification2.setUrl("/planification-paiement/" + planificationPaiement.getId());
                 notification2.setCreerPar(personne.getId());
                 notification2.setCreerLe(new Date());
                 notificationService.save(notification2);
@@ -157,6 +159,8 @@ public class PlanificationPaiementServiceImpl implements PlanificationPaiementSe
     public PlanificationPaiement savePlanificationPaiementAchat(Principal principal, PlanificationPaiement planificationPaiement) {
         Personne personne = personneService.findByUsername(principal.getName());
 
+        String roleCode = personne.getRole().getCode();
+
         planificationPaiement.setCodePlanification("PLNPAI" + UUID.randomUUID());
         planificationPaiement.setCreerLe(new Date());
         planificationPaiement.setCreerPar(personne.getId());
@@ -171,21 +175,21 @@ public class PlanificationPaiementServiceImpl implements PlanificationPaiementSe
         notification.setSendTo(String.valueOf(planificationPaiement.getContrat().getClient().getId()));
         notification.setDateNotification(new Date());
         notification.setLu(false);
-        notification.setUrl("/planifications-paiements/" + planificationPaiement.getId());
+        notification.setUrl("/planification-paiement/" + planificationPaiement.getId());
         notification.setCreerPar(personne.getId());
         notification.setCreerLe(new Date());
         notificationService.save(notification);
 
         if (planificationPaiement.getContrat().getBienImmobilier().getEstDelegue()) {
-            if (personne.getRole().getCode().equals("ROLE_RESPONSABLE") || personne.getRole().getCode().equals("ROLE_AGENTIMMOBILIER") ||
-                    personne.getRole().getCode().equals("ROLE_DEMARCHEUR") || personne.getRole().getCode().equals("ROLE_GERANT")) {
+            if (personneService.estResponsable(roleCode) || personneService.estAgentImmobilier(roleCode) ||
+                    personneService.estDemarcheur(roleCode) || personneService.estGerant(roleCode)) {
                 Notification notification2 = new Notification();
                 notification2.setTitre("Nouvelle planification de paiement");
                 notification2.setMessage("Une nouvelle planification de paiement d'achat a été faite sur le contrat de vente " + planificationPaiement.getContrat().getCodeContrat() + " du bien " + planificationPaiement.getContrat().getBienImmobilier().getCodeBien() + " que vous avez délégué");
                 notification2.setSendTo(String.valueOf(planificationPaiement.getContrat().getBienImmobilier().getPersonne().getId()));
                 notification2.setDateNotification(new Date());
                 notification2.setLu(false);
-                notification2.setUrl("/planifications-paiements/" + planificationPaiement.getId());
+                notification2.setUrl("/planification-paiement/" + planificationPaiement.getId());
                 notification2.setCreerPar(personne.getId());
                 notification2.setCreerLe(new Date());
                 notificationService.save(notification2);
@@ -198,7 +202,7 @@ public class PlanificationPaiementServiceImpl implements PlanificationPaiementSe
     }
 
     @Override
-    public PlanificationPaiement dernierePlanificationPaiementAchat(String codeContrat) {
+    public PlanificationPaiement lastPlanificationPaiement(String codeContrat) {
         return planificationPaiementRepository.findByContrat_CodeContratOrderByCreerLeDesc(codeContrat);
     }
 
@@ -208,7 +212,7 @@ public class PlanificationPaiementServiceImpl implements PlanificationPaiementSe
     }
 
     @Override
-    public void setStatutPlanification(PlanificationPaiement planificationPaiement) {
+    public void setPlanificationPaiement(PlanificationPaiement planificationPaiement) {
         planificationPaiementRepository.save(planificationPaiement);
     }
 

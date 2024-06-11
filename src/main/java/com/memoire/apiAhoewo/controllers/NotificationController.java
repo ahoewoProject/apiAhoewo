@@ -53,6 +53,42 @@ public class NotificationController {
         }
     }
 
+    @RequestMapping(value = "/notifications-list/admin", method = RequestMethod.GET)
+    public List<Notification> getNotificationsListByAdmin() {
+
+        try {
+            return this.notificationService.getNotificationsListByAdmin();
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des notifications.", e);
+        }
+    }
+
+    @RequestMapping(value = "/notifications-list/notaire", method = RequestMethod.GET)
+    public List<Notification> getNotificationsListByNotaire() {
+
+        try {
+            return this.notificationService.getNotificationsListByNotaire();
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des notifications.", e);
+        }
+    }
+
+    @RequestMapping(value = "/notifications-list/owner", method = RequestMethod.GET)
+    public List<Notification> getNotificationsListByOwner(Principal principal) {
+
+        try {
+            return this.notificationService.getNotificationsListByOwner(principal);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des notifications.", e);
+        }
+    }
+
     @RequestMapping(value = "/notifications/admin", method = RequestMethod.GET)
     public Page<Notification> getNotificationsByAdmin(
             @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,

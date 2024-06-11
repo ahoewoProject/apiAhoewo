@@ -25,11 +25,11 @@ public interface PlanificationPaiementService {
 
     PlanificationPaiement savePlanificationPaiementAchat(Principal principal, PlanificationPaiement planificationPaiement);
 
-    PlanificationPaiement dernierePlanificationPaiementAchat(String codeContrat);
+    PlanificationPaiement lastPlanificationPaiement(String codeContrat);
 
     void creerTransaction(PlanificationPaiement planificationPaiement);
 
-    void setStatutPlanification(PlanificationPaiement planificationPaiement);
+    void setPlanificationPaiement(PlanificationPaiement planificationPaiement);
 
     boolean existsByContratAndDatePlanifiee(Contrat contrat, Date datePlanifiee);
 }

@@ -22,5 +22,7 @@ public interface ServicesAgenceImmobiliereRepository extends JpaRepository<Servi
 
     ServicesAgenceImmobiliere findByServices(Services services);
 
+    List<ServicesAgenceImmobiliere> findByAgenceImmobiliereIn(List<AgenceImmobiliere> agenceImmobilieres);
+
     boolean existsByServicesAndAgenceImmobiliere(Services services, AgenceImmobiliere agenceImmobiliere);
 }

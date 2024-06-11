@@ -10,7 +10,9 @@ import java.util.List;
 
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
-    List<Notification> findBySendToAndLuAndStatut(String sendTo, Boolean lu, Boolean statut);
+    List<Notification> findBySendToAndLuAndStatutOrderByIdDesc(String sendTo, Boolean lu, Boolean statut);
+
+    List<Notification> findBySendToOrderByIdDesc(String sendTo);
 
     Page<Notification> findBySendToAndStatutOrderByIdDesc(Pageable pageable, String sendTo, Boolean statut);
 }

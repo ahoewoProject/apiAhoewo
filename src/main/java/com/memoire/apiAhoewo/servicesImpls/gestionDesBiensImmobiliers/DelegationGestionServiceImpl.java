@@ -63,10 +63,10 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
                         delegationGestionRepository.findAllByGestionnaireOrderByCreerLeDesc(personne, pageRequest) :
                         personneService.estResponsable(personne.getRole().getCode()) ?
                                 delegationGestionRepository.findAllByAgenceImmobiliereInOrderByCreerLeDesc(
-                                        agenceImmobiliereService.getAgencesByResponsable(principal), pageRequest) :
+                                        agenceImmobiliereService.getAgencesImmobilieresList(principal), pageRequest) :
                                 personneService.estAgentImmobilier(personne.getRole().getCode()) ?
                                         delegationGestionRepository.findAllByAgenceImmobiliereInOrderByCreerLeDesc(
-                                                agenceImmobiliereService.getAgencesByAgent(principal), pageRequest) :
+                                                agenceImmobiliereService.getAgencesImmobilieresList(principal), pageRequest) :
                                         null;
     }
 
@@ -79,10 +79,10 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
         } else if (personneService.estGerant(personne.getRole().getCode()) || personneService.estDemarcheur(personne.getRole().getCode())) {
             return delegationGestionRepository.findByGestionnaire(personne);
         } else if (personneService.estResponsable(personne.getRole().getCode())) {
-            List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereService.getAgencesByResponsable(principal);
+            List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereService.getAgencesImmobilieresList(principal);
             return delegationGestionRepository.findByAgenceImmobiliereIn(agenceImmobilieres);
         } else if (personneService.estAgentImmobilier(personne.getRole().getCode())) {
-            List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereService.getAgencesByAgent(principal);
+            List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereService.getAgencesImmobilieresList(principal);
             return delegationGestionRepository.findByAgenceImmobiliereIn(agenceImmobilieres);
         }
 
@@ -102,6 +102,11 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
     @Override
     public DelegationGestion findById(Long id) {
         return delegationGestionRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public DelegationGestion findByBienImmobilier(BienImmobilier bienImmobilier) {
+        return delegationGestionRepository.findByBienImmobilier(bienImmobilier);
     }
 
     @Override
@@ -125,16 +130,16 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
             notification.setSendTo(String.valueOf(delegationGestion.getGestionnaire().getId()));
             notification.setLu(false);
             notification.setDateNotification(new Date());
-            notification.setUrl("/delegations-gestions/" + delegationGestionAdd.getId());
+            notification.setUrl("/delegation-gestion/" +  delegationGestion.getId() + "?idBien=" + delegationGestion.getBienImmobilier().getId());
             notification.setCreerPar(personne.getId());
             notification.setCreerLe(new Date());
             notification.setStatut(true);
             notificationService.save(notification);
 
             if ("ROLE_DEMARCHEUR".equals(delegationGestion.getGestionnaire().getRole().getCode())) {
-                delegationGestionLink = "http://localhost:4200/#/demarcheur/delegations-gestions/" + delegationGestionAdd.getId();
+                delegationGestionLink = env.getProperty("client.web") + "#/demarcheur/delegation-gestion/" + delegationGestionAdd.getId() + "?idBien=" + delegationGestionAdd.getBienImmobilier().getId();
             } else {
-                delegationGestionLink = "http://localhost:4200/#/gerant/delegations-gestions/" + delegationGestionAdd.getId();
+                delegationGestionLink = env.getProperty("client.web") + "#/gerant/delegation-gestion/" + delegationGestionAdd.getId() + "?idBien=" + delegationGestionAdd.getBienImmobilier().getId();
             }
 
             String contenu = "Bonjour M./Mlle " + delegationGestion.getGestionnaire().getPrenom() + " " + delegationGestion.getGestionnaire().getNom() + ",\n\n" +
@@ -160,13 +165,13 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
                 notification.setSendTo(String.valueOf(affectationResponsableAgence.getResponsableAgenceImmobiliere().getId()));
                 notification.setLu(false);
                 notification.setDateNotification(new Date());
-                notification.setUrl("/delegations-gestions/" + delegationGestion.getId());
+                notification.setUrl("/delegation-gestion/" + delegationGestion.getId() + "?idBien=" + delegationGestion.getBienImmobilier().getId());
                 notification.setCreerPar(personne.getId());
                 notification.setCreerLe(new Date());
                 notificationService.save(notification);
             }
 
-            delegationGestionLink = "http://localhost:4200/#/responsable/agences-immobilieres/delegations-gestions/" + delegationGestion.getId();
+            delegationGestionLink = env.getProperty("client.web") + "#/responsable/agences-immobilieres/delegation-gestion/" + delegationGestion.getId() + "?idBien=" + delegationGestion.getBienImmobilier().getId();
             String contenu = "Bonjour Agence immobilière " + delegationGestion.getAgenceImmobiliere().getNomAgence() + ",\n\n" +
                     "Nous avons le plaisir de vous informer que M./Mlle " + personne.getPrenom() + " " + personne.getNom() + " vient de vous déléguer la gestion d'un de ses biens.\n" +
                     "\n\n" +
@@ -196,7 +201,7 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
             delegationGestion = this.saveDelegationGestionBienImmAssocie(delegationGestionForm2, caracteristiques, files, principal);
         }
 
-        String delegationGestionLink = "http://localhost:4200/#/proprietaire/delegations-gestions/" + delegationGestion.getId();
+        String delegationGestionLink = env.getProperty("client.web") + "#/proprietaire/delegation-gestion/" + delegationGestion.getId() + "?idBien=" + delegationGestion.getBienImmobilier().getId();
 
         Notification notification = new Notification();
 
@@ -207,7 +212,7 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
             notification.setSendTo(String.valueOf(delegationGestion.getBienImmobilier().getPersonne().getId()));
             notification.setLu(false);
             notification.setDateNotification(new Date());
-            notification.setUrl("/delegations-gestions/" + delegationGestion.getId());
+            notification.setUrl("/delegation-gestion/" + delegationGestion.getId() + "?idBien=" + delegationGestion.getBienImmobilier().getId());
             notification.setCreerPar(personne.getId());
             notification.setCreerLe(new Date());
             notificationService.save(notification);
@@ -231,7 +236,7 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
             notification.setSendTo(String.valueOf(delegationGestion.getBienImmobilier().getPersonne().getId()));
             notification.setLu(false);
             notification.setDateNotification(new Date());
-            notification.setUrl("/delegations-gestions/" + delegationGestion.getId());
+            notification.setUrl("/delegation-gestion/" + delegationGestion.getId() + "?idBien=" + delegationGestion.getBienImmobilier().getId());
             notification.setCreerPar(personne.getId());
             notification.setCreerLe(new Date());
             notificationService.save(notification);
@@ -278,7 +283,7 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
         delegationGestion.setEtatDelegation(true);
         delegationGestionRepository.save(delegationGestion);
 
-        String delegationGestionLink = "http://localhost:4200/#/proprietaire/delegations-gestions/" + delegationGestion.getId();
+        String delegationGestionLink = env.getProperty("client.web") + "#/proprietaire/delegation-gestion/" + delegationGestion.getId()  + "?idBien=" + delegationGestion.getBienImmobilier().getId();
         String contenu = "";
 
         if (delegationGestion.getAgenceImmobiliere() == null) {
@@ -289,7 +294,7 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
             notification.setSendTo(String.valueOf(delegationGestion.getBienImmobilier().getPersonne().getId()));
             notification.setLu(false);
             notification.setDateNotification(new Date());
-            notification.setUrl("/delegations-gestions/" + delegationGestion.getId());
+            notification.setUrl("/delegation-gestion/" + delegationGestion.getId() + "?idBien=" + delegationGestion.getBienImmobilier().getId());
             notification.setCreerPar(delegationGestion.getGestionnaire().getId());
             notification.setCreerLe(new Date());
             notificationService.save(notification);
@@ -309,7 +314,7 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
             notification.setSendTo(String.valueOf(delegationGestion.getBienImmobilier().getPersonne().getId()));
             notification.setLu(false);
             notification.setDateNotification(new Date());
-            notification.setUrl("/delegations-gestions/" + delegationGestion.getId());
+            notification.setUrl("/delegation-gestion/" + delegationGestion.getId() + "?idBien=" + delegationGestion.getBienImmobilier().getId());
             notification.setCreerPar(delegationGestion.getAgenceImmobiliere().getId());
             notification.setCreerLe(new Date());
             notificationService.save(notification);
@@ -348,7 +353,7 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
         delegationGestion.setStatutDelegation(2);
         delegationGestionRepository.save(delegationGestion);
 
-        String delegationGestionLink = "http://localhost:4200/#/proprietaire/delegations-gestions/" + delegationGestion.getId();
+        String delegationGestionLink = env.getProperty("client.web") + "#/proprietaire/delegation-gestion/" + delegationGestion.getId() + "?idBien=" + delegationGestion.getBienImmobilier().getId();
         String contenu = "";
 
         if (delegationGestion.getAgenceImmobiliere() == null) {
@@ -359,7 +364,7 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
             notification.setSendTo(String.valueOf(delegationGestion.getBienImmobilier().getPersonne().getId()));
             notification.setLu(false);
             notification.setDateNotification(new Date());
-            notification.setUrl("/delegations-gestions/" + delegationGestion.getId());
+            notification.setUrl("/delegation-gestion/" + delegationGestion.getId() + "?idBien=" + delegationGestion.getBienImmobilier().getId());
             notification.setCreerPar(delegationGestion.getGestionnaire().getId());
             notification.setCreerLe(new Date());
             notificationService.save(notification);
@@ -379,7 +384,7 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
             notification.setSendTo(String.valueOf(delegationGestion.getBienImmobilier().getPersonne().getId()));
             notification.setLu(false);
             notification.setDateNotification(new Date());
-            notification.setUrl("/delegations-gestions/" + delegationGestion.getId());
+            notification.setUrl("/delegation-gestion/" + delegationGestion.getId() + "?idBien=" + delegationGestion.getBienImmobilier().getId());
             notification.setCreerPar(delegationGestion.getAgenceImmobiliere().getId());
             notification.setCreerLe(new Date());
             notificationService.save(notification);
@@ -432,15 +437,15 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
             notification.setSendTo(String.valueOf(delegationGestion.getGestionnaire().getId()));
             notification.setLu(false);
             notification.setDateNotification(new Date());
-            notification.setUrl("/delegations-gestions/" + delegationGestion.getId());
+            notification.setUrl("/delegation-gestion/" + delegationGestion.getId());
             notification.setCreerPar(personne.getId());
             notification.setCreerLe(new Date());
             notificationService.save(notification);
 
             if ("ROLE_DEMARCHEUR".equals(delegationGestion.getGestionnaire().getRole().getCode())) {
-                delegationGestionLink = "http://localhost:4200/#/demarcheur/delegations-gestions/" + delegationGestion.getId();
+                delegationGestionLink = env.getProperty("client.web") + "#/demarcheur/delegation-gestion/" + delegationGestion.getId() + "?idBien=" + delegationGestion.getBienImmobilier().getId();
             } else {
-                delegationGestionLink = "http://localhost:4200/#/gerant/delegations-gestions/" + delegationGestion.getId();
+                delegationGestionLink = env.getProperty("client.web") + "#/gerant/delegation-gestion/" + delegationGestion.getId() + "?idBien=" + delegationGestion.getBienImmobilier().getId();
             }
 
             String contenu = "Bonjour M./Mlle " + delegationGestion.getGestionnaire().getPrenom() + " " + delegationGestion.getGestionnaire().getNom() + ",\n\n" +
@@ -466,13 +471,13 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
                 notification.setSendTo(String.valueOf(affectationResponsableAgence.getResponsableAgenceImmobiliere().getId()));
                 notification.setLu(false);
                 notification.setDateNotification(new Date());
-                notification.setUrl("/delegations-gestions/" + delegationGestion.getId());
+                notification.setUrl("/delegation-gestion/" + delegationGestion.getId() + "?idBien=" + delegationGestion.getBienImmobilier().getId());
                 notification.setCreerPar(personne.getId());
                 notification.setCreerLe(new Date());
                 notificationService.save(notification);
             }
 
-            delegationGestionLink = "http://localhost:4200/#/responsable/agences-immobilieres/delegations-gestions/" + delegationGestion.getId();
+            delegationGestionLink = env.getProperty("client.web") + "#/responsable/agences-immobilieres/delegation-gestion/" + delegationGestion.getId() + "?idBien=" + delegationGestion.getBienImmobilier().getId();
             String contenu = "Bonjour Chere Agence " + delegationGestion.getAgenceImmobiliere().getNomAgence() + ",\n\n" +
                     "Nous sommes ravis de vous annoncer que M./Mlle " + personne.getPrenom() + " " + personne.getNom() + " a récemment activé la gestion d'un bien qu'il/elle vous avait délégué.\n" +
                     "\n\n" +
@@ -509,15 +514,15 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
             notification.setSendTo(String.valueOf(delegationGestion.getGestionnaire().getId()));
             notification.setLu(false);
             notification.setDateNotification(new Date());
-            notification.setUrl("/delegations-gestions/" + delegationGestion.getId());
+            notification.setUrl("/delegation-gestion/" + delegationGestion.getId() + "?idBien=" + delegationGestion.getBienImmobilier().getId());
             notification.setCreerPar(personne.getId());
             notification.setCreerLe(new Date());
             notificationService.save(notification);
 
             if ("ROLE_DEMARCHEUR".equals(delegationGestion.getGestionnaire().getRole().getCode())) {
-                delegationGestionLink = "http://localhost:4200/#/demarcheur/delegations-gestions/" + delegationGestion.getId();
+                delegationGestionLink = env.getProperty("client.web") + "#/demarcheur/delegation-gestion/" + delegationGestion.getId() + "?idBien=" + delegationGestion.getBienImmobilier().getId();
             } else {
-                delegationGestionLink = "http://localhost:4200/#/gerant/delegations-gestions/" + delegationGestion.getId();
+                delegationGestionLink = env.getProperty("client.web") + "#/gerant/delegation-gestion/" + delegationGestion.getId() + "?idBien=" + delegationGestion.getBienImmobilier().getId();
             }
 
             String contenu = "Bonjour M./Mlle " + delegationGestion.getGestionnaire().getPrenom() + " " + delegationGestion.getGestionnaire().getNom() + ",\n\n" +
@@ -543,13 +548,13 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
                 notification.setSendTo(String.valueOf(affectationResponsableAgence.getResponsableAgenceImmobiliere().getId()));
                 notification.setLu(false);
                 notification.setDateNotification(new Date());
-                notification.setUrl("/delegations-gestions/" + delegationGestion.getId());
+                notification.setUrl("/delegation-gestion/" + delegationGestion.getId() + "?idBien=" + delegationGestion.getBienImmobilier().getId());
                 notification.setCreerPar(personne.getId());
                 notification.setCreerLe(new Date());
                 notificationService.save(notification);
             }
 
-            delegationGestionLink = "http://localhost:4200/#/responsable/agences-immobilieres/delegations-gestions/" + delegationGestion.getId();
+            delegationGestionLink = env.getProperty("client.web") + "#/responsable/agences-immobilieres/delegation-gestion/" + delegationGestion.getId() + "?idBien=" + delegationGestion.getBienImmobilier().getId();
             String contenu = "Bonjour Chere " + delegationGestion.getAgenceImmobiliere().getNomAgence() + ",\n\n" +
                     "Nous sommes désolés de vous informer que M./Mlle " + personne.getPrenom() + " " + personne.getNom() + " a récemment désactivé la gestion d'un bien qu'il/elle vous avait délégué..\n" +
                     "\n\n" +
@@ -569,12 +574,12 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
         BienImmobilier bienImmobilier = new BienImmobilier();
         Personne personne = personneService.findByUsername(principal.getName());
         Proprietaire proprietaire = (Proprietaire) personneService.findByMatricule(delegationGestionForm2.getMatriculeProprietaire());
+
+        String roleCode = personne.getRole().getCode();
+
         DelegationGestion delegationGestion = new DelegationGestion();
         bienImmobilier.setTypeDeBien(delegationGestionForm2.getTypeDeBien());
         bienImmobilier.setPersonne(proprietaire);
-//        if (!isTypeBienBoutiqueOrMagasinOrTerrain(delegationGestionForm2.getTypeDeBien().getDesignation())) {
-//            bienImmobilier.setCategorie(delegationGestionForm2.getCategorie());
-//        }
         bienImmobilier.setCategorie(delegationGestionForm2.getCategorie());
         bienImmobilier.setQuartier(delegationGestionForm2.getQuartier());
         bienImmobilier.setAdresse(delegationGestionForm2.getAdresse());
@@ -600,7 +605,7 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
 
         delegationGestion.setCodeDelegationGestion("DELGES" + UUID.randomUUID());
         delegationGestion.setBienImmobilier(bienImmobilierAdd);
-        if (personne.getRole().getCode().equals("ROLE_RESPONSABLE") || personne.getRole().getCode().equals("ROLE_AGENTIMMOBILIER")) {
+        if (personneService.estResponsable(roleCode) || personneService.estAgentImmobilier(roleCode)) {
             delegationGestion.setAgenceImmobiliere(delegationGestionForm2.getAgenceImmobiliere());
         } else {
             delegationGestion.setGestionnaire(personne);
@@ -619,13 +624,13 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
     private DelegationGestion saveDelegationGestionBienImmAssocie(DelegationGestionForm2 delegationGestionForm2, Caracteristiques caracteristiques, List<MultipartFile> files, Principal principal) {
         BienImmAssocie bienImmAssocie = new BienImmAssocie();
         Personne personne = personneService.findByUsername(principal.getName());
+
+        String roleCode = personne.getRole().getCode();
+
         BienImmobilier bienImmobilier = bienImmobilierService.findByCodeBien(delegationGestionForm2.getMatriculeBienImmo());
         DelegationGestion delegationGestion = new DelegationGestion();
         bienImmAssocie.setTypeDeBien(delegationGestionForm2.getTypeDeBien());
         bienImmAssocie.setPersonne(bienImmobilier.getPersonne());
-//        if (!isTypeBienBoutiqueOrMagasinOrTerrain(delegationGestionForm2.getTypeDeBien().getDesignation())) {
-//            bienImmAssocie.setCategorie(delegationGestionForm2.getCategorie());
-//        }
         bienImmAssocie.setCategorie(delegationGestionForm2.getCategorie());
         bienImmAssocie.setBienImmobilier(bienImmobilier);
         bienImmAssocie.setQuartier(bienImmobilier.getQuartier());
@@ -652,7 +657,7 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
 
         delegationGestion.setCodeDelegationGestion("DELGES" + UUID.randomUUID());
         delegationGestion.setBienImmobilier(bienImmAssocieAdd);
-        if (personne.getRole().getCode().equals("ROLE_RESPONSABLE") || personne.getRole().getCode().equals("ROLE_AGENTIMMOBILIER")) {
+        if (personneService.estResponsable(roleCode) || personneService.estAgentImmobilier(roleCode)) {
             delegationGestion.setAgenceImmobiliere(delegationGestionForm2.getAgenceImmobiliere());
         } else {
             delegationGestion.setGestionnaire(personne);
@@ -666,11 +671,6 @@ public class DelegationGestionServiceImpl implements DelegationGestionService {
         DelegationGestion delegationGestionAdd = delegationGestionRepository.save(delegationGestion);
         delegationGestionAdd.setCodeDelegationGestion("DELGES00" + delegationGestionAdd.getId());
         return delegationGestionRepository.save(delegationGestionAdd);
-    }
-
-    private boolean isTypeBienBoutiqueOrMagasinOrTerrain(String designation) {
-        return designation.equals("Boutique") ||
-                designation.equals("Magasin");
     }
 
     private boolean isBienSupport(String designation) {

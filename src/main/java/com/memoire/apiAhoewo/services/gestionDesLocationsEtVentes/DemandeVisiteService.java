@@ -3,7 +3,7 @@ package com.memoire.apiAhoewo.services.gestionDesLocationsEtVentes;
 import com.memoire.apiAhoewo.models.gestionDesComptes.Client;
 import com.memoire.apiAhoewo.models.gestionDesLocationsEtVentes.DemandeVisite;
 import com.memoire.apiAhoewo.models.gestionDesPublications.Publication;
-import com.memoire.apiAhoewo.dto.MotifRejetForm;
+import com.memoire.apiAhoewo.dto.MotifForm;
 import org.springframework.data.domain.Page;
 
 import java.security.Principal;
@@ -11,6 +11,8 @@ import java.util.List;
 
 public interface DemandeVisiteService {
     Page<DemandeVisite> getDemandesVisites(Principal principal, int numeroDeLaPage, int elementsParPage);
+
+    List<DemandeVisite> getDemandesVisites(Principal principal);
 
     List<DemandeVisite> getDemandesVisitesEnAttente();
 
@@ -26,9 +28,9 @@ public interface DemandeVisiteService {
 
     void valider(Long id, Principal principal);
 
-    void annuler(Long id, MotifRejetForm motifRejetForm, Principal principal);
+    void annuler(Long id, MotifForm motifRejetForm, Principal principal);
 
-    void refuser(Long id, MotifRejetForm motifRejetForm, Principal principal);
+    void refuser(Long id, MotifForm motifRejetForm, Principal principal);
 
     boolean clientAndPublicationExist(Client client, Publication publication);
 }

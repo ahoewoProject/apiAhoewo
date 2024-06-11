@@ -12,6 +12,8 @@ import java.util.List;
 public interface AgenceImmobiliereRepository extends JpaRepository<AgenceImmobiliere, Long> {
     AgenceImmobiliere findByNomAgence(String nomAgence);
 
+    Page<AgenceImmobiliere> findAllByOrderByIdDesc(Pageable pageable);
+
     Page<AgenceImmobiliere> findByEtatAgenceOrderByIdDesc(boolean etatAgence, Pageable pageable);
 
     Page<AgenceImmobiliere> findByQuartier_IdAndEtatAgenceOrderByIdDesc(Long idQuartier, boolean etatAgence, Pageable pageable);

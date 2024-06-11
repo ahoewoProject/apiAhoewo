@@ -35,7 +35,7 @@ public class AgentImmobilierServiceImpl implements AgentImmobilierService {
 
     @Override
     public List<AgentImmobilier> getAll() {
-        return this.agentImmobilierRepository.findAll();
+        return this.agentImmobilierRepository.findAllByOrderByCreerLeDesc();
     }
 
     @Override

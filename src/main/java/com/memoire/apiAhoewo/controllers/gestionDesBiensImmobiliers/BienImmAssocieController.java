@@ -7,7 +7,6 @@ import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.ImagesBienImmobil
 import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.BienImmobilierAssocieService;
 import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.CaracteristiquesService;
 import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.ImagesBienImmobilierService;
-import com.memoire.apiAhoewo.services.gestionDesComptes.PersonneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -27,8 +27,6 @@ public class BienImmAssocieController {
     private CaracteristiquesService caracteristiquesService;
     @Autowired
     private ImagesBienImmobilierService imagesBienImmobilierService;
-    @Autowired
-    private PersonneService personneService;
 
     @RequestMapping(value = "/biens-imm-associes/pagines/{id}", method = RequestMethod.GET)
     public Page<BienImmAssocie> getBiensAssociesPaginesByBienImmobilier(@PathVariable Long id,
@@ -42,6 +40,19 @@ public class BienImmAssocieController {
             System.out.println("Erreur " + e.getMessage());
             throw new RuntimeException("Une erreur s'est produite lors de la récupération des biens immobiliers associés.", e);
         }
+    }
+
+    @RequestMapping(value = "/biens-associes", method = RequestMethod.GET)
+    public List<BienImmAssocie> getBiensAssocies(Principal principal) {
+
+        List<BienImmAssocie> bienImmAssocies = new ArrayList<>();
+        try {
+            bienImmAssocies = this.bienImmobilierAssocieService.getBiensAssocies(principal);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return bienImmAssocies;
     }
 
     @RequestMapping(value = "/bien-imm-associe/{id}", method = RequestMethod.GET)
@@ -64,14 +75,13 @@ public class BienImmAssocieController {
     {
 
         try {
-//            Personne personne = personneService.findByUsername(principal.getName());
             BienImmAssocie bienImmAssocie = new BienImmAssocie();
             Caracteristiques caracteristique;
 
             if (bienImmAssocieJson != null && !bienImmAssocieJson.isEmpty()) {
                 bienImmAssocie = new ObjectMapper().readValue(bienImmAssocieJson, BienImmAssocie.class);
             }
-//            bienImmAssocie.setPersonne(personne);
+
             bienImmAssocie = this.bienImmobilierAssocieService.save(bienImmAssocie, principal);
 
             if (files != null) {

@@ -7,7 +7,6 @@ import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.ImagesBienImmobil
 import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.BienImmobilierService;
 import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.CaracteristiquesService;
 import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.ImagesBienImmobilierService;
-import com.memoire.apiAhoewo.services.gestionDesComptes.PersonneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -28,15 +27,13 @@ public class BienImmobilierController {
     private CaracteristiquesService caracteristiquesService;
     @Autowired
     private ImagesBienImmobilierService imagesBienImmobilierService;
-    @Autowired
-    private PersonneService personneService;
 
     @RequestMapping(value = "/biens-immobiliers", method = RequestMethod.GET)
-    public List<BienImmobilier> getAll() {
+    public List<BienImmobilier> getBiensImmobiliers(Principal principal) {
 
         List<BienImmobilier> bienImmobiliers = new ArrayList<>();
         try {
-            bienImmobiliers = this.bienImmobilierService.getAll();
+            bienImmobiliers = this.bienImmobilierService.getBiensImmobiliers(principal);
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Erreur " + e.getMessage());
@@ -44,45 +41,17 @@ public class BienImmobilierController {
         return bienImmobiliers;
     }
 
-    @RequestMapping(value = "/biens-immobiliers/proprietaire/pagines", method = RequestMethod.GET)
-    public Page<BienImmobilier> getBiensPaginesByProprietaire(Principal principal,
-            @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
-            @RequestParam(value = "elementsParPage") int elementsParPage) {
+    @RequestMapping(value = "/biens-supports-pagines", method = RequestMethod.GET)
+    public Page<BienImmobilier> getBiensSupportsPagines(Principal principal,
+                                                              @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+                                                              @RequestParam(value = "elementsParPage") int elementsParPage) {
 
         try {
-            return this.bienImmobilierService.getBiensPaginesByProprietaire(principal, numeroDeLaPage, elementsParPage);
+            return this.bienImmobilierService.getBiensSupportsPagines(principal, numeroDeLaPage, elementsParPage);
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Erreur " + e.getMessage());
-            throw new RuntimeException("Une erreur s'est produite lors de la récupération des biens immobiliers.", e);
-        }
-    }
-
-    @RequestMapping(value = "/biens-immobiliers/agences/responsable/pagines", method = RequestMethod.GET)
-    public Page<BienImmobilier> getBiensPaginesOfAgencesByResponsable(Principal principal,
-                                                            @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
-                                                            @RequestParam(value = "elementsParPage") int elementsParPage) {
-
-        try {
-            return this.bienImmobilierService.getBiensPaginesOfAgencesByResponsable(principal, numeroDeLaPage, elementsParPage);
-        } catch (Exception e) {
-            // TODO: handle exception
-            System.out.println("Erreur " + e.getMessage());
-            throw new RuntimeException("Une erreur s'est produite lors de la récupération des biens immobiliers.", e);
-        }
-    }
-
-    @RequestMapping(value = "/biens-immobiliers/agences/agent/pagines", method = RequestMethod.GET)
-    public Page<BienImmobilier> getBiensPaginesOfAgencesByAgent(Principal principal,
-                                                                      @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
-                                                                      @RequestParam(value = "elementsParPage") int elementsParPage) {
-
-        try {
-            return this.bienImmobilierService.getBiensPaginesOfAgencesByAgent(principal, numeroDeLaPage, elementsParPage);
-        } catch (Exception e) {
-            // TODO: handle exception
-            System.out.println("Erreur " + e.getMessage());
-            throw new RuntimeException("Une erreur s'est produite lors de la récupération des biens immobiliers.", e);
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des biens supports.", e);
         }
     }
 
@@ -99,25 +68,12 @@ public class BienImmobilierController {
         return bienImmobiliers;
     }
 
-    @RequestMapping(value = "/biens-immobiliers/agences/responsable", method = RequestMethod.GET)
-    public List<BienImmobilier> getBiensOfAgencesByResponsable(Principal principal) {
+    @RequestMapping(value = "/biens-supports", method = RequestMethod.GET)
+    public List<BienImmobilier> getBiensSupports(Principal principal) {
 
         List<BienImmobilier> bienImmobiliers = new ArrayList<>();
         try {
-            bienImmobiliers = this.bienImmobilierService.getBiensOfAgencesByResponsable(principal);
-        } catch (Exception e) {
-            // TODO: handle exception
-            System.out.println("Erreur " + e.getMessage());
-        }
-        return bienImmobiliers;
-    }
-
-    @RequestMapping(value = "/biens-immobiliers/agences/agent", method = RequestMethod.GET)
-    public List<BienImmobilier> getBiensOfAgencesByAgent(Principal principal) {
-
-        List<BienImmobilier> bienImmobiliers = new ArrayList<>();
-        try {
-            bienImmobiliers = this.bienImmobilierService.getBiensOfAgencesByAgent(principal);
+            bienImmobiliers = this.bienImmobilierService.getBiensSupports(principal);
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Erreur " + e.getMessage());
@@ -136,6 +92,19 @@ public class BienImmobilierController {
             System.out.println("Erreur " + e.getMessage());
         }
         return bienImmobiliers;
+    }
+
+    @RequestMapping(value = "/bien-immobilier/code-bien/{codeBien}", method = RequestMethod.GET)
+    public BienImmobilier findByCodeBien(@PathVariable String codeBien) {
+
+        BienImmobilier bienImmobilier = new BienImmobilier();
+        try {
+            bienImmobilier = this.bienImmobilierService.findByCodeBien(codeBien);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return bienImmobilier;
     }
 
     @RequestMapping(value = "/bien-immobilier/{id}", method = RequestMethod.GET)
@@ -158,14 +127,13 @@ public class BienImmobilierController {
                                                    @RequestParam(value = "caracteristiquesJson", required = false) String caracteristiquesJson         ) {
 
         try {
-//            Personne personne = personneService.findByUsername(principal.getName());
             BienImmobilier bienImmobilier = new BienImmobilier();
             Caracteristiques caracteristique;
 
             if (bienImmobilierJson != null && !bienImmobilierJson.isEmpty()) {
                 bienImmobilier = new ObjectMapper().readValue(bienImmobilierJson, BienImmobilier.class);
             }
-//            bienImmobilier.setPersonne(personne);
+
             bienImmobilier = this.bienImmobilierService.save(bienImmobilier, principal);
 
             if (files != null) {
@@ -203,6 +171,11 @@ public class BienImmobilierController {
 
             BienImmobilier bienImmobilierUpdate = new ObjectMapper().readValue(bienImmobilierJson, BienImmobilier.class);
             bienImmobilier.setDescription(bienImmobilierUpdate.getDescription());
+            if (bienImmobilierUpdate.getAgenceImmobiliere() != null) {
+                bienImmobilier.setAgenceImmobiliere(bienImmobilierUpdate.getAgenceImmobiliere());
+            } else {
+                bienImmobilier.setPersonne(bienImmobilierUpdate.getPersonne());
+            }
             bienImmobilier.setCategorie(bienImmobilierUpdate.getCategorie());
             bienImmobilier.setAdresse(bienImmobilierUpdate.getAdresse());
             bienImmobilier.setQuartier(bienImmobilierUpdate.getQuartier());

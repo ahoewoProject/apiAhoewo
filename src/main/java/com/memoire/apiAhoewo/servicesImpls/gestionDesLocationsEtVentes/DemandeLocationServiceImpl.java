@@ -1,15 +1,15 @@
 package com.memoire.apiAhoewo.servicesImpls.gestionDesLocationsEtVentes;
 
-import com.memoire.apiAhoewo.models.MotifRejet;
+import com.memoire.apiAhoewo.dto.MotifForm;
+import com.memoire.apiAhoewo.models.Motif;
 import com.memoire.apiAhoewo.models.Notification;
 import com.memoire.apiAhoewo.models.gestionDesComptes.Client;
 import com.memoire.apiAhoewo.models.gestionDesComptes.Personne;
 import com.memoire.apiAhoewo.models.gestionDesLocationsEtVentes.DemandeLocation;
 import com.memoire.apiAhoewo.models.gestionDesPublications.Publication;
 import com.memoire.apiAhoewo.repositories.gestionDesLocationsEtVentes.DemandeLocationRepository;
-import com.memoire.apiAhoewo.dto.MotifRejetForm;
 import com.memoire.apiAhoewo.services.EmailSenderService;
-import com.memoire.apiAhoewo.services.MotifRejetService;
+import com.memoire.apiAhoewo.services.MotifService;
 import com.memoire.apiAhoewo.services.NotificationService;
 import com.memoire.apiAhoewo.services.gestionDesComptes.PersonneService;
 import com.memoire.apiAhoewo.services.gestionDesLocationsEtVentes.DemandeLocationService;
@@ -24,7 +24,6 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 public class DemandeLocationServiceImpl implements DemandeLocationService {
@@ -41,16 +40,19 @@ public class DemandeLocationServiceImpl implements DemandeLocationService {
     @Autowired
     private Environment env;
     @Autowired
-    private MotifRejetService motifRejetService;
+    private MotifService motifService;
 
     @Override
     public Page<DemandeLocation> getDemandesLocations(Principal principal, int numeroDeLaPage, int elementsParPage) {
         Personne personne = personneService.findByUsername(principal.getName());
         PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
 
-        if (personne.getRole().getCode().equals("ROLE_PROPRIETAIRE") || personne.getRole().getCode().equals("ROLE_RESPONSABLE") ||
-                personne.getRole().getCode().equals("ROLE_AGENTIMMOBILIER") || personne.getRole().getCode().equals("ROLE_DEMARCHEUR") ||
-                personne.getRole().getCode().equals("ROLE_GERANT")) {
+        String roleCode = personne.getRole().getCode();
+
+        if (personneService.estProprietaire(roleCode) || personneService.estResponsable(roleCode) ||
+                personneService.estAgentImmobilier(roleCode) || personneService.estDemarcheur(roleCode) ||
+                personneService.estGerant(roleCode)) {
+
             List<Publication> publicationList = publicationService.getPublications(principal);
             return demandeLocationRepository.findByPublicationInOrderByIdDesc(publicationList, pageRequest);
         } else {
@@ -62,9 +64,11 @@ public class DemandeLocationServiceImpl implements DemandeLocationService {
     public List<DemandeLocation> getDemandesLocations(Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
 
-        if (personne.getRole().getCode().equals("ROLE_PROPRIETAIRE") || personne.getRole().getCode().equals("ROLE_RESPONSABLE") ||
-                personne.getRole().getCode().equals("ROLE_AGENTIMMOBILIER") || personne.getRole().getCode().equals("ROLE_DEMARCHEUR") ||
-                personne.getRole().getCode().equals("ROLE_GERANT")) {
+        String roleCode = personne.getRole().getCode();
+
+        if (personneService.estProprietaire(roleCode) || personneService.estResponsable(roleCode) ||
+                personneService.estAgentImmobilier(roleCode) || personneService.estDemarcheur(roleCode) ||
+                personneService.estGerant(roleCode)) {
             List<Publication> publicationList = publicationService.getPublications(principal);
             return demandeLocationRepository.findByPublicationInOrderByIdDesc(publicationList);
         } else {
@@ -101,7 +105,7 @@ public class DemandeLocationServiceImpl implements DemandeLocationService {
         notification.setSendTo(String.valueOf(demandeLocation.getPublication().getCreerPar()));
         notification.setDateNotification(new Date());
         notification.setLu(false);
-        notification.setUrl("/demandes-locations/" + demandeLocationAdd.getId());
+        notification.setUrl("/demande-location/" + demandeLocationAdd.getId());
         notification.setCreerPar(personne.getId());
         notification.setCreerLe(new Date());
         notificationService.save(notification);
@@ -124,7 +128,7 @@ public class DemandeLocationServiceImpl implements DemandeLocationService {
         notification.setSendTo(String.valueOf(demandeLocation.getPublication().getCreerPar()));
         notification.setDateNotification(new Date());
         notification.setLu(false);
-        notification.setUrl("/demandes-locations/" + demandeLocation.getId());
+        notification.setUrl("/demande-location/" + demandeLocation.getId());
         notification.setCreerPar(personne.getId());
         notification.setCreerLe(new Date());
         notificationService.save(notification);
@@ -144,7 +148,7 @@ public class DemandeLocationServiceImpl implements DemandeLocationService {
         notification.setSendTo(String.valueOf(demandeLocation.getPublication().getCreerPar()));
         notification.setDateNotification(new Date());
         notification.setLu(false);
-        notification.setUrl("/demandes-locations/" + demandeLocation.getId());
+        notification.setUrl("/demande-location/" + demandeLocation.getId());
         notification.setCreerPar(personne.getId());
         notification.setCreerLe(new Date());
         notificationService.save(notification);
@@ -167,28 +171,28 @@ public class DemandeLocationServiceImpl implements DemandeLocationService {
         notification.setSendTo(String.valueOf(demandeLocation.getClient().getId()));
         notification.setDateNotification(new Date());
         notification.setLu(false);
-        notification.setUrl("/demandes-locations/" + demandeLocation.getId());
+        notification.setUrl("/demande-location/" + demandeLocation.getId());
         notification.setCreerPar(personne.getId());
         notification.setCreerLe(new Date());
         notificationService.save(notification);
 
         demandeLocationLink = "http://localhost:4200/client/demandes-locations/" + demandeLocation.getId();
-
-        String contenu = "Bonjour M./Mlle " + demandeLocation.getClient().getNom() + " " + demandeLocation.getClient().getPrenom() + ",\n" +
-                "Votre demande de location pour la publication de " + demandeLocation.getPublication().getLibelle() + " a été validée.\n" +
-                "Vous pouvez consulter les détails de la demande en cliquant sur le lien suivant : " + demandeLocationLink + "\n" +
-                "Cordialement,\n" +
-                "L'équipe Ahoewo";
-
-        CompletableFuture.runAsync(() -> {
-            emailSenderService.sendMail(env.getProperty("spring.mail.username"), demandeLocation.getClient().getEmail(), "Demande de location validée", contenu);
-        });
+//
+//        String contenu = "Bonjour M./Mlle " + demandeLocation.getClient().getNom() + " " + demandeLocation.getClient().getPrenom() + ",\n" +
+//                "Votre demande de location pour la publication de " + demandeLocation.getPublication().getLibelle() + " a été validée.\n" +
+//                "Vous pouvez consulter les détails de la demande en cliquant sur le lien suivant : " + demandeLocationLink + "\n" +
+//                "Cordialement,\n" +
+//                "L'équipe Ahoewo";
+//
+//        CompletableFuture.runAsync(() -> {
+//            emailSenderService.sendMail(env.getProperty("spring.mail.username"), demandeLocation.getClient().getEmail(), "Demande de location validée", contenu);
+//        });
 
         demandeLocationRepository.save(demandeLocation);
     }
 
     @Override
-    public void annuler(Long id, MotifRejetForm motifRejetForm, Principal principal) {
+    public void annuler(Long id, MotifForm motifForm, Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
 
         DemandeLocation demandeLocation = demandeLocationRepository.findById(id).orElse(null);
@@ -202,23 +206,23 @@ public class DemandeLocationServiceImpl implements DemandeLocationService {
         notification.setSendTo(String.valueOf(demandeLocation.getPublication().getCreerPar()));
         notification.setDateNotification(new Date());
         notification.setLu(false);
-        notification.setUrl("/demandes-locations/" + demandeLocation.getId());
+        notification.setUrl("/demande-location/" + demandeLocation.getId());
         notification.setCreerPar(personne.getId());
         notification.setCreerLe(new Date());
         notificationService.save(notification);
 
-        if (motifRejetForm != null) {
-            MotifRejet motifRejet = new MotifRejet();
-            motifRejet.setCode(demandeLocation.getCodeDemande());
-            motifRejet.setMotif(motifRejetForm.getMotif());
-            motifRejetService.save(motifRejet, principal);
+        if (motifForm != null) {
+            Motif motif = new Motif();
+            motif.setCode(demandeLocation.getCodeDemande());
+            motif.setMotif(motifForm.getMotif());
+            motifService.save(motif, principal);
         }
 
         demandeLocationRepository.save(demandeLocation);
     }
 
     @Override
-    public void refuser(Long id, MotifRejetForm motifRejetForm, Principal principal) {
+    public void refuser(Long id, MotifForm motifForm, Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
 
         DemandeLocation demandeLocation = demandeLocationRepository.findById(id).orElse(null);
@@ -234,28 +238,28 @@ public class DemandeLocationServiceImpl implements DemandeLocationService {
         notification.setSendTo(String.valueOf(demandeLocation.getClient().getId()));
         notification.setDateNotification(new Date());
         notification.setLu(false);
-        notification.setUrl("/demandes-locations/" + demandeLocation.getId());
+        notification.setUrl("/demande-location/" + demandeLocation.getId());
         notification.setCreerPar(personne.getId());
         notification.setCreerLe(new Date());
         notificationService.save(notification);
 
-        if (motifRejetForm != null) {
-            MotifRejet motifRejet = new MotifRejet();
-            motifRejet.setCode(demandeLocation.getCodeDemande());
-            motifRejet.setMotif(motifRejetForm.getMotif());
-            motifRejetService.save(motifRejet, principal);
+        if (motifForm != null) {
+            Motif motif = new Motif();
+            motif.setCode(demandeLocation.getCodeDemande());
+            motif.setMotif(motifForm.getMotif());
+            motifService.save(motif, principal);
         }
 
-        String contenu = "Bonjour M./Mlle " + demandeLocation.getClient().getNom() + " " + demandeLocation.getClient().getPrenom() + ",\n" +
-                "Votre demande de location pour la publication de " + demandeLocation.getPublication().getLibelle() + " a été refusée.\n" +
-                "Vous pouvez consulter les détails de la demande en cliquant sur le lien suivant : " + demandeLocationLink + "\n" +
-                "Cordialement,\n" +
-                "L'équipe Ahoewo";
-
-        CompletableFuture.runAsync(() -> {
-            emailSenderService.sendMail(env.getProperty("spring.mail.username"), demandeLocation.getClient().getEmail(), "Demande de location refusée", contenu);
-                }
-        );
+//        String contenu = "Bonjour M./Mlle " + demandeLocation.getClient().getNom() + " " + demandeLocation.getClient().getPrenom() + ",\n" +
+//                "Votre demande de location pour la publication de " + demandeLocation.getPublication().getLibelle() + " a été refusée.\n" +
+//                "Vous pouvez consulter les détails de la demande en cliquant sur le lien suivant : " + demandeLocationLink + "\n" +
+//                "Cordialement,\n" +
+//                "L'équipe Ahoewo";
+//
+//        CompletableFuture.runAsync(() -> {
+//            emailSenderService.sendMail(env.getProperty("spring.mail.username"), demandeLocation.getClient().getEmail(), "Demande de location refusée", contenu);
+//                }
+//        );
 
         demandeLocationRepository.save(demandeLocation);
     }

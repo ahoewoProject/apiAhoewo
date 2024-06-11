@@ -3,7 +3,7 @@ package com.memoire.apiAhoewo.services.gestionDesLocationsEtVentes;
 import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.BienImmobilier;
 import com.memoire.apiAhoewo.models.gestionDesLocationsEtVentes.ContratLocation;
 import com.memoire.apiAhoewo.models.gestionDesLocationsEtVentes.DemandeLocation;
-import com.memoire.apiAhoewo.dto.MotifRejetForm;
+import com.memoire.apiAhoewo.dto.MotifForm;
 import org.springframework.data.domain.Page;
 
 import java.io.IOException;
@@ -21,6 +21,8 @@ public interface ContratLocationService {
 
     ContratLocation findById(Long id);
 
+    ContratLocation findByCodeContrat(String codeContrat);
+
     ContratLocation save(ContratLocation contratLocation, Principal principal);
 
     ContratLocation modifier(Principal principal, ContratLocation contratLocation);
@@ -31,9 +33,9 @@ public interface ContratLocationService {
 
     void mettreFin(Principal principal, Long id);
 
-    void refuser(Principal principal, Long id, MotifRejetForm motifRejetForm);
+    void refuser(Principal principal, Long id, MotifForm motifRejetForm);
 
-    void demandeModification(Principal principal, MotifRejetForm motifRejetForm, Long id);
+    void demandeModification(Principal principal, MotifForm motifRejetForm, Long id);
 
     byte[] generateContratLocationPdf(Long id) throws IOException;
 

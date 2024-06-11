@@ -42,14 +42,20 @@ public class ServicesAgenceImmobiliereServiceImpl implements ServicesAgenceImmob
     private Environment env;
 
     @Override
-    public Page<ServicesAgenceImmobiliere> getServicesOfAgencePagines(Principal principal, int numeroDeLaPage, int elementsParPage) {
-        List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereService.getAgencesByResponsable(principal);
+    public List<ServicesAgenceImmobiliere> getServicesAgencesList(Principal principal) {
+        List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereService.getAgencesImmobilieresList(principal);
+        return servicesAgenceImmobiliereRepository.findByAgenceImmobiliereIn(agenceImmobilieres);
+    }
+
+    @Override
+    public Page<ServicesAgenceImmobiliere> getServicesAgencesPage(Principal principal, int numeroDeLaPage, int elementsParPage) {
+        List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereService.getAgencesImmobilieresList(principal);
         PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
         return servicesAgenceImmobiliereRepository.findAllByAgenceImmobiliereInAndEtatInOrderByCreerLeDesc(agenceImmobilieres, pageRequest, List.of(0,1,2));
     }
 
     @Override
-    public Page<ServicesAgenceImmobiliere> getServicesOfAgencePagines(Long id, int numeroDeLaPage, int elementsParPage) {
+    public Page<ServicesAgenceImmobiliere> getServicesByIdAgencePage(Long id, int numeroDeLaPage, int elementsParPage) {
         AgenceImmobiliere agenceImmobiliere = agenceImmobiliereService.findById(id);
         PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
         return servicesAgenceImmobiliereRepository.findAllByAgenceImmobiliereAndEtatInOrderByCreerLeDesc(agenceImmobiliere, pageRequest, List.of(0,1,2));
@@ -104,12 +110,12 @@ public class ServicesAgenceImmobiliereServiceImpl implements ServicesAgenceImmob
 
         Notification notification = new Notification();
 
-        notification.setTitre("Demande d'ajout de nouveau service");
-        notification.setMessage("Demande d'ajout de service pour " + agenceImmobiliere.getNomAgence());
+        notification.setTitre("Demande d'enregistrement de nouveau service");
+        notification.setMessage("Demande d'enregistrement de service pour " + agenceImmobiliere.getNomAgence());
         notification.setSendTo("ADMIN");
         notification.setLu(false);
         notification.setDateNotification(new Date());
-        notification.setUrl("/autres-services/" + services.getId());
+        notification.setUrl("/autre-service/" + services.getId());
         notification.setCreerPar(personne.getId());
         notification.setCreerLe(new Date());
         notificationService.save(notification);
@@ -119,7 +125,7 @@ public class ServicesAgenceImmobiliereServiceImpl implements ServicesAgenceImmob
                 "Détails du service non disponible :\n" +
                 "Nom du service : " + serviceNonTrouveForm.getNomDuService() + "\n" +
                 "Description : " + serviceNonTrouveForm.getDescriptionDuService() + "\n\n" +
-                "Nous vous prions de bien vouloir examiner cette demande et prendre les mesures nécessaires pour évaluer l'ajout de ce service à la plateforme.\n\n" +
+                "Nous vous prions de bien vouloir examiner cette demande et prendre les mesures nécessaires pour évaluer l'enregistrement de ce service à la plateforme.\n\n" +
                 "Nous vous remercions par avance pour votre attention à cette requête. Si vous avez besoin de plus amples informations ou si vous avez des questions, n'hésitez pas à nous contacter.\n\n" +
                 "Cordialement,\n\n" +
                 "Responsable de l'agence : " + personne.getNom() + " " + personne.getPrenom() + "\n" +
@@ -128,7 +134,7 @@ public class ServicesAgenceImmobiliereServiceImpl implements ServicesAgenceImmob
 
         // Envoyer l'email au support technique
         CompletableFuture.runAsync(()->{
-            emailSenderService.sendMail(env.getProperty("spring.mail.username"), env.getProperty("spring.mail.username"), "Demande d'ajout de nouveau service - Action requise", contenu);
+            emailSenderService.sendMail(env.getProperty("spring.mail.username"), env.getProperty("spring.mail.username"), "Demande d'enregistrement de nouveau service - Action requise", contenu);
         });
     }
 

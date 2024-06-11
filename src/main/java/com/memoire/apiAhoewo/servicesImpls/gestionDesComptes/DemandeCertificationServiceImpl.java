@@ -101,7 +101,7 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
                         "Détails de la demande :\n" +
                         "- Demandeur : M/Mlle. " + personne.getPrenom() + " " + personne.getNom() + "\n" +
                         "- Code de demande : DEMCER00" + demandeCertification.getId() + "\n" +
-                        "- Lien de la demande : " + env.getProperty("ahoewo.client") + "notaire/demandes-certifications/" + demandeCertification.getId() + "\n\n" +
+                        "- Lien de la demande : " + env.getProperty("client.web") + "#notaire/demandes-certifications/" + demandeCertification.getId() + "\n\n" +
                         "Nous vous prions de bien vouloir prendre les mesures nécessaires pour traiter cette demande dans les meilleurs délais.\n\n" +
                         "Cordialement,\n" +
                         "L'équipe Ahoewo";
@@ -151,7 +151,7 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
                         "- Nom de l'agence : " + demandeCertification.getAgenceImmobiliere().getNomAgence() + "\n" +
                         "- Demandeur : M/Mlle. " + personne.getPrenom() + " " + personne.getNom() + "\n" +
                         "- Code de demande : DEMCER00" + demandeCertification.getId() + "\n" +
-                        "- Lien de la demande : " + env.getProperty("ahoewo.client") + "notaire/demandes-certifications/" + demandeCertification.getId() + "\n\n" +
+                        "- Lien de la demande : " + env.getProperty("client.web") + "#/notaire/demandes-certifications/" + demandeCertification.getId() + "\n\n" +
                         "Nous vous prions de bien vouloir prendre les mesures nécessaires pour traiter cette demande dans les meilleurs délais.\n\n" +
                         "Cordialement,\n" +
                         "L'équipe Ahoewo";
@@ -200,7 +200,7 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
 
         String contenu = "Bonjour M/Mlle " + personne.getPrenom() + " " + personne.getNom() + ",\n\n" +
                 "Nous avons le plaisir de vous informer que votre compte vient d'être certifié conformément à votre demande de certification.\n" +
-                "- Lien de la demande : " + env.getProperty("ahoewo.client") + "notaire/demandes-certifications/" + demandeCertification.getId() + "\n\n" +
+                "- Lien de la demande : " + env.getProperty("client.web") + "#/notaire/demandes-certifications/" + demandeCertification.getId() + "\n\n" +
                 "Cordialement,\n" +
                 "L'équipe Ahoewo";
 
@@ -225,7 +225,7 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
 
         String contenu1 = "Bonjour " + agenceImmobiliere.getNomAgence() + ",\n\n" +
                 "Nous avons le plaisir de vous informer que votre agence immobilière vient d'être certifiée conformément à votre demande de certification.\n" +
-                "- Lien de la demande : " + env.getProperty("ahoewo.client") + "responsable/agences-immobilieres/demandes-certifications/" + demandeCertification.getId() + "\n\n" +
+                "- Lien de la demande : " + env.getProperty("client.web") + "#/responsable/agences-immobilieres/demandes-certifications/" + demandeCertification.getId() + "\n\n" +
                 "N'hésitez pas à explorer toutes les fonctionnalités offertes par notre plateforme pour optimiser votre travail et offrir le meilleur service à vos clients.\n\n" +
                 "Si vous avez des questions ou avez besoin d'assistance, n'hésitez pas à nous contacter. Nous sommes là pour vous aider.\n\n" +
                 "Cordialement,\n" +
@@ -236,7 +236,7 @@ public class DemandeCertificationServiceImpl implements DemandeCertificationServ
 
         String contenu2 = "Bonjour M/Mlle " + personne.getPrenom() + " " + personne.getNom() + ",\n\n" +
                 "Nous avons le plaisir de vous informer que votre compte vient d'être certifié conformément à la demande de certification de votre agence.\n" +
-                "- Lien de la demande : " + env.getProperty("ahoewo.client") + "responsable/agences-immobilieres/demandes-certifications/" + demandeCertification.getId() + "\n\n" +
+                "- Lien de la demande : " + env.getProperty("client.web") + "#/responsable/agences-immobilieres/demandes-certifications/" + demandeCertification.getId() + "\n\n" +
                 "N'hésitez pas à explorer toutes les fonctionnalités offertes par notre plateforme pour optimiser votre travail et offrir le meilleur service à vos clients.\n\n" +
                 "Si vous avez des questions ou avez besoin d'assistance, n'hésitez pas à nous contacter. Nous sommes là pour vous aider.\n\n" +
                 "Cordialement,\n" +

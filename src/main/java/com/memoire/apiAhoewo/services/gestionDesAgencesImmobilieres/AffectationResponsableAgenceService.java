@@ -9,15 +9,11 @@ import java.security.Principal;
 import java.util.List;
 
 public interface AffectationResponsableAgenceService {
-    public List<AffectationResponsableAgence> getAll();
-
     public List<AffectationResponsableAgence> findByAgenceImmobiliere(AgenceImmobiliere agenceImmobiliere);
 
-    public Page<AffectationResponsableAgence> getAffectationsResponsableAgence(int numeroDeLaPage, int elementsParPage);
+    public List<AffectationResponsableAgence> getAffectationsResponsableAgenceList(Principal principal);
 
-    public List<AffectationResponsableAgence> getResponsablesOfAgences(Principal principal);
-
-    public Page<AffectationResponsableAgence> getResponsablesOfAgencesPagines(int numeroDeLaPage, int elementsParPage, Principal principal);
+    public Page<AffectationResponsableAgence> getAffectationsReponsableAgencePage(int numeroDeLaPage, int elementsParPage, Principal principal);
 
     AffectationResponsableAgence findById(Long id);
 

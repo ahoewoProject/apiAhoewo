@@ -10,13 +10,13 @@ import java.security.Principal;
 import java.util.List;
 
 public interface AffectationAgentAgenceService {
-    List<AffectationAgentAgence> getAll();
+    Page<AffectationAgentAgence> getAffectationsAgentAgencePage(Principal principal, int numeroDeLaPage, int elementsParPage);
+
+    List<AffectationAgentAgence> getAffectationsAgentAgenceList(Principal principal);
 
     List<AffectationAgentAgence> getAgentsByAgences(Principal principal);
 
     List<AffectationResponsableAgence> getAgencesByAgent(Principal principal);
-
-    Page<AffectationResponsableAgence> getAgencesByAgentPaginees(Principal principal, int numeroDeLaPage, int elementsParPage);
 
     AffectationAgentAgence findById(Long id);
 

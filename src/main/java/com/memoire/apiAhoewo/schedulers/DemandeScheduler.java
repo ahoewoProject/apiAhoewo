@@ -40,7 +40,7 @@ public class DemandeScheduler {
                 notification.setMessage("La visite pour " + demande.getPublication().getLibelle() + " est prévue pour " + demande.getDateHeureVisite() + ". N'oubliez pas!");
                 notification.setSendTo(String.valueOf(demande.getPublication().getCreerPar())); // Envoyer à l'utilisateur qui a créé la publication
                 notification.setLu(false);
-                notification.setUrl("/demandes-visites/" + demande.getId()); // Lien vers la demande de visite
+                notification.setUrl("/demande-visite/" + demande.getId()); // Lien vers la demande de visite
                 notification.setDateNotification(new Date());
                 notification.setCreerPar(demande.getCreerPar()); // Utilisateur système qui envoie le rappel
                 notification.setCreerLe(new Date());
@@ -72,7 +72,7 @@ public class DemandeScheduler {
             notification.setMessage("La demande de visite soumise pour la publication de " + demande.getPublication().getLibelle() + " est toujours en attente");
             notification.setSendTo(String.valueOf(demande.getPublication().getCreerPar()));
             notification.setLu(false);
-            notification.setUrl("/demandes-visites/" + demande.getId());
+            notification.setUrl("/demande-visite/" + demande.getId());
             notification.setDateNotification(new Date());
             notification.setCreerPar(demande.getCreerPar());
             notification.setCreerLe(new Date());
@@ -90,7 +90,7 @@ public class DemandeScheduler {
             notification.setMessage("La demande de location soumise pour la publication de " + demande.getPublication().getLibelle() + " est toujours en attente");
             notification.setSendTo(String.valueOf(demande.getPublication().getCreerPar()));
             notification.setLu(false);
-            notification.setUrl("/demandes-locations/" + demande.getId());
+            notification.setUrl("/demande-location/" + demande.getId());
             notification.setDateNotification(new Date());
             notification.setCreerPar(demande.getCreerPar());
             notification.setCreerLe(new Date());
@@ -108,7 +108,7 @@ public class DemandeScheduler {
             notification.setMessage("La demande d'achat soumise pour la publication de " + demande.getPublication().getLibelle() + " est toujours en attente");
             notification.setSendTo(String.valueOf(demande.getPublication().getCreerPar()));
             notification.setLu(false);
-            notification.setUrl("/demandes-achats/" + demande.getId());
+            notification.setUrl("/demande-achat/" + demande.getId());
             notification.setDateNotification(new Date());
             notification.setCreerPar(demande.getCreerPar());
             notification.setCreerLe(new Date());

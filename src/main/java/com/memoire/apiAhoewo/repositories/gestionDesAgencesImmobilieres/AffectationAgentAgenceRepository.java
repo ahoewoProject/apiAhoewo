@@ -3,6 +3,8 @@ package com.memoire.apiAhoewo.repositories.gestionDesAgencesImmobilieres;
 import com.memoire.apiAhoewo.models.gestionDesAgencesImmobilieres.AffectationAgentAgence;
 import com.memoire.apiAhoewo.models.gestionDesAgencesImmobilieres.AgenceImmobiliere;
 import com.memoire.apiAhoewo.models.gestionDesComptes.AgentImmobilier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,10 +12,14 @@ import java.util.List;
 
 @Repository
 public interface AffectationAgentAgenceRepository extends JpaRepository<AffectationAgentAgence, Long> {
-    List<AffectationAgentAgence> findByAgenceImmobiliereIn(List<AgenceImmobiliere> agenceImmobiliereList);
+    Page<AffectationAgentAgence> findByAgentImmobilierOrderByIdDesc(AgentImmobilier agentImmobilier, Pageable pageable);
 
-    List<AffectationAgentAgence> findByAgentImmobilier(AgentImmobilier agentImmobilier);
-     
+    Page<AffectationAgentAgence> findByAgenceImmobiliereInOrderByIdDesc(List<AgenceImmobiliere> agenceImmobiliereList, Pageable pageable);
+
+    List<AffectationAgentAgence> findByAgenceImmobiliereInOrderByIdDesc(List<AgenceImmobiliere> agenceImmobiliereList);
+
+    List<AffectationAgentAgence> findByAgentImmobilierOrderByIdDesc(AgentImmobilier agentImmobilier);
+
     List<AffectationAgentAgence> findByAgentImmobilierAndActif(AgentImmobilier agentImmobilier, Boolean actif);
 
     List<AffectationAgentAgence> findByAgenceImmobiliere(AgenceImmobiliere agenceImmobiliere);

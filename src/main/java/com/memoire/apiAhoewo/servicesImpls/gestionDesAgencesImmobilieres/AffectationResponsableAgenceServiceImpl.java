@@ -35,36 +35,23 @@ public class AffectationResponsableAgenceServiceImpl implements AffectationRespo
     private Environment env;
 
     @Override
-    public List<AffectationResponsableAgence> getAll() {
-        return affectationResponsableAgenceRepository.findAll();
-    }
-
-    @Override
     public List<AffectationResponsableAgence> findByAgenceImmobiliere(AgenceImmobiliere agenceImmobiliere) {
         return affectationResponsableAgenceRepository.findByAgenceImmobiliere(agenceImmobiliere);
     }
 
     @Override
-    public Page<AffectationResponsableAgence> getAffectationsResponsableAgence(int numeroDeLaPage, int elementsParPage) {
-        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
-        return affectationResponsableAgenceRepository.findAll(pageRequest);
+    public List<AffectationResponsableAgence> getAffectationsResponsableAgenceList(Principal principal) {
+        Personne personne = personneService.findByUsername(principal.getName());
+
+        String roleCode = personne.getRole().getCode();
+        if (personneService.estResponsable(roleCode)) {
+            return affectationResponsableAgenceRepository.findByResponsableAgenceImmobiliereOrderByIdDesc((ResponsableAgenceImmobiliere) personne);
+        }
+        return null;
     }
 
     @Override
-    public List<AffectationResponsableAgence> getResponsablesOfAgences(Principal principal) {
-        ResponsableAgenceImmobiliere responsableAgenceImmobiliere = (ResponsableAgenceImmobiliere) personneService.findByUsername(principal.getName());
-
-        List<AffectationResponsableAgence> responsableAgences = affectationResponsableAgenceRepository.findByResponsableAgenceImmobiliere(responsableAgenceImmobiliere);
-
-        List<AgenceImmobiliere> agenceImmobilieres = responsableAgences.stream()
-                .map(AffectationResponsableAgence::getAgenceImmobiliere)
-                .collect(Collectors.toList());
-
-        return affectationResponsableAgenceRepository.findByAgenceImmobiliereIn(agenceImmobilieres);
-    }
-
-    @Override
-    public Page<AffectationResponsableAgence> getResponsablesOfAgencesPagines(int numeroDeLaPage, int elementsParPage, Principal principal) {
+    public Page<AffectationResponsableAgence> getAffectationsReponsableAgencePage(int numeroDeLaPage, int elementsParPage, Principal principal) {
         PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
         ResponsableAgenceImmobiliere responsableAgenceImmobiliere = (ResponsableAgenceImmobiliere) personneService.findByUsername(principal.getName());
 
@@ -108,7 +95,7 @@ public class AffectationResponsableAgenceServiceImpl implements AffectationRespo
         affectationResponsableAgenceSaved.setStatut(true);
 
         if (responsable.getMatricule().isEmpty()) {
-            String contenu = "Bonjour " + responsable.getPrenom() + " " + responsable.getNom() + ",\n\n" +
+            String contenu = "Bonjour M.Mlle" + responsable.getPrenom() + " " + responsable.getNom() + ",\n\n" +
                     "Vous avez été affecté à l'agence immobilière " + agenceImmobiliere.getNomAgence() + " par le responsable " + personne.getPrenom() + " " + personne.getNom() + " en tant que co-responsable" +
                     "." + "\n\n" +
                     "Cordialement,\n" +

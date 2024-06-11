@@ -1,7 +1,7 @@
 package com.memoire.apiAhoewo.controllers.gestionDesAgencesImmobilieres;
 
-import com.memoire.apiAhoewo.models.gestionDesAgencesImmobilieres.ServicesAgenceImmobiliere;
 import com.memoire.apiAhoewo.dto.ServiceNonTrouveForm;
+import com.memoire.apiAhoewo.models.gestionDesAgencesImmobilieres.ServicesAgenceImmobiliere;
 import com.memoire.apiAhoewo.services.gestionDesAgencesImmobilieres.ServicesAgenceImmobiliereService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,7 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -19,13 +21,26 @@ public class ServicesAgenceImmobilierController {
     @Autowired
     private ServicesAgenceImmobiliereService servicesAgenceImmobiliereService;
 
-    @RequestMapping(value = "/services/agence-immobiliere/pagines", method = RequestMethod.GET)
-    public Page<ServicesAgenceImmobiliere> getServicesOfAgencePagines(Principal principal,
+    @RequestMapping(value = "/services/agences-immobilieres/list", method = RequestMethod.GET)
+    public List<ServicesAgenceImmobiliere> getServicesAgencesList(Principal principal) {
+
+        List<ServicesAgenceImmobiliere> servicesAgenceImmobiliereList = new ArrayList<>();
+        try {
+            servicesAgenceImmobiliereList = this.servicesAgenceImmobiliereService.getServicesAgencesList(principal);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return servicesAgenceImmobiliereList;
+    }
+
+    @RequestMapping(value = "/services/agences-immobilieres/page", method = RequestMethod.GET)
+    public Page<ServicesAgenceImmobiliere> getServicesAgencesPage(Principal principal,
                                                                 @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
                                                                 @RequestParam(value = "elementsParPage") int elementsParPage) {
 
         try {
-            return this.servicesAgenceImmobiliereService.getServicesOfAgencePagines(principal, numeroDeLaPage, elementsParPage);
+            return this.servicesAgenceImmobiliereService.getServicesAgencesPage(principal, numeroDeLaPage, elementsParPage);
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Erreur " + e.getMessage());
@@ -33,13 +48,13 @@ public class ServicesAgenceImmobilierController {
         }
     }
 
-    @RequestMapping(value = "/services/agence-immobiliere/pagines/{id}", method = RequestMethod.GET)
-    public Page<ServicesAgenceImmobiliere> getServicesOfAgencePagines(@PathVariable Long id,
+    @RequestMapping(value = "/services/agence-immobiliere/page/{id}", method = RequestMethod.GET)
+    public Page<ServicesAgenceImmobiliere> getServicesByIdAgencePage(@PathVariable Long id,
                                                                       @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
                                                                       @RequestParam(value = "elementsParPage") int elementsParPage) {
 
         try {
-            return this.servicesAgenceImmobiliereService.getServicesOfAgencePagines(id, numeroDeLaPage, elementsParPage);
+            return this.servicesAgenceImmobiliereService.getServicesByIdAgencePage(id, numeroDeLaPage, elementsParPage);
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Erreur " + e.getMessage());
@@ -47,7 +62,7 @@ public class ServicesAgenceImmobilierController {
         }
     }
 
-    @RequestMapping(value = "/services/agence/{nomAgence}", method = RequestMethod.GET)
+    @RequestMapping(value = "/services/agence-immobiliere/{nomAgence}", method = RequestMethod.GET)
     public Page<ServicesAgenceImmobiliere> getServicesByNomAgence(@PathVariable String nomAgence,
                                                                       @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
                                                                       @RequestParam(value = "elementsParPage") int elementsParPage) {

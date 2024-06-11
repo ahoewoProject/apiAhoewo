@@ -30,11 +30,11 @@ public class Paiement extends EntiteDeBase {
     @Column(name = "date_paiement")
     private Date datePaiement;
 
-    @Column(name = "numero_compte_paiement")
-    private String numeroComptePaiement;
+    @Column(name = "preuve")
+    private String preuve;
 
-    @Column(name = "reference_transaction")
-    private String referenceTransaction;
+    @Column(name = "payout_id")
+    private String payoutBatchId;
 
     @OneToOne
     @JoinColumn(name = "planification_id")

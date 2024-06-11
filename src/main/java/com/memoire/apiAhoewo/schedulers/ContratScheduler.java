@@ -33,7 +33,7 @@ public class ContratScheduler {
             notification1.setSendTo(String.valueOf(contratVente.getDemandeAchat().getClient().getId()));
             notification1.setDateNotification(new Date());
             notification1.setLu(false);
-            notification1.setUrl("/contrats/ventes/" + contratVente.getId());
+            notification1.setUrl("/contrat-vente/" + contratVente.getId());
             notification1.setCreerPar(contratVente.getCreerPar());
             notification1.setCreerLe(new Date());
             notificationService.save(notification1);
@@ -51,7 +51,7 @@ public class ContratScheduler {
             notification.setSendTo(String.valueOf(contratLocation.getDemandeLocation().getClient().getId()));
             notification.setDateNotification(new Date());
             notification.setLu(false);
-            notification.setUrl("/contrats/locations/" + contratLocation.getId());
+            notification.setUrl("/contrat-location/" + contratLocation.getId());
             notification.setCreerPar(contratLocation.getCreerPar());
             notification.setCreerLe(new Date());
             notificationService.save(notification);

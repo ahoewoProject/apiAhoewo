@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class MotifRejetForm {
-    Long id;
-    String motif;
+public class GetInvoicePaydunyaForm {
+    private String account_alias;
+    private int amount;
+    private String withdraw_mode;
+    private String callback_url;
 }

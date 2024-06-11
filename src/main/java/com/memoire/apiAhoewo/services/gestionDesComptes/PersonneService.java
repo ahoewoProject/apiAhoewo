@@ -4,8 +4,11 @@ import com.memoire.apiAhoewo.models.gestionDesComptes.Personne;
 import com.memoire.apiAhoewo.dto.RegisterForm;
 
 import java.security.Principal;
+import java.util.List;
 
 public interface PersonneService {
+    public List<Personne> getAll();
+
     public Personne findByUsername(String username);
 
     public Personne findByMatricule(String matricule);
@@ -51,4 +54,6 @@ public interface PersonneService {
     public boolean estGerant(String code);
 
     public boolean estAdministrateur(String code);
+
+    public boolean estClient(String code);
 }

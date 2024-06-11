@@ -20,6 +20,8 @@ public interface ContratLocationRepository extends JpaRepository<ContratLocation
 
     List<ContratLocation> findByEtatContrat(String etatContrat);
 
+    ContratLocation findByCodeContrat(String codeContrat);
+
     boolean existsByDemandeLocation(DemandeLocation demandeLocation);
 
     boolean existsByBienImmobilierAndEtatContrat(BienImmobilier bienImmobilier, String etatContrat);

@@ -10,8 +10,8 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name="motifs_rejets")
-public class MotifRejet extends EntiteDeBase {
+@Table(name="motifs")
+public class Motif extends EntiteDeBase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

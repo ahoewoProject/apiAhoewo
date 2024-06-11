@@ -23,6 +23,8 @@ public interface DelegationGestionService {
 
     DelegationGestion findById(Long id);
 
+    DelegationGestion findByBienImmobilier(BienImmobilier bienImmobilier);
+
     public DelegationGestion save(DelegationGestion delegationGestion, Principal principal);
 
     public DelegationGestion saveDelegationGestion2(DelegationGestionForm2 delegationGestionFormTwo, Caracteristiques caracteristiques, List<MultipartFile> files, Principal principal);

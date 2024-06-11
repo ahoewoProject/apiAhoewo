@@ -7,19 +7,13 @@ import java.security.Principal;
 import java.util.List;
 
 public interface BienImmobilierService {
-    public List<BienImmobilier> getAll();
+    public List<BienImmobilier> getBiensImmobiliers(Principal principal);
 
-    Page<BienImmobilier> getBiensPaginesByProprietaire(Principal principal, int numeroDeLaPage, int elementsParPage);
+    public List<BienImmobilier> getBiensSupports(Principal principal);
 
-    Page<BienImmobilier> getBiensPaginesOfAgencesByResponsable(Principal principal, int numeroDeLaPage, int elementsParPage);
-
-    Page<BienImmobilier> getBiensPaginesOfAgencesByAgent(Principal principal, int numeroDeLaPage, int elementsParPage);
+    Page<BienImmobilier> getBiensSupportsPagines(Principal principal, int numeroDeLaPage, int elementsParPage);
 
     public List<BienImmobilier> getBiensByProprietaire(Principal principal);
-
-    public List<BienImmobilier> getBiensOfAgencesByResponsable(Principal principal);
-
-    public List<BienImmobilier> getBiensOfAgencesByAgent(Principal principal);
 
     public List<BienImmobilier> getBiensPropresAndBiensDelegues(Principal principal);
 

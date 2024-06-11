@@ -1,8 +1,8 @@
 package com.memoire.apiAhoewo.controllers.gestionDesLocationsEtVentes;
 
+import com.memoire.apiAhoewo.dto.MotifForm;
 import com.memoire.apiAhoewo.models.gestionDesComptes.Client;
 import com.memoire.apiAhoewo.models.gestionDesLocationsEtVentes.DemandeLocation;
-import com.memoire.apiAhoewo.dto.MotifRejetForm;
 import com.memoire.apiAhoewo.services.gestionDesComptes.PersonneService;
 import com.memoire.apiAhoewo.services.gestionDesLocationsEtVentes.DemandeLocationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -33,6 +35,19 @@ public class DemandeLocationController {
             System.out.println("Erreur " + e.getMessage());
             throw new RuntimeException("Une erreur s'est produite lors de la récupération des demandes de locations.", e);
         }
+    }
+
+    @RequestMapping(value = "/demandes-locations-list", method = RequestMethod.GET)
+    public List<DemandeLocation> getDemandesLocationsList(Principal principal) {
+
+        List<DemandeLocation> demandeLocationList = new ArrayList<>();
+        try {
+            demandeLocationList = this.demandeLocationService.getDemandesLocations(principal);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return demandeLocationList;
     }
 
     @RequestMapping(value = "/demande-location/{id}", method = RequestMethod.GET)
@@ -94,12 +109,12 @@ public class DemandeLocationController {
     }
 
     @RequestMapping(value = "/demande-location/refuser/{id}", method = RequestMethod.POST, headers = "accept=Application/json")
-    public void refuser(@PathVariable Long id, @RequestBody MotifRejetForm motifRejetForm, Principal principal) {
+    public void refuser(@PathVariable Long id, @RequestBody MotifForm motifRejetForm, Principal principal) {
         this.demandeLocationService.refuser(id, motifRejetForm, principal);
     }
 
     @RequestMapping(value = "/demande-location/annuler/{id}", method = RequestMethod.POST, headers = "accept=Application/json")
-    public void annuler(@PathVariable Long id, @RequestBody MotifRejetForm motifRejetForm, Principal principal) {
+    public void annuler(@PathVariable Long id, @RequestBody MotifForm motifRejetForm, Principal principal) {
         this.demandeLocationService.annuler(id, motifRejetForm, principal);
     }
 }

@@ -3,6 +3,7 @@ package com.memoire.apiAhoewo.controllers.gestionDesComptes;
 import com.memoire.apiAhoewo.models.gestionDesComptes.AgentImmobilier;
 import com.memoire.apiAhoewo.services.gestionDesComptes.AgentImmobilierService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,5 +28,17 @@ public class AgentImmobilierController {
             System.out.println("Erreur " + e.getMessage());
         }
         return agentImmobilierList;
+    }
+
+    @RequestMapping(value = "/agent-immobilier/{id}", method = RequestMethod.GET)
+    public AgentImmobilier findById(@PathVariable Long id) {
+
+        AgentImmobilier agentImmobilier = new AgentImmobilier();
+        try {
+            agentImmobilier = this.agentImmobilierService.findById(id);
+        } catch (Exception e) {
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return agentImmobilier;
     }
 }

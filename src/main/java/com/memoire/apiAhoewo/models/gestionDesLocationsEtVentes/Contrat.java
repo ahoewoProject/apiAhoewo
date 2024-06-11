@@ -1,5 +1,6 @@
 package com.memoire.apiAhoewo.models.gestionDesLocationsEtVentes;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.memoire.apiAhoewo.models.EntiteDeBase;
 import com.memoire.apiAhoewo.models.gestionDesAgencesImmobilieres.AgenceImmobiliere;
 import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.BienImmobilier;
@@ -21,6 +22,7 @@ import java.util.Date;
 @Table(name = "contrats")
 @DiscriminatorColumn(name = "type")
 @Inheritance(strategy = InheritanceType.JOINED)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Contrat extends EntiteDeBase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

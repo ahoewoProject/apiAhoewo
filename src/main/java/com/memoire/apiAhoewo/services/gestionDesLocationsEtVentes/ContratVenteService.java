@@ -1,6 +1,6 @@
 package com.memoire.apiAhoewo.services.gestionDesLocationsEtVentes;
 
-import com.memoire.apiAhoewo.dto.MotifRejetForm;
+import com.memoire.apiAhoewo.dto.MotifForm;
 import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.BienImmobilier;
 import com.memoire.apiAhoewo.models.gestionDesLocationsEtVentes.ContratVente;
 import com.memoire.apiAhoewo.models.gestionDesLocationsEtVentes.DemandeAchat;
@@ -21,6 +21,8 @@ public interface ContratVenteService {
 
     ContratVente findById(Long id);
 
+    ContratVente findByCodeContrat(String codeContrat);
+
     ContratVente save(ContratVente contratVente, Principal principal);
 
     ContratVente modifier(Principal principal, ContratVente contratVente);
@@ -29,9 +31,9 @@ public interface ContratVenteService {
 
     void valider(Principal principal, Long id);
 
-    void refuser(Principal principal, Long id, MotifRejetForm motifRejetForm);
+    void refuser(Principal principal, Long id, MotifForm motifRejetForm);
 
-    void demandeModification(Principal principal, Long id, MotifRejetForm motifRejetForm);
+    void demandeModification(Principal principal, Long id, MotifForm motifRejetForm);
 
     byte[] generateContratVentePdf(Long id) throws IOException;
 

@@ -14,11 +14,17 @@ import java.util.List;
 public interface AffectationResponsableAgenceRepository extends JpaRepository<AffectationResponsableAgence, Long> {
     Page<AffectationResponsableAgence> findAllByOrderByCreerLeDesc(Pageable pageable);
 
+    Page<AffectationResponsableAgence> findByResponsableAgenceImmobiliereOrderByIdDesc(ResponsableAgenceImmobiliere responsableAgenceImmobiliere, Pageable pageable);
+
     Page<AffectationResponsableAgence> findAllByAgenceImmobiliereInOrderByCreerLeDesc(List<AgenceImmobiliere> agenceImmobiliereList, Pageable pageable);
 
     List<AffectationResponsableAgence> findByResponsableAgenceImmobiliere(ResponsableAgenceImmobiliere responsableAgenceImmobiliere);
 
-    List<AffectationResponsableAgence> findByAgenceImmobiliereIn(List<AgenceImmobiliere> agenceImmobiliereList);
+    List<AffectationResponsableAgence> findByResponsableAgenceImmobiliereOrderByIdDesc(ResponsableAgenceImmobiliere responsableAgenceImmobiliere);
+
+    List<AffectationResponsableAgence> findByResponsableAgenceImmobiliereAndActif(ResponsableAgenceImmobiliere responsableAgenceImmobiliere, Boolean actif);
+
+    List<AffectationResponsableAgence> findByAgenceImmobiliereInOrderByIdDesc(List<AgenceImmobiliere> agenceImmobiliereList);
 
     List<AffectationResponsableAgence> findByAgenceImmobiliere(AgenceImmobiliere agenceImmobiliere);
 

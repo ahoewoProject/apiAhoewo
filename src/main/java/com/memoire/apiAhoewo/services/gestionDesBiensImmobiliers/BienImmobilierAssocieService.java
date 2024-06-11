@@ -12,11 +12,15 @@ public interface BienImmobilierAssocieService {
 
     List<BienImmAssocie> getBiensAssocies(BienImmobilier bienImmobilier);
 
+    List<BienImmAssocie> getBiensAssocies(Principal principal);
+
     public BienImmAssocie findById(Long id);
 
     public BienImmAssocie save(BienImmAssocie magasin, Principal principal);
 
     public BienImmAssocie update(BienImmAssocie magasin, Principal principal);
+
+    BienImmAssocie setBienImmAssocie(BienImmAssocie bienImmAssocie);
 
     public boolean bienImmobilierExists(BienImmobilier bienImmobilier);
 }

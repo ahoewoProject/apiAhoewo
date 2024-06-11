@@ -1,8 +1,8 @@
 package com.memoire.apiAhoewo.controllers.gestionDesComptes;
 
+import com.memoire.apiAhoewo.dto.RegisterForm;
 import com.memoire.apiAhoewo.filters.RefreshTokenFilter;
 import com.memoire.apiAhoewo.models.gestionDesComptes.Personne;
-import com.memoire.apiAhoewo.dto.RegisterForm;
 import com.memoire.apiAhoewo.services.gestionDesComptes.PersonneService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -23,6 +25,19 @@ import java.util.Map;
 public class PersonneController {
     @Autowired
     private PersonneService personneService;
+
+    @RequestMapping(value = "/personnes", method = RequestMethod.GET)
+    public List<Personne> getAll() {
+
+        List<Personne> personneList = new ArrayList<>();
+        try {
+            personneList = this.personneService.getAll();
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return personneList;
+    }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST, headers = "accept=Application/json")
     public ResponseEntity<?> savePersonne(@RequestBody RegisterForm registerForm) {
@@ -76,17 +91,17 @@ public class PersonneController {
         return personne;
     }
 
-    @RequestMapping(value = "/certifier/compte/{id}", method = RequestMethod.GET, headers = "accept=Application/json")
+    @RequestMapping(value = "/certifier/compte/{id}", method = RequestMethod.GET)
     public void certifierCompte(@PathVariable Long id){
         this.personneService.certifierCompte(id);
     }
 
-    @RequestMapping(value = "/activer/compte/{id}", method = RequestMethod.GET, headers = "accept=Application/json")
+    @RequestMapping(value = "/activer/compte/{id}", method = RequestMethod.GET)
     public void activerCompte(@PathVariable Long id){
         this.personneService.activerCompte(id);
     }
 
-    @RequestMapping(value = "/desactiver/compte/{id}", method = RequestMethod.GET, headers = "accept=Application/json")
+    @RequestMapping(value = "/desactiver/compte/{id}", method = RequestMethod.GET)
     public void desactiverCompte(@PathVariable Long id){
         this.personneService.desactiverCompte(id);
     }
@@ -97,7 +112,7 @@ public class PersonneController {
         return nombres;
     }
 
-    @RequestMapping(value = "/request-reset-password", method = RequestMethod.POST, headers = "accept=Application/json")
+    @RequestMapping(value = "/request-reset-password", method = RequestMethod.POST)
     public ResponseEntity<?> requestPasswordReset(@RequestParam("email") String email) {
         Personne personne = personneService.findByEmail(email);
         if (personne != null) {

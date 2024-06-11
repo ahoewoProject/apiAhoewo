@@ -117,5 +117,4 @@ public class PaysController {
     public void desactiverPays(@PathVariable Long id){
         this.paysService.desactiverPays(id);
     }
-
 }

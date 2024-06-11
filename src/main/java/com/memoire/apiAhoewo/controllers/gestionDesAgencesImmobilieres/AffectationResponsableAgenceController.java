@@ -27,31 +27,43 @@ public class AffectationResponsableAgenceController {
     @Autowired
     private PersonneService personneService;
 
-    @RequestMapping(value = "/affectations-responsables-agences/responsable", method = RequestMethod.GET)
-    public List<AffectationResponsableAgence> getResponsablesOfAgences(Principal principal) {
+    @RequestMapping(value = "/affectations-responsable-agence/list", method = RequestMethod.GET)
+    public List<AffectationResponsableAgence> getAffectationsResponsableAgenceList(Principal principal) {
 
-        List<AffectationResponsableAgence> agencesList = new ArrayList<>();
+        List<AffectationResponsableAgence> affectationResponsableAgenceList = new ArrayList<>();
         try {
-            agencesList = this.affectationResponsableAgenceService.getResponsablesOfAgences(principal);
+            affectationResponsableAgenceList = this.affectationResponsableAgenceService.getAffectationsResponsableAgenceList(principal);
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Erreur " + e.getMessage());
         }
-        return agencesList;
+        return affectationResponsableAgenceList;
     }
 
-    @RequestMapping(value = "/affectations-responsables-agences/responsable/pagines", method = RequestMethod.GET)
-    public Page<AffectationResponsableAgence> getResponsablesOfAgencesPagines(Principal principal,
+    @RequestMapping(value = "/affectations-responsable-agence/page", method = RequestMethod.GET)
+    public Page<AffectationResponsableAgence> getAffectationsReponsableAgencePage(Principal principal,
                                                                         @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
                                                                         @RequestParam(value = "elementsParPage") int elementsParPage) {
 
         try {
-            return this.affectationResponsableAgenceService.getResponsablesOfAgencesPagines(numeroDeLaPage, elementsParPage, principal);
+            return this.affectationResponsableAgenceService.getAffectationsReponsableAgencePage(numeroDeLaPage, elementsParPage, principal);
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Erreur " + e.getMessage());
             throw new RuntimeException("Une erreur s'est produite lors de la récupération des affectations responsables agences.", e);
         }
+    }
+
+    @RequestMapping(value = "/affectation-responsable-agence/{id}", method = RequestMethod.GET)
+    public AffectationResponsableAgence detailAffectation(@PathVariable Long id) {
+
+        AffectationResponsableAgence affectationResponsableAgence = new AffectationResponsableAgence();
+        try {
+            affectationResponsableAgence = this.affectationResponsableAgenceService.findById(id);
+        } catch (Exception e) {
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return affectationResponsableAgence;
     }
 
     @RequestMapping(value = "/affectation-responsable-agence/ajouter", method = RequestMethod.POST, headers = "accept=Application/json")

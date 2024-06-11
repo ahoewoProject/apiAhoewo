@@ -1,9 +1,11 @@
 package com.memoire.apiAhoewo.servicesImpls.gestionDesBiensImmobiliers;
 
+import com.memoire.apiAhoewo.models.gestionDesAgencesImmobilieres.AgenceImmobiliere;
 import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.BienImmAssocie;
 import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.BienImmobilier;
 import com.memoire.apiAhoewo.models.gestionDesComptes.Personne;
 import com.memoire.apiAhoewo.repositories.gestionDesBiensImmobiliers.BienImmAssocieRepository;
+import com.memoire.apiAhoewo.services.gestionDesAgencesImmobilieres.AgenceImmobiliereService;
 import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.BienImmobilierAssocieService;
 import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.BienImmobilierService;
 import com.memoire.apiAhoewo.services.gestionDesComptes.PersonneService;
@@ -25,6 +27,8 @@ public class BienImmAssocieServiceImpl implements BienImmobilierAssocieService {
     private BienImmobilierService bienImmobilierService;
     @Autowired
     private PersonneService personneService;
+    @Autowired
+    private AgenceImmobiliereService agenceImmobiliereService;
 
     @Override
     public Page<BienImmAssocie> getBiensAssociesPaginesByBienImmobilier(Long id, int numeroDeLaPage, int elementsParPage) {
@@ -39,6 +43,25 @@ public class BienImmAssocieServiceImpl implements BienImmobilierAssocieService {
     }
 
     @Override
+    public List<BienImmAssocie> getBiensAssocies(Principal principal) {
+        Personne personne = personneService.findByUsername(principal.getName());
+
+        String roleCode = personne.getRole().getCode();
+
+        if (personneService.estProprietaire(roleCode) || personneService.estDemarcheur(roleCode)) {
+            return bienImmAssocieRepository.findAllByPersonneOrderByCreerLeDesc(personne);
+        } else if (personneService.estResponsable(roleCode)) {
+            List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereService.getAgencesImmobilieresList(principal);
+            return bienImmAssocieRepository.findAllByAgenceImmobiliereInOrderByCreerLeDesc(agenceImmobilieres);
+        } else if (personneService.estAgentImmobilier(roleCode)) {
+            List<AgenceImmobiliere> agenceImmobilieres = agenceImmobiliereService.getAgencesImmobilieresList(principal);
+            return bienImmAssocieRepository.findAllByAgenceImmobiliereInOrderByCreerLeDesc(agenceImmobilieres);
+        }
+
+        return null;
+    }
+
+    @Override
     public BienImmAssocie findById(Long id) {
         return bienImmAssocieRepository.findById(id).orElse(null);
     }
@@ -48,6 +71,8 @@ public class BienImmAssocieServiceImpl implements BienImmobilierAssocieService {
         Personne personne = personneService.findByUsername(principal.getName());
         if (bienImmAssocie.getBienImmobilier().getAgenceImmobiliere() != null) {
             bienImmAssocie.setAgenceImmobiliere(bienImmAssocie.getBienImmobilier().getAgenceImmobiliere());
+        } else {
+            bienImmAssocie.setPersonne(bienImmAssocie.getBienImmobilier().getPersonne());
         }
         bienImmAssocie.setCodeBien("BIMMA" + UUID.randomUUID());
         bienImmAssocie.setStatutBien("Disponible");
@@ -65,9 +90,16 @@ public class BienImmAssocieServiceImpl implements BienImmobilierAssocieService {
         Personne personne = personneService.findByUsername(principal.getName());
         if (bienImmAssocie.getBienImmobilier().getAgenceImmobiliere() != null) {
             bienImmAssocie.setAgenceImmobiliere(bienImmAssocie.getBienImmobilier().getAgenceImmobiliere());
+        } else {
+            bienImmAssocie.setPersonne(bienImmAssocie.getBienImmobilier().getPersonne());
         }
         bienImmAssocie.setModifierLe(new Date());
         bienImmAssocie.setModifierPar(personne.getId());
+        return bienImmAssocieRepository.save(bienImmAssocie);
+    }
+
+    @Override
+    public BienImmAssocie setBienImmAssocie(BienImmAssocie bienImmAssocie) {
         return bienImmAssocieRepository.save(bienImmAssocie);
     }
 

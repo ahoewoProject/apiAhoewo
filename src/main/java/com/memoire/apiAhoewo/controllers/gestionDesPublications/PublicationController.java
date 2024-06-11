@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -214,6 +215,19 @@ public class PublicationController {
         }
     }
 
+    @RequestMapping(value = "/publications/user", method = RequestMethod.GET)
+    public List<Publication> getPublicationsByUser(Principal principal) {
+
+        List<Publication> publicationList = new ArrayList<>();
+        try {
+            publicationList = this.publicationService.getPublications(principal);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return publicationList;
+    }
+
     @RequestMapping(value = "/publication/{id}", method = RequestMethod.GET)
     public Publication findById(@PathVariable Long id) {
 
@@ -247,49 +261,50 @@ public class PublicationController {
             if (contratLocationService.existingContratLocationByBienImmobilierAndEtatContrat(publication.getBienImmobilier(), "En cours")) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                         .body("Un contrat de location est toujours en cours pour ce bien immobilier.");
-            } else if (typeDeBienService.isTypeBienSupport(publication.getBienImmobilier().getTypeDeBien().getDesignation())) {
-                List<BienImmAssocie> bienImmAssocieList = bienImmAssocieService.getBiensAssocies(publication.getBienImmobilier());
-
-                if (!bienImmAssocieList.isEmpty()) {
-                    for (BienImmAssocie bienImmAssocie : bienImmAssocieList) {
-                        if (publicationService.existsByBienImmobilierAndEtat(bienImmAssocie, true)) {
-                            return ResponseEntity.status(HttpStatus.CONFLICT)
-                                    .body("Une publication avec un des biens associés à ce bien support est toujours active. Veuillez désactiver la publication avant d'en ajouter une autre.");
-                        } else if (publicationService.existsByBienImmobilierAndEtat(publication.getBienImmobilier(), true)) {
-                            return ResponseEntity.status(HttpStatus.CONFLICT)
-                                    .body("Une publication avec ce bien est toujours active. Veuillez désactiver la publication avant d'en ajouter une autre.");
+            } else {
+                if (typeDeBienService.isTypeBienSupport(publication.getBienImmobilier().getTypeDeBien().getDesignation())) {
+                    List<BienImmAssocie> bienImmAssocieList = bienImmAssocieService.getBiensAssocies(publication.getBienImmobilier());
+                    if (!bienImmAssocieList.isEmpty()) {
+                        for (BienImmAssocie bienImmAssocie : bienImmAssocieList) {
+                            if (publicationService.existsByBienImmobilierAndEtat(bienImmAssocie, true)) {
+                                return ResponseEntity.status(HttpStatus.CONFLICT)
+                                        .body("Une publication avec un des biens associés à ce bien support est toujours active. Veuillez désactiver la publication avant d'en ajouter une autre.");
+                            }
                         }
                     }
-                } else {
-                    if (publicationService.existsByBienImmobilierAndEtat(publication.getBienImmobilier(), true)) {
-                                            return ResponseEntity.status(HttpStatus.CONFLICT)
-                                                    .body("Une publication avec ce bien est toujours active. Veuillez désactiver la publication avant d'en ajouter une autre.");
-                                        }
+                } else if (typeDeBienService.isTypeBienAssocie(publication.getBienImmobilier().getTypeDeBien().getDesignation())) {
+                    BienImmAssocie bienImmAssocie = bienImmAssocieService.findById(publication.getBienImmobilier().getId());
+                    if (publicationService.existsByBienImmobilierAndEtat(bienImmAssocie.getBienImmobilier(), true)) {
+                        return ResponseEntity.status(HttpStatus.CONFLICT)
+                                .body("Une publication avec le bien support auquel est associé ce bien est toujours active. Veuillez désactiver la publication avant d'en ajouter une autre.");
+                    }
                 }
-            } else if (typeDeBienService.isTypeBienAssocie(publication.getBienImmobilier().getTypeDeBien().getDesignation())) {
-                BienImmAssocie bienImmAssocie = bienImmAssocieService.findById(publication.getBienImmobilier().getId());
-                if (publicationService.existsByBienImmobilierAndEtat(bienImmAssocie.getBienImmobilier(), true)) {
-                    return ResponseEntity.status(HttpStatus.CONFLICT)
-                            .body("Une publication avec le bien support auquel est associé ce bien est toujours active. Veuillez désactiver la publication avant d'en ajouter une autre.");
-                } else if (publicationService.existsByBienImmobilierAndEtat(publication.getBienImmobilier(), true)) {
+
+                if (publicationService.existsByBienImmobilierAndEtat(publication.getBienImmobilier(), true)) {
                     return ResponseEntity.status(HttpStatus.CONFLICT)
                             .body("Une publication avec ce bien est toujours active. Veuillez désactiver la publication avant d'en ajouter une autre.");
                 }
-            }
 
-            if (roleCode.equals("ROLE_RESPONSABLE") || roleCode.equals("ROLE_AGENTIMMOBILIER")) {
-                DelegationGestion delegationGestion = delegationGestionService.getDelegationByBienImmobilierAndEtatDelegation(publication.getBienImmobilier(), true);
-                if (delegationGestion != null) {
-                    publication.setAgenceImmobiliere(delegationGestion.getAgenceImmobiliere());
-                } else {
-                    publication.setAgenceImmobiliere(publication.getBienImmobilier().getAgenceImmobiliere());
+                if (contratLocationService.existingContratLocationByBienImmobilierAndEtatContrat(publication.getBienImmobilier(), "En cours")) {
+                    return ResponseEntity.status(HttpStatus.CONFLICT)
+                            .body("Un contrat de location est toujours en cours pour ce bien immobilier.");
                 }
-            } else {
-                publication.setPersonne(personne);
+
+                if (personneService.estResponsable(roleCode) || personneService.estAgentImmobilier(roleCode)) {
+                    DelegationGestion delegationGestion = delegationGestionService.getDelegationByBienImmobilierAndEtatDelegation(publication.getBienImmobilier(), true);
+                    if (delegationGestion != null) {
+                        publication.setAgenceImmobiliere(delegationGestion.getAgenceImmobiliere());
+                    } else {
+                        publication.setAgenceImmobiliere(publication.getBienImmobilier().getAgenceImmobiliere());
+                    }
+                } else {
+                    publication.setPersonne(personne);
+                }
+
+                publication = publicationService.save(publication, principal);
+                return ResponseEntity.ok().body(publication);
             }
 
-            publication = publicationService.save(publication, principal);
-            return ResponseEntity.ok().body(publication);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -319,7 +334,7 @@ public class PublicationController {
                 publicationExistante.setCaution(null);
             }
 
-            if (roleCode.equals("ROLE_RESPONSABLE") || roleCode.equals("ROLE_AGENTIMMOBILIER")) {
+            if (personneService.estResponsable(roleCode) || personneService.estAgentImmobilier(roleCode)) {
                 DelegationGestion delegationGestion = delegationGestionService.getDelegationByBienImmobilierAndEtatDelegation(publication.getBienImmobilier(), true);
                 publicationExistante.setFraisDeVisite(publication.getFraisDeVisite());
                 publicationExistante.setPersonne(null);
@@ -353,7 +368,7 @@ public class PublicationController {
         } else if (contratVenteService.existingContratLocationByBienImmobilierAndEtatContrat(publication.getBienImmobilier(), "Confirmé")) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body("Un contrat de vente a été confirmé pour ce bien immobilier");
-        }else if (typeDeBienService.isTypeBienSupport(publication.getBienImmobilier().getTypeDeBien().getDesignation())) {
+        } else if (typeDeBienService.isTypeBienSupport(publication.getBienImmobilier().getTypeDeBien().getDesignation())) {
             List<BienImmAssocie> bienImmAssocieList = bienImmAssocieService.getBiensAssocies(publication.getBienImmobilier());
 
             if (!bienImmAssocieList.isEmpty()) {

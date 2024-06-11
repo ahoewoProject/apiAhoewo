@@ -45,6 +45,19 @@ public class PlanificationPaiementController {
         }
     }
 
+    @RequestMapping(value = "/planifications-paiements-list", method = RequestMethod.GET)
+    public List<PlanificationPaiement> getPlanificationsPaiementsList(Principal principal) {
+
+        List<PlanificationPaiement> planificationPaiementList = new ArrayList<>();
+        try {
+            planificationPaiementList = this.planificationPaiementService.getPlanificationsPaiement(principal);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return planificationPaiementList;
+    }
+
     @RequestMapping(value = "/planification-paiement/{id}", method = RequestMethod.GET)
     public PlanificationPaiement findById(@PathVariable Long id) {
 
@@ -62,7 +75,7 @@ public class PlanificationPaiementController {
 
         PlanificationPaiement planificationPaiement = new PlanificationPaiement();
         try {
-            planificationPaiement = this.planificationPaiementService.dernierePlanificationPaiementAchat(codeContrat);
+            planificationPaiement = this.planificationPaiementService.lastPlanificationPaiement(codeContrat);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
         }
@@ -104,7 +117,7 @@ public class PlanificationPaiementController {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                         .body("Une planification de paiement existe déjà pour ce contrat à la date spécifiée.");
             } else {
-                PlanificationPaiement paiementAdd =  this.planificationPaiementService.savePlanificationPaiementLocation(principal, planificationPaiement);
+                PlanificationPaiement paiementAdd =  this.planificationPaiementService.savePlanificationPaiementAchat(principal, planificationPaiement);
                 return ResponseEntity.status(HttpStatus.OK).body(paiementAdd);
             }
         } catch (Exception e) {

@@ -1,14 +1,14 @@
 package com.memoire.apiAhoewo.servicesImpls.gestionDesAgencesImmobilieres;
 
-import com.memoire.apiAhoewo.models.MotifRejet;
+import com.memoire.apiAhoewo.models.Motif;
 import com.memoire.apiAhoewo.models.Notification;
 import com.memoire.apiAhoewo.models.gestionDesAgencesImmobilieres.Services;
 import com.memoire.apiAhoewo.models.gestionDesAgencesImmobilieres.ServicesAgenceImmobiliere;
 import com.memoire.apiAhoewo.models.gestionDesComptes.Personne;
 import com.memoire.apiAhoewo.repositories.gestionDesAgencesImmobilieres.ServicesRepository;
-import com.memoire.apiAhoewo.dto.MotifRejetForm;
+import com.memoire.apiAhoewo.dto.MotifForm;
 import com.memoire.apiAhoewo.services.EmailSenderService;
-import com.memoire.apiAhoewo.services.MotifRejetService;
+import com.memoire.apiAhoewo.services.MotifService;
 import com.memoire.apiAhoewo.services.NotificationService;
 import com.memoire.apiAhoewo.services.gestionDesAgencesImmobilieres.ServicesAgenceImmobiliereService;
 import com.memoire.apiAhoewo.services.gestionDesAgencesImmobilieres.ServicesService;
@@ -38,7 +38,7 @@ public class ServicesServiceImpl implements ServicesService {
     @Autowired
     private EmailSenderService emailSenderService;
     @Autowired
-    private MotifRejetService motifRejetService;
+    private MotifService motifService;
     @Autowired
     private Environment env;
 
@@ -125,11 +125,11 @@ public class ServicesServiceImpl implements ServicesService {
 
         Notification notification = new Notification();
         notification.setTitre("Nouveau service validé");
-        notification.setMessage("La demande d'ajout du nouveau service " + services.getNomService() + " à été validé.");
+        notification.setMessage("La demande d'enregistrement du nouveau service " + services.getNomService() + " à été validé.");
         notification.setSendTo(String.valueOf(services.getCreerPar()));
         notification.setLu(false);
         notification.setDateNotification(new Date());
-        notification.setUrl("/agences-immobilieres/service/" + services.getId());
+        notification.setUrl("/agence-immobiliere/service/" + services.getId());
         notification.setCreerPar(personne.getId());
         notification.setCreerLe(new Date());
         notificationService.save(notification);
@@ -159,14 +159,14 @@ public class ServicesServiceImpl implements ServicesService {
         });
 
         CompletableFuture.runAsync(()->{
-            emailSenderService.sendMail(env.getProperty("spring.mail.username"), servicesAgenceImmobiliere.getAgenceImmobiliere().getAdresseEmail(), "Demande d'ajout de nouveau service validé", contenu2);
+            emailSenderService.sendMail(env.getProperty("spring.mail.username"), servicesAgenceImmobiliere.getAgenceImmobiliere().getAdresseEmail(), "Demande d'enregistrement de nouveau service validé", contenu2);
         });
 
         servicesRepository.save(services);
     }
 
     @Override
-    public void rejeterServices(MotifRejetForm motifRejetForm, Principal principal) {
+    public void rejeterServices(MotifForm motifRejetForm, Principal principal) {
         Services services = servicesRepository.findById(motifRejetForm.getId()).orElse(null);
         services.setEtat(3);
 
@@ -184,15 +184,15 @@ public class ServicesServiceImpl implements ServicesService {
         notification.setSendTo(String.valueOf(services.getCreerPar()));
         notification.setLu(false);
         notification.setDateNotification(new Date());
-        notification.setUrl("/agences-immobilieres/services/" + servicesAgenceImmobiliere.getId());
+        notification.setUrl("/agence-immobiliere/service/" + servicesAgenceImmobiliere.getId());
         notification.setCreerPar(personne.getId());
         notification.setCreerLe(new Date());
         notificationService.save(notification);
 
-        MotifRejet motifRejet = new MotifRejet();
-        motifRejet.setCode(services.getCodeService());
-        motifRejet.setMotif(motifRejetForm.getMotif());
-        motifRejetService.save(motifRejet, principal);
+        Motif motif = new Motif();
+        motif.setCode(services.getCodeService());
+        motif.setMotif(motifRejetForm.getMotif());
+        motifService.save(motif, principal);
 
         String contenu1 = "Bonjour " + personneSave.getPrenom() + " " + personneSave.getNom() + ",\n\n" +
                 "Nous sommes désolés de vous informer que la demande de nouveau service pour votre agence immobilière a été rejetée.\n\n" +
@@ -215,11 +215,11 @@ public class ServicesServiceImpl implements ServicesService {
                 "L'équipe Ahoewo";
 
         CompletableFuture.runAsync(()->{
-            emailSenderService.sendMail(env.getProperty("spring.mail.username"), personne.getEmail(), "Demande d'ajout de nouveau service rejeté", contenu1);
+            emailSenderService.sendMail(env.getProperty("spring.mail.username"), personne.getEmail(), "Demande d'enregistrement de nouveau service rejeté", contenu1);
         });
 
         CompletableFuture.runAsync(()->{
-            emailSenderService.sendMail(env.getProperty("spring.mail.username"), servicesAgenceImmobiliere.getAgenceImmobiliere().getAdresseEmail(), "Demande d'ajout de nouveau service rejeté", contenu2);
+            emailSenderService.sendMail(env.getProperty("spring.mail.username"), servicesAgenceImmobiliere.getAgenceImmobiliere().getAdresseEmail(), "Demande d'enregistrement de nouveau service rejeté", contenu2);
         });
 
         servicesRepository.save(services);

@@ -23,18 +23,34 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public List<Notification> getNotificationsNonLuesByAdmin() {
-        return notificationRepository.findBySendToAndLuAndStatut("ADMIN", false,true);
+        return notificationRepository.findBySendToAndLuAndStatutOrderByIdDesc("ADMIN", false,true);
     }
 
     @Override
     public List<Notification> getNotificationsNonLuesByNotaire() {
-        return notificationRepository.findBySendToAndLuAndStatut("NOTAIRE", false, true);
+        return notificationRepository.findBySendToAndLuAndStatutOrderByIdDesc("NOTAIRE", false, true);
     }
 
     @Override
     public List<Notification> getNotificationsNonLuesByOwner(Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
-        return notificationRepository.findBySendToAndLuAndStatut(String.valueOf(personne.getId()), false, true);
+        return notificationRepository.findBySendToAndLuAndStatutOrderByIdDesc(String.valueOf(personne.getId()), false, true);
+    }
+
+    @Override
+    public List<Notification> getNotificationsListByAdmin() {
+        return notificationRepository.findBySendToOrderByIdDesc("ADMIN");
+    }
+
+    @Override
+    public List<Notification> getNotificationsListByNotaire() {
+        return notificationRepository.findBySendToOrderByIdDesc("NOTAIRE");
+    }
+
+    @Override
+    public List<Notification> getNotificationsListByOwner(Principal principal) {
+        Personne personne = personneService.findByUsername(principal.getName());
+        return notificationRepository.findBySendToOrderByIdDesc(String.valueOf(personne.getId()));
     }
 
     @Override

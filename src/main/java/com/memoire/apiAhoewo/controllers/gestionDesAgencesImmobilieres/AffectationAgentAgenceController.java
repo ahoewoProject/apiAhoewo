@@ -1,10 +1,10 @@
 package com.memoire.apiAhoewo.controllers.gestionDesAgencesImmobilieres;
 
+import com.memoire.apiAhoewo.dto.AffectationAgentAgenceForm;
 import com.memoire.apiAhoewo.models.gestionDesAgencesImmobilieres.AffectationAgentAgence;
 import com.memoire.apiAhoewo.models.gestionDesAgencesImmobilieres.AffectationResponsableAgence;
 import com.memoire.apiAhoewo.models.gestionDesAgencesImmobilieres.AgenceImmobiliere;
 import com.memoire.apiAhoewo.models.gestionDesComptes.AgentImmobilier;
-import com.memoire.apiAhoewo.dto.AffectationAgentAgenceForm;
 import com.memoire.apiAhoewo.services.gestionDesAgencesImmobilieres.AffectationAgentAgenceService;
 import com.memoire.apiAhoewo.services.gestionDesComptes.AgentImmobilierService;
 import com.memoire.apiAhoewo.services.gestionDesComptes.PersonneService;
@@ -28,17 +28,30 @@ public class AffectationAgentAgenceController {
     @Autowired
     private PersonneService personneService;
 
-    @RequestMapping(value = "/affectations-agents-agences", method = RequestMethod.GET)
-    public List<AffectationAgentAgence> getAll() {
+    @RequestMapping(value = "/affectations-agent-agence/page", method = RequestMethod.GET)
+    public Page<AffectationAgentAgence> getAffectationsAgentAgencePage(Principal principal, @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
+                                                     @RequestParam(value = "elementsParPage") int elementsParPage) {
 
-        List<AffectationAgentAgence> agentAgences = new ArrayList<>();
         try {
-            agentAgences = this.affectationAgentAgenceService.getAll();
+            return this.affectationAgentAgenceService.getAffectationsAgentAgencePage(principal, numeroDeLaPage, elementsParPage);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+            throw new RuntimeException("Une erreur s'est produite lors de la récupération des affectations agents agences.", e);
+        }
+    }
+
+    @RequestMapping(value = "/affectations-agent-agence/list", method = RequestMethod.GET)
+    public List<AffectationAgentAgence> getAffectationsAgentAgenceList(Principal principal) {
+
+        List<AffectationAgentAgence> affectationAgentAgenceArrayList = new ArrayList<>();
+        try {
+            affectationAgentAgenceArrayList = this.affectationAgentAgenceService.getAffectationsAgentAgenceList(principal);
         } catch (Exception e) {
             // TODO: handle exception
             System.out.println("Erreur " + e.getMessage());
         }
-        return agentAgences;
+        return affectationAgentAgenceArrayList;
     }
 
     @RequestMapping(value = "/affectations-agents-agences/responsable", method = RequestMethod.GET)
@@ -65,20 +78,6 @@ public class AffectationAgentAgenceController {
             System.out.println("Erreur " + e.getMessage());
         }
         return agencesList;
-    }
-
-    @RequestMapping(value = "/affectations-agents-agences/agent/paginees", method = RequestMethod.GET)
-    public Page<AffectationResponsableAgence> getAgencesOfAgentPaginees(Principal principal,
-                                                                    @RequestParam(value = "numeroDeLaPage") int numeroDeLaPage,
-                                                                    @RequestParam(value = "elementsParPage") int elementsParPage) {
-
-        try {
-            return this.affectationAgentAgenceService.getAgencesByAgentPaginees(principal, numeroDeLaPage, elementsParPage);
-        } catch (Exception e) {
-            // TODO: handle exception
-            System.out.println("Erreur " + e.getMessage());
-            throw new RuntimeException("Une erreur s'est produite lors de la récupération des affectations responsables agences.", e);
-        }
     }
 
     @RequestMapping(value = "/affectation-agent-agence/{id}", method = RequestMethod.GET)

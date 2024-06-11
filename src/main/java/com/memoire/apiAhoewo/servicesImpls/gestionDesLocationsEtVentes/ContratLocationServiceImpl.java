@@ -15,18 +15,21 @@ import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
-import com.memoire.apiAhoewo.dto.MotifRejetForm;
-import com.memoire.apiAhoewo.models.MotifRejet;
+import com.memoire.apiAhoewo.dto.MotifForm;
+import com.memoire.apiAhoewo.models.Motif;
 import com.memoire.apiAhoewo.models.Notification;
+import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.BienImmAssocie;
 import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.BienImmobilier;
 import com.memoire.apiAhoewo.models.gestionDesComptes.Personne;
 import com.memoire.apiAhoewo.models.gestionDesLocationsEtVentes.ContratLocation;
 import com.memoire.apiAhoewo.models.gestionDesLocationsEtVentes.DemandeLocation;
 import com.memoire.apiAhoewo.models.gestionDesPaiements.PlanificationPaiement;
 import com.memoire.apiAhoewo.repositories.gestionDesLocationsEtVentes.ContratLocationRepository;
-import com.memoire.apiAhoewo.services.MotifRejetService;
+import com.memoire.apiAhoewo.services.MotifService;
 import com.memoire.apiAhoewo.services.NotificationService;
+import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.BienImmobilierAssocieService;
 import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.BienImmobilierService;
+import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.TypeDeBienService;
 import com.memoire.apiAhoewo.services.gestionDesComptes.PersonneService;
 import com.memoire.apiAhoewo.services.gestionDesLocationsEtVentes.ContratLocationService;
 import com.memoire.apiAhoewo.services.gestionDesLocationsEtVentes.DemandeLocationService;
@@ -58,13 +61,17 @@ public class ContratLocationServiceImpl implements ContratLocationService {
     @Autowired
     private NotificationService notificationService;
     @Autowired
-    private MotifRejetService motifRejetService;
+    private MotifService motifService;
     @Autowired
     private PublicationService publicationService;
     @Autowired
     private BienImmobilierService bienImmobilierService;
     @Autowired
+    private TypeDeBienService typeDeBienService;
+    @Autowired
     private PlanificationPaiementService planificationPaiementService;
+    @Autowired
+    private BienImmobilierAssocieService bienImmAssocieService;
 
     @Override
     public Page<ContratLocation> getContratLocations(Principal principal, int numeroDeLaPage, int elementsParPage) {
@@ -131,21 +138,21 @@ public class ContratLocationServiceImpl implements ContratLocationService {
         return contratLocationRepository.findByEtatContrat("En attente");
     }
 
-    private boolean verifyRoleCode(String roleCode) {
-        return roleCode.equals("ROLE_PROPRIETAIRE") || roleCode.equals("ROLE_RESPONSABLE") ||
-                roleCode.equals("ROLE_AGENTIMMOBILIER") || roleCode.equals("ROLE_DEMARCHEUR") ||
-                roleCode.equals("ROLE_GERANT");
-    }
-
-
     @Override
     public ContratLocation findById(Long id) {
         return contratLocationRepository.findById(id).orElse(null);
     }
 
     @Override
+    public ContratLocation findByCodeContrat(String codeContrat) {
+        return contratLocationRepository.findByCodeContrat(codeContrat);
+    }
+
+    @Override
     public ContratLocation save(ContratLocation contratLocation, Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
+
+        String roleCode = personne.getRole().getCode();
 
         contratLocation.setCodeContrat("CONLOC" + UUID.randomUUID());
         contratLocation.setEtatContrat("En attente");
@@ -160,22 +167,22 @@ public class ContratLocationServiceImpl implements ContratLocationService {
         notification1.setSendTo(String.valueOf(contratLocation.getDemandeLocation().getClient().getId()));
         notification1.setDateNotification(new Date());
         notification1.setLu(false);
-        notification1.setUrl("/contrats/locations/" + contratLocation.getId());
+        notification1.setUrl("/contrat-location/" + contratLocation.getId());
         notification1.setCreerPar(personne.getId());
         notification1.setCreerLe(new Date());
         notificationService.save(notification1);
 
 
         if (contratLocation.getBienImmobilier().getEstDelegue()) {
-            if (personne.getRole().getCode().equals("ROLE_RESPONSABLE") || personne.getRole().getCode().equals("ROLE_AGENTIMMOBILIER") ||
-                    personne.getRole().getCode().equals("ROLE_DEMARCHEUR") || personne.getRole().getCode().equals("ROLE_GERANT")) {
+            if (personneService.estResponsable(roleCode) || personneService.estAgentImmobilier(roleCode) ||
+                    personneService.estDemarcheur(roleCode) || personneService.estGerant(roleCode)) {
                 Notification notification2 = new Notification();
                 notification2.setTitre("Proposition d'un contrat de location");
                 notification2.setMessage("Une proposition de contrat a été faite sur le bien immobilier " + contratLocation.getBienImmobilier().getCodeBien() + " que vous avez délégué");
                 notification2.setSendTo(String.valueOf(contratLocation.getBienImmobilier().getPersonne().getId()));
                 notification2.setDateNotification(new Date());
                 notification2.setLu(false);
-                notification2.setUrl("/contrats/locations/" + contratLocation.getId());
+                notification2.setUrl("/contrat-location/" + contratLocation.getId());
                 notification2.setCreerPar(personne.getId());
                 notification2.setCreerLe(new Date());
                 notificationService.save(notification2);
@@ -190,6 +197,9 @@ public class ContratLocationServiceImpl implements ContratLocationService {
     public ContratLocation modifier(Principal principal, ContratLocation contratLocation) {
 
         Personne personne = personneService.findByUsername(principal.getName());
+
+        String roleCode = personne.getRole().getCode();
+
         contratLocation.setEtatContrat("Modifié");
         contratLocation.setModifierPar(personne.getId());
         contratLocation.setModifierLe(new Date());
@@ -202,14 +212,14 @@ public class ContratLocationServiceImpl implements ContratLocationService {
         notification.setSendTo(String.valueOf(contratLocation.getClient().getId()));
         notification.setDateNotification(new Date());
         notification.setLu(false);
-        notification.setUrl("/contrats/locations/" + contratLocation.getId());
+        notification.setUrl("/contrat-location/" + contratLocation.getId());
         notification.setCreerPar(personne.getId());
         notification.setCreerLe(new Date());
         notificationService.save(notification);
 
         if (contratLocation.getBienImmobilier().getEstDelegue()) {
-            if (personne.getRole().getCode().equals("ROLE_RESPONSABLE") || personne.getRole().getCode().equals("ROLE_AGENTIMMOBILIER") ||
-                    personne.getRole().getCode().equals("ROLE_DEMARCHEUR") || personne.getRole().getCode().equals("ROLE_GERANT")) {
+            if (personneService.estResponsable(roleCode) || personneService.estAgentImmobilier(roleCode) ||
+                   personneService.estDemarcheur(roleCode) || personneService.estGerant(roleCode)) {
 
                 Notification notification2 = new Notification();
                 notification2.setTitre("Modification d'une proposition de contrat de location");
@@ -237,6 +247,8 @@ public class ContratLocationServiceImpl implements ContratLocationService {
         ContratLocation contratLocation = contratLocationRepository.findById(id).orElse(null);
         Personne personne = personneService.findByUsername(principal.getName());
 
+        String roleCode = personne.getRole().getCode();
+
         if (contratLocation != null) {
             contratLocation.setDateSignature(new Date());
             contratLocation.setEtatContrat("Validé");
@@ -247,21 +259,21 @@ public class ContratLocationServiceImpl implements ContratLocationService {
             notification.setSendTo(String.valueOf(contratLocation.getCreerPar()));
             notification.setDateNotification(new Date());
             notification.setLu(false);
-            notification.setUrl("/contrats/locations/" + contratLocation.getId());
+            notification.setUrl("/contrat-location/" + contratLocation.getId());
             notification.setCreerPar(personne.getId());
             notification.setCreerLe(new Date());
             notificationService.save(notification);
 
             if (contratLocation.getBienImmobilier().getEstDelegue()) {
-                if (personne.getRole().getCode().equals("ROLE_RESPONSABLE") || personne.getRole().getCode().equals("ROLE_AGENTIMMOBILIER") ||
-                        personne.getRole().getCode().equals("ROLE_DEMARCHEUR") || personne.getRole().getCode().equals("ROLE_GERANT")) {
+                if (personneService.estResponsable(roleCode) || personneService.estAgentImmobilier(roleCode) ||
+                        personneService.estDemarcheur(roleCode) || personneService.estGerant(roleCode)) {
                     Notification notification2 = new Notification();
                     notification2.setTitre("Validation d'une proposition de contrat de location");
                     notification2.setMessage("La proposition de contrat faite sur le bien immobilier " + contratLocation.getBienImmobilier().getCodeBien() + " que vous avez délégué a été validée. Vous pouvez maintenant continuer les démarches pour la signature du contrat");
                     notification2.setSendTo(String.valueOf(contratLocation.getBienImmobilier().getPersonne().getId()));
                     notification2.setDateNotification(new Date());
                     notification2.setLu(false);
-                    notification2.setUrl("/contrats/locations/" + contratLocation.getId());
+                    notification2.setUrl("/contrat-location/" + contratLocation.getId());
                     notification2.setCreerPar(personne.getId());
                     notification2.setCreerLe(new Date());
                     notificationService.save(notification2);
@@ -276,7 +288,7 @@ public class ContratLocationServiceImpl implements ContratLocationService {
             planificationPaiement.setLibelle("Avance/Caution");
             planificationPaiement.setMontantDu(montantDu);
             planificationPaiement.setMontantPaye(montantDu);
-            planificationPaiement.setRestePaye(montantDu);
+            planificationPaiement.setRestePaye(planificationPaiement.getMontantDu() - planificationPaiement.getMontantPaye());
             planificationPaiement.setDatePlanifiee(new Date());
             planificationPaiementService.savePlanificationPaiementLocation(principal, planificationPaiement);
 
@@ -299,7 +311,7 @@ public class ContratLocationServiceImpl implements ContratLocationService {
             notification.setSendTo(String.valueOf(contratLocation.getClient().getId()));
             notification.setDateNotification(new Date());
             notification.setLu(false);
-            notification.setUrl("/contrats/locations/" + contratLocation.getId());
+            notification.setUrl("/contrat-location/" + contratLocation.getId());
             notification.setCreerPar(personne.getId());
             notification.setCreerLe(new Date());
             notificationService.save(notification);
@@ -307,6 +319,16 @@ public class ContratLocationServiceImpl implements ContratLocationService {
 
         contratLocation.getBienImmobilier().setStatutBien("Disponible");
         bienImmobilierService.setBienImmobilier(contratLocation.getBienImmobilier());
+        if (typeDeBienService.isTypeBienSupport(contratLocation.getBienImmobilier().getTypeDeBien().getDesignation())) {
+            List<BienImmAssocie> bienImmAssocieList = bienImmAssocieService.getBiensAssocies(contratLocation.getBienImmobilier());
+
+            if (!bienImmAssocieList.isEmpty()) {
+                for (BienImmAssocie bienImmAssocie : bienImmAssocieList) {
+                    bienImmAssocie.setStatutBien("Loué");
+                    bienImmobilierService.setBienImmobilier(bienImmAssocie);
+                }
+            }
+        }
 
         publicationService.activerPublication(contratLocation.getDemandeLocation().getPublication().getId());
 
@@ -314,8 +336,10 @@ public class ContratLocationServiceImpl implements ContratLocationService {
     }
 
     @Override
-    public void refuser(Principal principal, Long id, MotifRejetForm motifRejetForm) {
+    public void refuser(Principal principal, Long id, MotifForm motifForm) {
         Personne personne = personneService.findByUsername(principal.getName());
+
+        String roleCode = personne.getRole().getCode();
 
         ContratLocation contratLocation = contratLocationRepository.findById(id).orElse(null);
 
@@ -330,14 +354,14 @@ public class ContratLocationServiceImpl implements ContratLocationService {
             notification.setSendTo(String.valueOf(contratLocation.getCreerPar()));
             notification.setDateNotification(new Date());
             notification.setLu(false);
-            notification.setUrl("/contrats/locations/" + contratLocation.getId());
+            notification.setUrl("/contrat-location/" + contratLocation.getId());
             notification.setCreerPar(personne.getId());
             notification.setCreerLe(new Date());
             notificationService.save(notification);
 
             if (contratLocation.getBienImmobilier().getEstDelegue()) {
-                if (personne.getRole().getCode().equals("ROLE_RESPONSABLE") || personne.getRole().getCode().equals("ROLE_AGENTIMMOBILIER") ||
-                        personne.getRole().getCode().equals("ROLE_DEMARCHEUR") || personne.getRole().getCode().equals("ROLE_GERANT")) {
+                if (personneService.estResponsable(roleCode) || personneService.estAgentImmobilier(roleCode) ||
+                        personneService.estAgentImmobilier(roleCode) || personneService.estGerant(roleCode)) {
 
                     Notification notification2 = new Notification();
                     notification2.setTitre("Refus d'une proposition de contrat de location");
@@ -345,19 +369,19 @@ public class ContratLocationServiceImpl implements ContratLocationService {
                     notification2.setSendTo(String.valueOf(contratLocation.getBienImmobilier().getPersonne().getId()));
                     notification2.setDateNotification(new Date());
                     notification2.setLu(false);
-                    notification2.setUrl("/contrats/locations/" + contratLocation.getId());
+                    notification2.setUrl("/contrat-locations-/" + contratLocation.getId());
                     notification2.setCreerPar(personne.getId());
                     notification2.setCreerLe(new Date());
                     notificationService.save(notification2);
                 }
             }
 
-            if (motifRejetForm != null) {
-                MotifRejet motifRejet = new MotifRejet();
-                motifRejet.setCode(contratLocation.getCodeContrat());
-                motifRejet.setLibelle("Motif de refus de la proposition de contrat de location");
-                motifRejet.setMotif(motifRejetForm.getMotif());
-                motifRejetService.save(motifRejet, principal);
+            if (motifForm != null) {
+                Motif motif = new Motif();
+                motif.setCode(contratLocation.getCodeContrat());
+                motif.setLibelle("Motif de refus de la proposition de contrat de location");
+                motif.setMotif(motifForm.getMotif());
+                motifService.save(motif, principal);
             }
             contratLocationRepository.save(contratLocation);
         }
@@ -365,7 +389,7 @@ public class ContratLocationServiceImpl implements ContratLocationService {
     }
 
     @Override
-    public void demandeModification(Principal principal, MotifRejetForm motifRejetForm, Long id) {
+    public void demandeModification(Principal principal, MotifForm motifForm, Long id) {
         Personne personne = personneService.findByUsername(principal.getName());
 
         ContratLocation contratLocation = contratLocationRepository.findById(id).orElse(null);
@@ -380,17 +404,17 @@ public class ContratLocationServiceImpl implements ContratLocationService {
             notification.setSendTo(String.valueOf(contratLocation.getCreerPar()));
             notification.setDateNotification(new Date());
             notification.setLu(false);
-            notification.setUrl("/contrats/locations/" + contratLocation.getId());
+            notification.setUrl("/contrat-location/" + contratLocation.getId());
             notification.setCreerPar(personne.getId());
             notification.setCreerLe(new Date());
             notificationService.save(notification);
 
-            if (motifRejetForm != null) {
-                MotifRejet motifRejet = new MotifRejet();
-                motifRejet.setCode(contratLocation.getCodeContrat());
-                motifRejet.setLibelle("Motif de demande de modification de la proposition de contrat de location");
-                motifRejet.setMotif(motifRejetForm.getMotif());
-                motifRejetService.save(motifRejet, principal);
+            if (motifForm != null) {
+                Motif motif = new Motif();
+                motif.setCode(contratLocation.getCodeContrat());
+                motif.setLibelle("Motif de demande de modification de la proposition de contrat de location");
+                motif.setMotif(motifForm.getMotif());
+                motifService.save(motif, principal);
             }
             contratLocationRepository.save(contratLocation);
         }
@@ -494,7 +518,7 @@ public class ContratLocationServiceImpl implements ContratLocationService {
 
         clientDetails.addCell(getCell10fLeft(new Paragraph("Loyer").setMarginTop(10), true));
         clientDetails.addCell(getCell10fLeft(new Paragraph("Avance").setMarginTop(10), true));
-        clientDetails.addCell(getCell10fLeft(new Paragraph(String.valueOf(contratLocation.getLoyer()) + " FCFA"), false));
+        clientDetails.addCell(getCell10fLeft(new Paragraph(String.format("%.0f", contratLocation.getLoyer()) + " FCFA"), false));
         clientDetails.addCell(getCell10fLeft(new Paragraph(String.valueOf(contratLocation.getAvance()) + " mois"), false));
 
         clientDetails.addCell(getCell10fLeft(new Paragraph("Caution").setMarginTop(10), true));

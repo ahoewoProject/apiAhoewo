@@ -16,6 +16,7 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.memoire.apiAhoewo.models.Notification;
+import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.BienImmAssocie;
 import com.memoire.apiAhoewo.models.gestionDesComptes.Personne;
 import com.memoire.apiAhoewo.models.gestionDesLocationsEtVentes.Contrat;
 import com.memoire.apiAhoewo.models.gestionDesLocationsEtVentes.ContratLocation;
@@ -24,19 +25,27 @@ import com.memoire.apiAhoewo.models.gestionDesPaiements.Paiement;
 import com.memoire.apiAhoewo.models.gestionDesPaiements.PlanificationPaiement;
 import com.memoire.apiAhoewo.repositories.gestionDesPaiements.PaiementRepository;
 import com.memoire.apiAhoewo.services.NotificationService;
+import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.BienImmobilierAssocieService;
 import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.BienImmobilierService;
+import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.TypeDeBienService;
 import com.memoire.apiAhoewo.services.gestionDesComptes.PersonneService;
 import com.memoire.apiAhoewo.services.gestionDesLocationsEtVentes.ContratLocationService;
 import com.memoire.apiAhoewo.services.gestionDesLocationsEtVentes.ContratVenteService;
 import com.memoire.apiAhoewo.services.gestionDesPaiements.PaiementService;
 import com.memoire.apiAhoewo.services.gestionDesPaiements.PlanificationPaiementService;
 import com.memoire.apiAhoewo.services.gestionDesPublications.PublicationService;
+import com.paydunya.neptune.PaydunyaCheckoutStore;
+import com.paydunya.neptune.PaydunyaSetup;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
@@ -65,6 +74,14 @@ public class PaiementServiceImpl implements PaiementService {
     private ContratVenteService contratVenteService;
     @Autowired
     private ContratLocationService contratLocationService;
+    @Autowired
+    private TypeDeBienService typeDeBienService;
+    @Autowired
+    private BienImmobilierAssocieService bienImmAssocieService;
+    @Autowired
+    private PaydunyaSetup paydunyaSetup;
+    @Autowired
+    private PaydunyaCheckoutStore paydunyaStore;
 
     @Override
     public Page<Paiement> getPaiements(Principal principal, int numeroDeLaPage, int elementsParPage) {
@@ -76,15 +93,37 @@ public class PaiementServiceImpl implements PaiementService {
     }
 
     @Override
-    public Page<Paiement> getPaiementsByCodePlanification(String codePlanification, int numeroDeLaPage, int elementsParPage) {
+    public Page<Paiement> getPaiementsByCodeContrat(String codeContrat, int numeroDeLaPage, int elementsParPage) {
         PageRequest pageRequest =  PageRequest.of(numeroDeLaPage, elementsParPage);
 
-        return paiementRepository.findByPlanificationPaiement_CodePlanificationOrderByIdDesc(codePlanification, pageRequest);
+        return paiementRepository.findByPlanificationPaiement_Contrat_CodeContratOrderByIdDesc(codeContrat, pageRequest);
+    }
+
+    @Override
+    public List<Paiement> getPaiements(Principal principal) {
+        List<PlanificationPaiement> planificationPaiementList = planificationPaiementService.getPlanificationsPaiement(principal);
+
+        return paiementRepository.findByPlanificationPaiementInOrderByIdDesc(planificationPaiementList);
+    }
+
+    @Override
+    public List<Paiement> getPaiementByModePaiementEnAttente() {
+        return paiementRepository.findByModePaiementAndStatutPaiementOrderByIdDesc("Hors plateforme", "En attente");
+    }
+
+    @Override
+    public List<Paiement> getPaiementsByStatutPaiementIfPayoutBatchIdExist() {
+        return paiementRepository.findByStatutPaiementAndPayoutBatchIdIsNotNull("En attente");
     }
 
     @Override
     public Paiement findById(Long id) {
         return paiementRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public Paiement findByPayoutBatchId(String payoutBatchId) {
+        return paiementRepository.findByPayoutBatchId(payoutBatchId);
     }
 
     @Override
@@ -106,58 +145,148 @@ public class PaiementServiceImpl implements PaiementService {
     public Paiement savePaiementLocation(Paiement paiement, Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
 
+        String roleCode = personne.getRole().getCode();
+
         paiement.setCodePaiement("PAIEME" + UUID.randomUUID());
-        paiement.setStatutPaiement("Effectué");
         paiement.setDatePaiement(new Date());
         paiement.setCreerLe(new Date());
         paiement.setCreerPar(personne.getId());
         paiement.setStatut(true);
+        paiement = paiementRepository.save(paiement);
 
-        paiement =  paiementRepository.save(paiement);
-
-        Notification notification = new Notification();
-        notification.setTitre("Nouveau paiement");
-        notification.setMessage("Un paiement vient d'être effectué pour la planification de paiement " + paiement.getPlanificationPaiement().getCodePlanification());
-        notification.setSendTo(String.valueOf(paiement.getPlanificationPaiement().getCreerLe()));
-        notification.setDateNotification(new Date());
-        notification.setLu(false);
-        notification.setUrl("/paiements/" + paiement.getId());
-        notification.setCreerPar(personne.getId());
-        notification.setCreerLe(new Date());
-        notificationService.save(notification);
+        ContratLocation contratLocation = contratLocationService.findById(paiement.getPlanificationPaiement().getContrat().getId());
 
         if (paiement.getPlanificationPaiement().getContrat().getBienImmobilier().getEstDelegue()) {
-            if (personne.getRole().getCode().equals("ROLE_RESPONSABLE") || personne.getRole().getCode().equals("ROLE_AGENTIMMOBILIER") ||
-                    personne.getRole().getCode().equals("ROLE_DEMARCHEUR") || personne.getRole().getCode().equals("ROLE_GERANT")) {
+            if (personneService.estClient(roleCode)) {
+                paiement.setStatutPaiement("En attente");
+
                 Notification notification1 = new Notification();
                 notification1.setTitre("Nouveau paiement");
                 notification1.setMessage("Un paiement vient d'être effectué pour la planification de paiement " + paiement.getPlanificationPaiement().getCodePlanification());
-                notification1.setSendTo(String.valueOf(paiement.getPlanificationPaiement().getContrat().getBienImmobilier().getPersonne().getId()));
+                notification1.setSendTo(String.valueOf(paiement.getPlanificationPaiement().getContrat().getProprietaire().getId()));
                 notification1.setDateNotification(new Date());
                 notification1.setLu(false);
-                notification1.setUrl("/paiements/" + paiement.getId());
+                notification1.setUrl("/paiement/" + paiement.getId());
+                notification1.setCreerPar(personne.getId());
+                notification1.setCreerLe(new Date());
+                notificationService.save(notification1);
+
+                Notification notification2 = new Notification();
+                notification2.setTitre("Nouveau paiement");
+                notification2.setMessage("Un paiement vient d'être effectué pour la planification de paiement " + paiement.getPlanificationPaiement().getCodePlanification());
+                notification2.setSendTo(String.valueOf(paiement.getPlanificationPaiement().getContrat().getCreerPar()));
+                notification2.setDateNotification(new Date());
+                notification2.setLu(false);
+                notification2.setUrl("/paiement/" + paiement.getId());
+                notification2.setCreerPar(personne.getId());
+                notification2.setCreerLe(new Date());
+                notificationService.save(notification2);
+            } else {
+                paiement.setStatutPaiement("Effectué");
+
+                Notification notification1 = new Notification();
+                notification1.setTitre("Nouveau paiement");
+                notification1.setMessage("Un paiement vient d'être effectué pour la planification de paiement " + paiement.getPlanificationPaiement().getCodePlanification());
+                notification1.setSendTo(String.valueOf(paiement.getPlanificationPaiement().getContrat().getClient().getId()));
+                notification1.setDateNotification(new Date());
+                notification1.setLu(false);
+                notification1.setUrl("/paiement/" + paiement.getId());
+                notification1.setCreerPar(personne.getId());
+                notification1.setCreerLe(new Date());
+                notificationService.save(notification1);
+
+                Notification notification2 = new Notification();
+                notification2.setTitre("Nouveau paiement");
+                notification2.setMessage("Un paiement vient d'être effectué pour la planification de paiement " + paiement.getPlanificationPaiement().getCodePlanification());
+                notification2.setSendTo(String.valueOf(paiement.getPlanificationPaiement().getContrat().getProprietaire().getId()));
+                notification2.setDateNotification(new Date());
+                notification2.setLu(false);
+                notification2.setUrl("/paiement/" + paiement.getId());
+                notification2.setCreerPar(personne.getId());
+                notification2.setCreerLe(new Date());
+                notificationService.save(notification2);
+
+                if (paiement.getPlanificationPaiement().getLibelle().equals("Avance/Caution")) {
+                    paiement.getPlanificationPaiement().getContrat().getBienImmobilier().setStatutBien("Loué");
+                    bienImmobilierService.setBienImmobilier(paiement.getPlanificationPaiement().getContrat().getBienImmobilier());
+
+                    if (typeDeBienService.isTypeBienSupport(paiement.getPlanificationPaiement().getContrat().getBienImmobilier().getTypeDeBien().getDesignation())) {
+                        List<BienImmAssocie> bienImmAssocieList = bienImmAssocieService.getBiensAssocies(paiement.getPlanificationPaiement().getContrat().getBienImmobilier());
+
+                        if (!bienImmAssocieList.isEmpty()) {
+                            for (BienImmAssocie bienImmAssocie : bienImmAssocieList) {
+                                bienImmAssocie.setStatutBien("Loué");
+                                bienImmobilierService.setBienImmobilier(bienImmAssocie);
+                            }
+                        }
+                    }
+
+                    publicationService.desactiverPublication(contratLocation.getDemandeLocation().getPublication().getId());
+                }
+
+                paiement.getPlanificationPaiement().setRestePaye(paiement.getPlanificationPaiement().getMontantDu() - paiement.getMontant());
+                paiement.getPlanificationPaiement().setStatutPlanification("Payé");
+                planificationPaiementService.setPlanificationPaiement(paiement.getPlanificationPaiement());
+
+                contratLocation.setEtatContrat("En cours");
+                contratLocationService.setEtatContrat(contratLocation);
+
+            }
+        } else {
+            if (!personneService.estClient(roleCode)) {
+                paiement.setStatutPaiement("Effectué");
+
+                Notification notification1 = new Notification();
+                notification1.setTitre("Nouveau paiement");
+                notification1.setMessage("Un paiement vient d'être effectué pour la planification de paiement " + paiement.getPlanificationPaiement().getCodePlanification());
+                notification1.setSendTo(String.valueOf(paiement.getPlanificationPaiement().getContrat().getClient().getId()));
+                notification1.setDateNotification(new Date());
+                notification1.setLu(false);
+                notification1.setUrl("/paiement/" + paiement.getId());
+                notification1.setCreerPar(personne.getId());
+                notification1.setCreerLe(new Date());
+                notificationService.save(notification1);
+
+                if (paiement.getPlanificationPaiement().getLibelle().equals("Avance/Caution")) {
+                    paiement.getPlanificationPaiement().getContrat().getBienImmobilier().setStatutBien("Loué");
+                    bienImmobilierService.setBienImmobilier(paiement.getPlanificationPaiement().getContrat().getBienImmobilier());
+
+                    if (typeDeBienService.isTypeBienSupport(paiement.getPlanificationPaiement().getContrat().getBienImmobilier().getTypeDeBien().getDesignation())) {
+                        List<BienImmAssocie> bienImmAssocieList = bienImmAssocieService.getBiensAssocies(paiement.getPlanificationPaiement().getContrat().getBienImmobilier());
+
+                        if (!bienImmAssocieList.isEmpty()) {
+                            for (BienImmAssocie bienImmAssocie : bienImmAssocieList) {
+                                bienImmAssocie.setStatutBien("Loué");
+                                bienImmobilierService.setBienImmobilier(bienImmAssocie);
+                            }
+                        }
+                    }
+
+                    publicationService.desactiverPublication(contratLocation.getDemandeLocation().getPublication().getId());
+                }
+
+                paiement.getPlanificationPaiement().setRestePaye(paiement.getPlanificationPaiement().getMontantDu() - paiement.getMontant());
+                paiement.getPlanificationPaiement().setStatutPlanification("Payé");
+                planificationPaiementService.setPlanificationPaiement(paiement.getPlanificationPaiement());
+
+                contratLocation.setEtatContrat("En cours");
+                contratLocationService.setEtatContrat(contratLocation);
+
+            } else {
+                paiement.setStatutPaiement("En attente");
+
+                Notification notification1 = new Notification();
+                notification1.setTitre("Nouveau paiement");
+                notification1.setMessage("Un paiement vient d'être effectué pour la planification de paiement " + paiement.getPlanificationPaiement().getCodePlanification());
+                notification1.setSendTo(String.valueOf(paiement.getPlanificationPaiement().getContrat().getCreerPar()));
+                notification1.setDateNotification(new Date());
+                notification1.setLu(false);
+                notification1.setUrl("/paiement/" + paiement.getId());
                 notification1.setCreerPar(personne.getId());
                 notification1.setCreerLe(new Date());
                 notificationService.save(notification1);
             }
         }
-
-        if (paiement.getModePaiement().equals("Manuel") || paiement.getModePaiement().equals("Espèce")) {
-            if (paiement.getPlanificationPaiement().getLibelle().equals("Avance/Caution")) {
-                paiement.getPlanificationPaiement().getContrat().getBienImmobilier().setStatutBien("Loué");
-                bienImmobilierService.setBienImmobilier(paiement.getPlanificationPaiement().getContrat().getBienImmobilier());
-
-                publicationService.desactiverPublicationParBienImmobilier(paiement.getPlanificationPaiement().getContrat().getBienImmobilier().getId());
-            }
-        } else {
-
-        }
-
-        paiement.getPlanificationPaiement().setStatutPlanification("Payé");
-        planificationPaiementService.setStatutPlanification(paiement.getPlanificationPaiement());
-
-        paiement.getPlanificationPaiement().getContrat().setEtatContrat("En cours");
-        contratLocationService.setEtatContrat((ContratLocation) paiement.getPlanificationPaiement().getContrat());
 
         paiement.setCodePaiement("PAIEME00" + paiement.getId());
         return paiementRepository.save(paiement);
@@ -167,8 +296,9 @@ public class PaiementServiceImpl implements PaiementService {
     public Paiement savePaiementAchat(Paiement paiement, Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
 
+        String roleCode = personne.getRole().getCode();
+
         paiement.setCodePaiement("PAIEME" + UUID.randomUUID());
-        paiement.setStatutPaiement("Effectué");
         paiement.setDatePaiement(new Date());
         paiement.setCreerLe(new Date());
         paiement.setCreerPar(personne.getId());
@@ -178,34 +308,345 @@ public class PaiementServiceImpl implements PaiementService {
 
         ContratVente contratVente = contratVenteService.findById(paiement.getPlanificationPaiement().getContrat().getId());
 
-        Notification notification = new Notification();
-        notification.setTitre("Nouveau paiement");
-        notification.setMessage("Un paiement vient d'être effectué pour la planification de paiement " + paiement.getPlanificationPaiement().getCodePlanification());
-        notification.setSendTo(String.valueOf(paiement.getPlanificationPaiement().getCreerLe()));
-        notification.setDateNotification(new Date());
-        notification.setLu(false);
-        notification.setUrl("/paiements/" + paiement.getId());
-        notification.setCreerPar(personne.getId());
-        notification.setCreerLe(new Date());
-        notificationService.save(notification);
-
         if (paiement.getPlanificationPaiement().getContrat().getBienImmobilier().getEstDelegue()) {
-            if (personne.getRole().getCode().equals("ROLE_RESPONSABLE") || personne.getRole().getCode().equals("ROLE_AGENTIMMOBILIER") ||
-                    personne.getRole().getCode().equals("ROLE_DEMARCHEUR") || personne.getRole().getCode().equals("ROLE_GERANT")) {
+            if (personneService.estClient(roleCode)) {
+                paiement.setStatutPaiement("En attente");
+
                 Notification notification1 = new Notification();
                 notification1.setTitre("Nouveau paiement");
                 notification1.setMessage("Un paiement vient d'être effectué pour la planification de paiement " + paiement.getPlanificationPaiement().getCodePlanification());
-                notification1.setSendTo(String.valueOf(paiement.getPlanificationPaiement().getContrat().getBienImmobilier().getPersonne().getId()));
+                notification1.setSendTo(String.valueOf(paiement.getPlanificationPaiement().getContrat().getProprietaire().getId()));
                 notification1.setDateNotification(new Date());
                 notification1.setLu(false);
-                notification1.setUrl("/paiements/" + paiement.getId());
+                notification1.setUrl("/paiement/" + paiement.getId());
+                notification1.setCreerPar(personne.getId());
+                notification1.setCreerLe(new Date());
+                notificationService.save(notification1);
+
+                Notification notification2 = new Notification();
+                notification2.setTitre("Nouveau paiement");
+                notification2.setMessage("Un paiement vient d'être effectué pour la planification de paiement " + paiement.getPlanificationPaiement().getCodePlanification());
+                notification2.setSendTo(String.valueOf(paiement.getPlanificationPaiement().getCreerPar()));
+                notification2.setDateNotification(new Date());
+                notification2.setLu(false);
+                notification2.setUrl("/paiement/" + paiement.getId());
+                notification2.setCreerPar(personne.getId());
+                notification2.setCreerLe(new Date());
+                notificationService.save(notification2);
+            } else {
+                paiement.setStatutPaiement("Effectué");
+                Notification notification1 = new Notification();
+                notification1.setTitre("Nouveau paiement");
+                notification1.setMessage("Un paiement vient d'être effectué pour la planification de paiement " + paiement.getPlanificationPaiement().getCodePlanification());
+                notification1.setSendTo(String.valueOf(paiement.getPlanificationPaiement().getContrat().getClient().getId()));
+                notification1.setDateNotification(new Date());
+                notification1.setLu(false);
+                notification1.setUrl("/paiement/" + paiement.getId());
+                notification1.setCreerPar(personne.getId());
+                notification1.setCreerLe(new Date());
+                notificationService.save(notification1);
+
+                List<Paiement> lastPaiements = dernierePaiement(paiement.getPlanificationPaiement().getContrat().getCodeContrat());
+
+                if (!lastPaiements.isEmpty()) {
+                    double montantTotal = 0;
+                    for (Paiement paiement1: lastPaiements) {
+                        montantTotal += paiement1.getMontant();
+                    }
+
+                    if (contratVente.getPrixVente().equals(montantTotal)) {
+                        contratVente.getBienImmobilier().setStatutBien("Vendu");
+                        bienImmobilierService.setBienImmobilier(contratVente.getBienImmobilier());
+
+                        if (typeDeBienService.isTypeBienSupport(contratVente.getBienImmobilier().getTypeDeBien().getDesignation())) {
+                            List<BienImmAssocie> bienImmAssocieList = bienImmAssocieService.getBiensAssocies(contratVente.getBienImmobilier());
+
+                            if (!bienImmAssocieList.isEmpty()) {
+                                for (BienImmAssocie bienImmAssocie : bienImmAssocieList) {
+                                    bienImmAssocie.setStatutBien("Vendu");
+                                    bienImmobilierService.setBienImmobilier(bienImmAssocie);
+                                }
+                            }
+                        }
+
+                        publicationService.desactiverPublication(contratVente.getDemandeAchat().getPublication().getId());
+
+                    }
+                } else {
+                    contratVente.getBienImmobilier().setStatutBien("Vendu");
+                    bienImmobilierService.setBienImmobilier(contratVente.getBienImmobilier());
+
+                    if (typeDeBienService.isTypeBienSupport(contratVente.getBienImmobilier().getTypeDeBien().getDesignation())) {
+                        List<BienImmAssocie> bienImmAssocieList = bienImmAssocieService.getBiensAssocies(contratVente.getBienImmobilier());
+
+                        if (!bienImmAssocieList.isEmpty()) {
+                            for (BienImmAssocie bienImmAssocie : bienImmAssocieList) {
+                                bienImmAssocie.setStatutBien("Loué");
+                                bienImmobilierService.setBienImmobilier(bienImmAssocie);
+                            }
+                        }
+                    }
+
+                    publicationService.desactiverPublication(contratVente.getDemandeAchat().getPublication().getId());
+                }
+            }
+        } else {
+            if (!personneService.estClient(roleCode)) {
+                paiement.setStatutPaiement("Effectué");
+
+                Notification notification1 = new Notification();
+                notification1.setTitre("Nouveau paiement");
+                notification1.setMessage("Un paiement vient d'être effectué pour la planification de paiement " + paiement.getPlanificationPaiement().getCodePlanification());
+                notification1.setSendTo(String.valueOf(paiement.getPlanificationPaiement().getContrat().getClient().getId()));
+                notification1.setDateNotification(new Date());
+                notification1.setLu(false);
+                notification1.setUrl("/paiement/" + paiement.getId());
+                notification1.setCreerPar(personne.getId());
+                notification1.setCreerLe(new Date());
+                notificationService.save(notification1);
+
+
+                List<Paiement> lastPaiements = dernierePaiement(paiement.getPlanificationPaiement().getContrat().getCodeContrat());
+
+                if (!lastPaiements.isEmpty()) {
+                    double montantTotal = 0;
+                    for (Paiement paiement1: lastPaiements) {
+                        montantTotal += paiement1.getMontant();
+                    }
+
+                    if (contratVente.getPrixVente().equals(montantTotal)) {
+                        contratVente.getBienImmobilier().setStatutBien("Vendu");
+                        bienImmobilierService.setBienImmobilier(contratVente.getBienImmobilier());
+
+                        if (typeDeBienService.isTypeBienSupport(contratVente.getBienImmobilier().getTypeDeBien().getDesignation())) {
+                            List<BienImmAssocie> bienImmAssocieList = bienImmAssocieService.getBiensAssocies(contratVente.getBienImmobilier());
+
+                            if (!bienImmAssocieList.isEmpty()) {
+                                for (BienImmAssocie bienImmAssocie : bienImmAssocieList) {
+                                    bienImmAssocie.setStatutBien("Vendu");
+                                    bienImmobilierService.setBienImmobilier(bienImmAssocie);
+                                }
+                            }
+                        }
+
+                        publicationService.desactiverPublication(contratVente.getDemandeAchat().getPublication().getId());
+
+                    }
+                } else {
+                    contratVente.getBienImmobilier().setStatutBien("Vendu");
+                    bienImmobilierService.setBienImmobilier(contratVente.getBienImmobilier());
+
+                    if (typeDeBienService.isTypeBienSupport(contratVente.getBienImmobilier().getTypeDeBien().getDesignation())) {
+                        List<BienImmAssocie> bienImmAssocieList = bienImmAssocieService.getBiensAssocies(contratVente.getBienImmobilier());
+
+                        if (!bienImmAssocieList.isEmpty()) {
+                            for (BienImmAssocie bienImmAssocie : bienImmAssocieList) {
+                                bienImmAssocie.setStatutBien("Loué");
+                                bienImmobilierService.setBienImmobilier(bienImmAssocie);
+                            }
+                        }
+                    }
+
+                    publicationService.desactiverPublication(contratVente.getDemandeAchat().getPublication().getId());
+                }
+            } else {
+                paiement.setStatutPaiement("En attente");
+
+                Notification notification1 = new Notification();
+                notification1.setTitre("Nouveau paiement");
+                notification1.setMessage("Un paiement vient d'être effectué pour la planification de paiement " + paiement.getPlanificationPaiement().getCodePlanification());
+                notification1.setSendTo(String.valueOf(paiement.getPlanificationPaiement().getContrat().getCreerPar()));
+                notification1.setDateNotification(new Date());
+                notification1.setLu(false);
+                notification1.setUrl("/paiement/" + paiement.getId());
                 notification1.setCreerPar(personne.getId());
                 notification1.setCreerLe(new Date());
                 notificationService.save(notification1);
             }
         }
 
-        if (paiement.getModePaiement().equals("Manuel") || paiement.getModePaiement().equals("Espèce")) {
+        paiement.setCodePaiement("PAIEME00" + paiement.getId());
+        return paiementRepository.save(paiement);
+    }
+
+    @Override
+    public Paiement savePaiementByClientIfStatutPaiementIsPending(Paiement paiement) {
+        paiement.setCodePaiement("PAIEME" + UUID.randomUUID());
+        paiement.setDatePaiement(new Date());
+        paiement.setStatutPaiement("En attente");
+        paiement.setCreerLe(new Date());
+        paiement.setCreerPar(paiement.getPlanificationPaiement().getContrat().getClient().getId());
+        paiement.setStatut(true);
+        paiement = paiementRepository.save(paiement);
+
+        if (paiement.getPlanificationPaiement().getContrat().getBienImmobilier().getEstDelegue()) {
+            Notification notification1 = new Notification();
+            notification1.setTitre("Nouveau paiement");
+            notification1.setMessage("Un paiement vient d'être effectué pour la planification de paiement " + paiement.getPlanificationPaiement().getCodePlanification());
+            notification1.setSendTo(String.valueOf(paiement.getPlanificationPaiement().getContrat().getProprietaire().getId()));
+            notification1.setDateNotification(new Date());
+            notification1.setLu(false);
+            notification1.setUrl("/paiement/" + paiement.getId());
+            notification1.setCreerPar(paiement.getPlanificationPaiement().getContrat().getClient().getId());
+            notification1.setCreerLe(new Date());
+            notificationService.save(notification1);
+
+            Notification notification2 = new Notification();
+            notification2.setTitre("Nouveau paiement");
+            notification2.setMessage("Un paiement vient d'être effectué pour la planification de paiement " + paiement.getPlanificationPaiement().getCodePlanification());
+            notification2.setSendTo(String.valueOf(paiement.getPlanificationPaiement().getContrat().getCreerPar()));
+            notification2.setDateNotification(new Date());
+            notification2.setLu(false);
+            notification2.setUrl("/paiement/" + paiement.getId());
+            notification2.setCreerPar(paiement.getPlanificationPaiement().getContrat().getClient().getId());
+            notification2.setCreerLe(new Date());
+            notificationService.save(notification2);
+        } else {
+            Notification notification1 = new Notification();
+            notification1.setTitre("Nouveau paiement");
+            notification1.setMessage("Un paiement vient d'être effectué pour la planification de paiement " + paiement.getPlanificationPaiement().getCodePlanification());
+            notification1.setSendTo(String.valueOf(paiement.getPlanificationPaiement().getContrat().getCreerPar()));
+            notification1.setDateNotification(new Date());
+            notification1.setLu(false);
+            notification1.setUrl("/paiement/" + paiement.getId());
+            notification1.setCreerPar(paiement.getPlanificationPaiement().getContrat().getClient().getId());
+            notification1.setCreerLe(new Date());
+            notificationService.save(notification1);
+        }
+
+        paiement.setCodePaiement("PAIEME00" + paiement.getId());
+        return paiementRepository.save(paiement);
+    }
+
+    @Override
+    public Paiement savePaiementLocationByClientIfStatutIsCompleted(Paiement paiement) {
+        paiement.setCodePaiement("PAIEME" + UUID.randomUUID());
+        paiement.setDatePaiement(new Date());
+        paiement.setCreerLe(new Date());
+        paiement.setCreerPar(paiement.getPlanificationPaiement().getContrat().getClient().getId());
+        paiement.setStatut(true);
+        paiement = paiementRepository.save(paiement);
+
+        ContratLocation contratLocation = contratLocationService.findById(paiement.getPlanificationPaiement().getContrat().getId());
+
+        if (paiement.getPlanificationPaiement().getContrat().getBienImmobilier().getEstDelegue()) {
+            paiement.setStatutPaiement("Effectué");
+
+            Notification notification1 = new Notification();
+            notification1.setTitre("Nouveau paiement");
+            notification1.setMessage("Un paiement vient d'être effectué pour la planification de paiement " + paiement.getPlanificationPaiement().getCodePlanification());
+            notification1.setSendTo(String.valueOf(paiement.getPlanificationPaiement().getContrat().getClient().getId()));
+            notification1.setDateNotification(new Date());
+            notification1.setLu(false);
+            notification1.setUrl("/paiement/" + paiement.getId());
+            notification1.setCreerPar(paiement.getPlanificationPaiement().getContrat().getClient().getId());
+            notification1.setCreerLe(new Date());
+            notificationService.save(notification1);
+
+            Notification notification2 = new Notification();
+            notification2.setTitre("Nouveau paiement");
+            notification2.setMessage("Un paiement vient d'être effectué pour la planification de paiement " + paiement.getPlanificationPaiement().getCodePlanification());
+            notification2.setSendTo(String.valueOf(paiement.getPlanificationPaiement().getContrat().getProprietaire().getId()));
+            notification2.setDateNotification(new Date());
+            notification2.setLu(false);
+            notification2.setUrl("/paiement/" + paiement.getId());
+            notification2.setCreerPar(paiement.getPlanificationPaiement().getContrat().getClient().getId());
+            notification2.setCreerLe(new Date());
+            notificationService.save(notification2);
+
+            if (paiement.getPlanificationPaiement().getLibelle().equals("Avance/Caution")) {
+                paiement.getPlanificationPaiement().getContrat().getBienImmobilier().setStatutBien("Loué");
+                bienImmobilierService.setBienImmobilier(paiement.getPlanificationPaiement().getContrat().getBienImmobilier());
+
+                if (typeDeBienService.isTypeBienSupport(paiement.getPlanificationPaiement().getContrat().getBienImmobilier().getTypeDeBien().getDesignation())) {
+                    List<BienImmAssocie> bienImmAssocieList = bienImmAssocieService.getBiensAssocies(paiement.getPlanificationPaiement().getContrat().getBienImmobilier());
+
+                    if (!bienImmAssocieList.isEmpty()) {
+                        for (BienImmAssocie bienImmAssocie : bienImmAssocieList) {
+                            bienImmAssocie.setStatutBien("Loué");
+                            bienImmobilierService.setBienImmobilier(bienImmAssocie);
+                        }
+                    }
+                }
+
+                publicationService.desactiverPublication(contratLocation.getDemandeLocation().getPublication().getId());
+            }
+
+            paiement.getPlanificationPaiement().setRestePaye(paiement.getPlanificationPaiement().getMontantDu() - paiement.getMontant());
+            paiement.getPlanificationPaiement().setStatutPlanification("Payé");
+            planificationPaiementService.setPlanificationPaiement(paiement.getPlanificationPaiement());
+
+            contratLocation.setEtatContrat("En cours");
+            contratLocationService.setEtatContrat(contratLocation);
+        } else {
+            paiement.setStatutPaiement("Effectué");
+
+            Notification notification1 = new Notification();
+            notification1.setTitre("Nouveau paiement");
+            notification1.setMessage("Un paiement vient d'être effectué pour la planification de paiement " + paiement.getPlanificationPaiement().getCodePlanification());
+            notification1.setSendTo(String.valueOf(paiement.getPlanificationPaiement().getContrat().getClient().getId()));
+            notification1.setDateNotification(new Date());
+            notification1.setLu(false);
+            notification1.setUrl("/paiement/" + paiement.getId());
+            notification1.setCreerPar(paiement.getPlanificationPaiement().getContrat().getClient().getId());
+            notification1.setCreerLe(new Date());
+            notificationService.save(notification1);
+
+            if (paiement.getPlanificationPaiement().getLibelle().equals("Avance/Caution")) {
+                paiement.getPlanificationPaiement().getContrat().getBienImmobilier().setStatutBien("Loué");
+                bienImmobilierService.setBienImmobilier(paiement.getPlanificationPaiement().getContrat().getBienImmobilier());
+
+                if (typeDeBienService.isTypeBienSupport(paiement.getPlanificationPaiement().getContrat().getBienImmobilier().getTypeDeBien().getDesignation())) {
+                    List<BienImmAssocie> bienImmAssocieList = bienImmAssocieService.getBiensAssocies(paiement.getPlanificationPaiement().getContrat().getBienImmobilier());
+
+                    if (!bienImmAssocieList.isEmpty()) {
+                        for (BienImmAssocie bienImmAssocie : bienImmAssocieList) {
+                            bienImmAssocie.setStatutBien("Loué");
+                            bienImmobilierService.setBienImmobilier(bienImmAssocie);
+                        }
+                    }
+                }
+
+                publicationService.desactiverPublication(contratLocation.getDemandeLocation().getPublication().getId());
+            }
+
+            paiement.getPlanificationPaiement().setRestePaye(paiement.getPlanificationPaiement().getMontantDu() - paiement.getMontant());
+            paiement.getPlanificationPaiement().setStatutPlanification("Payé");
+            planificationPaiementService.setPlanificationPaiement(paiement.getPlanificationPaiement());
+
+            contratLocation.setEtatContrat("En cours");
+            contratLocationService.setEtatContrat(contratLocation);
+        }
+
+        paiement.setCodePaiement("PAIEME00" + paiement.getId());
+        return paiementRepository.save(paiement);
+    }
+
+    @Override
+    public Paiement savePaiementAchatByClientIfStatutIsCompleted(Paiement paiement) {
+        paiement.setCodePaiement("PAIEME" + UUID.randomUUID());
+        paiement.setDatePaiement(new Date());
+        paiement.setCreerLe(new Date());
+        paiement.setCreerPar(paiement.getPlanificationPaiement().getContrat().getClient().getId());
+        paiement.setStatut(true);
+
+        paiement = paiementRepository.save(paiement);
+
+        ContratVente contratVente = contratVenteService.findById(paiement.getPlanificationPaiement().getContrat().getId());
+
+        if (paiement.getPlanificationPaiement().getContrat().getBienImmobilier().getEstDelegue()) {
+            paiement.setStatutPaiement("Effectué");
+            Notification notification1 = new Notification();
+            notification1.setTitre("Nouveau paiement");
+            notification1.setMessage("Un paiement vient d'être effectué pour la planification de paiement " + paiement.getPlanificationPaiement().getCodePlanification());
+            notification1.setSendTo(String.valueOf(paiement.getPlanificationPaiement().getContrat().getClient().getId()));
+            notification1.setDateNotification(new Date());
+            notification1.setLu(false);
+            notification1.setUrl("/paiement/" + paiement.getId());
+            notification1.setCreerPar(paiement.getPlanificationPaiement().getContrat().getClient().getId());
+            notification1.setCreerLe(new Date());
+            notificationService.save(notification1);
+
             List<Paiement> lastPaiements = dernierePaiement(paiement.getPlanificationPaiement().getContrat().getCodeContrat());
 
             if (!lastPaiements.isEmpty()) {
@@ -218,33 +659,317 @@ public class PaiementServiceImpl implements PaiementService {
                     contratVente.getBienImmobilier().setStatutBien("Vendu");
                     bienImmobilierService.setBienImmobilier(contratVente.getBienImmobilier());
 
-                    publicationService.desactiverPublicationParBienImmobilier(contratVente.getBienImmobilier().getId());
+                    if (typeDeBienService.isTypeBienSupport(contratVente.getBienImmobilier().getTypeDeBien().getDesignation())) {
+                        List<BienImmAssocie> bienImmAssocieList = bienImmAssocieService.getBiensAssocies(contratVente.getBienImmobilier());
+
+                        if (!bienImmAssocieList.isEmpty()) {
+                            for (BienImmAssocie bienImmAssocie : bienImmAssocieList) {
+                                bienImmAssocie.setStatutBien("Vendu");
+                                bienImmobilierService.setBienImmobilier(bienImmAssocie);
+                            }
+                        }
+                    }
+
+                    publicationService.desactiverPublication(contratVente.getDemandeAchat().getPublication().getId());
 
                 }
             } else {
                 contratVente.getBienImmobilier().setStatutBien("Vendu");
                 bienImmobilierService.setBienImmobilier(contratVente.getBienImmobilier());
 
-                publicationService.desactiverPublicationParBienImmobilier(contratVente.getBienImmobilier().getId());
+                if (typeDeBienService.isTypeBienSupport(contratVente.getBienImmobilier().getTypeDeBien().getDesignation())) {
+                    List<BienImmAssocie> bienImmAssocieList = bienImmAssocieService.getBiensAssocies(contratVente.getBienImmobilier());
+
+                    if (!bienImmAssocieList.isEmpty()) {
+                        for (BienImmAssocie bienImmAssocie : bienImmAssocieList) {
+                            bienImmAssocie.setStatutBien("Loué");
+                            bienImmobilierService.setBienImmobilier(bienImmAssocie);
+                        }
+                    }
+                }
+
+                publicationService.desactiverPublication(contratVente.getDemandeAchat().getPublication().getId());
             }
         } else {
+            paiement.setStatutPaiement("Effectué");
 
+            Notification notification1 = new Notification();
+            notification1.setTitre("Nouveau paiement");
+            notification1.setMessage("Un paiement vient d'être effectué pour la planification de paiement " + paiement.getPlanificationPaiement().getCodePlanification());
+            notification1.setSendTo(String.valueOf(paiement.getPlanificationPaiement().getContrat().getClient().getId()));
+            notification1.setDateNotification(new Date());
+            notification1.setLu(false);
+            notification1.setUrl("/paiement/" + paiement.getId());
+            notification1.setCreerPar(paiement.getPlanificationPaiement().getContrat().getClient().getId());
+            notification1.setCreerLe(new Date());
+            notificationService.save(notification1);
+
+
+            List<Paiement> lastPaiements = dernierePaiement(paiement.getPlanificationPaiement().getContrat().getCodeContrat());
+
+            if (!lastPaiements.isEmpty()) {
+                double montantTotal = 0;
+                for (Paiement paiement1: lastPaiements) {
+                    montantTotal += paiement1.getMontant();
+                }
+
+                if (contratVente.getPrixVente().equals(montantTotal)) {
+                    contratVente.getBienImmobilier().setStatutBien("Vendu");
+                    bienImmobilierService.setBienImmobilier(contratVente.getBienImmobilier());
+
+                    if (typeDeBienService.isTypeBienSupport(contratVente.getBienImmobilier().getTypeDeBien().getDesignation())) {
+                        List<BienImmAssocie> bienImmAssocieList = bienImmAssocieService.getBiensAssocies(contratVente.getBienImmobilier());
+
+                        if (!bienImmAssocieList.isEmpty()) {
+                            for (BienImmAssocie bienImmAssocie : bienImmAssocieList) {
+                                bienImmAssocie.setStatutBien("Vendu");
+                                bienImmobilierService.setBienImmobilier(bienImmAssocie);
+                            }
+                        }
+                    }
+
+                    publicationService.desactiverPublication(contratVente.getDemandeAchat().getPublication().getId());
+
+                }
+            } else {
+                contratVente.getBienImmobilier().setStatutBien("Vendu");
+                bienImmobilierService.setBienImmobilier(contratVente.getBienImmobilier());
+
+                if (typeDeBienService.isTypeBienSupport(contratVente.getBienImmobilier().getTypeDeBien().getDesignation())) {
+                    List<BienImmAssocie> bienImmAssocieList = bienImmAssocieService.getBiensAssocies(contratVente.getBienImmobilier());
+
+                    if (!bienImmAssocieList.isEmpty()) {
+                        for (BienImmAssocie bienImmAssocie : bienImmAssocieList) {
+                            bienImmAssocie.setStatutBien("Loué");
+                            bienImmobilierService.setBienImmobilier(bienImmAssocie);
+                        }
+                    }
+                }
+
+                publicationService.desactiverPublication(contratVente.getDemandeAchat().getPublication().getId());
+            }
         }
-
-        paiement.getPlanificationPaiement().setStatutPlanification("Payé");
-        planificationPaiementService.setStatutPlanification(paiement.getPlanificationPaiement());
-
-        paiement.getPlanificationPaiement().getContrat().setEtatContrat("Confirmé");
-        contratVenteService.setEtatContrat((ContratVente) paiement.getPlanificationPaiement().getContrat());
 
         paiement.setCodePaiement("PAIEME00" + paiement.getId());
         return paiementRepository.save(paiement);
     }
 
     @Override
+    public void savePaiementIsCompleted(Long id) {
+        Paiement paiement = paiementRepository.findById(id).orElse(null);
+
+        assert paiement != null;
+        paiement.setStatutPaiement("Effectué");
+        ContratLocation contratLocation = contratLocationService.findById(paiement.getPlanificationPaiement().getContrat().getId());
+        ContratVente contratVente = contratVenteService.findById(paiement.getPlanificationPaiement().getContrat().getId());
+
+        Notification notification = new Notification();
+        notification.setTitre("Validation d'un paiement");
+        notification.setMessage("Votre paiement de " + paiement.getPlanificationPaiement().getTypePlanification() + " " + paiement.getCodePaiement() + " a été validé.");
+        notification.setSendTo(String.valueOf(paiement.getPlanificationPaiement().getContrat().getClient().getId()));
+        notification.setDateNotification(new Date());
+        notification.setLu(false);
+        notification.setUrl("/paiement/" + paiement.getId());
+        notification.setCreerPar(paiement.getPlanificationPaiement().getContrat().getClient().getId());
+        notification.setCreerLe(new Date());
+        notificationService.save(notification);
+
+        if (contratLocation != null) {
+            if (paiement.getPlanificationPaiement().getLibelle().equals("Avance/Caution")) {
+                paiement.getPlanificationPaiement().getContrat().getBienImmobilier().setStatutBien("Loué");
+                bienImmobilierService.setBienImmobilier(paiement.getPlanificationPaiement().getContrat().getBienImmobilier());
+
+                if (typeDeBienService.isTypeBienSupport(paiement.getPlanificationPaiement().getContrat().getBienImmobilier().getTypeDeBien().getDesignation())) {
+                    List<BienImmAssocie> bienImmAssocieList = bienImmAssocieService.getBiensAssocies(paiement.getPlanificationPaiement().getContrat().getBienImmobilier());
+
+                    if (!bienImmAssocieList.isEmpty()) {
+                        for (BienImmAssocie bienImmAssocie : bienImmAssocieList) {
+                            bienImmAssocie.setStatutBien("Loué");
+                            bienImmobilierService.setBienImmobilier(bienImmAssocie);
+                        }
+                    }
+                }
+
+                publicationService.desactiverPublication(contratLocation.getDemandeLocation().getPublication().getId());
+            }
+
+            paiement.getPlanificationPaiement().setRestePaye(paiement.getPlanificationPaiement().getMontantDu() - paiement.getMontant());
+            paiement.getPlanificationPaiement().setStatutPlanification("Payé");
+            planificationPaiementService.setPlanificationPaiement(paiement.getPlanificationPaiement());
+
+            contratLocation.setEtatContrat("En cours");
+            contratLocationService.setEtatContrat(contratLocation);
+        } else {
+            List<Paiement> lastPaiements = dernierePaiement(paiement.getPlanificationPaiement().getContrat().getCodeContrat());
+
+            if (!lastPaiements.isEmpty()) {
+                double montantTotal = 0;
+                for (Paiement paiement1: lastPaiements) {
+                    montantTotal += paiement1.getMontant();
+                }
+
+                if (contratVente.getPrixVente().equals(montantTotal)) {
+                    contratVente.getBienImmobilier().setStatutBien("Vendu");
+                    bienImmobilierService.setBienImmobilier(contratVente.getBienImmobilier());
+
+                    if (typeDeBienService.isTypeBienSupport(contratVente.getBienImmobilier().getTypeDeBien().getDesignation())) {
+                        List<BienImmAssocie> bienImmAssocieList = bienImmAssocieService.getBiensAssocies(contratVente.getBienImmobilier());
+
+                        if (!bienImmAssocieList.isEmpty()) {
+                            for (BienImmAssocie bienImmAssocie : bienImmAssocieList) {
+                                bienImmAssocie.setStatutBien("Vendu");
+                                bienImmobilierService.setBienImmobilier(bienImmAssocie);
+                            }
+                        }
+                    }
+
+                    publicationService.desactiverPublication(contratVente.getDemandeAchat().getPublication().getId());
+
+                    paiement.getPlanificationPaiement().setStatutPlanification("Payé");
+                    planificationPaiementService.setPlanificationPaiement(paiement.getPlanificationPaiement());
+
+                    contratVente.setEtatContrat("Confirmé");
+                    contratVenteService.setEtatContrat(contratVente);
+
+                }
+            } else {
+                contratVente.getBienImmobilier().setStatutBien("Vendu");
+                bienImmobilierService.setBienImmobilier(contratVente.getBienImmobilier());
+
+                if (typeDeBienService.isTypeBienSupport(contratVente.getBienImmobilier().getTypeDeBien().getDesignation())) {
+                    List<BienImmAssocie> bienImmAssocieList = bienImmAssocieService.getBiensAssocies(contratVente.getBienImmobilier());
+
+                    if (!bienImmAssocieList.isEmpty()) {
+                        for (BienImmAssocie bienImmAssocie : bienImmAssocieList) {
+                            bienImmAssocie.setStatutBien("Loué");
+                            bienImmobilierService.setBienImmobilier(bienImmAssocie);
+                        }
+                    }
+                }
+
+                publicationService.desactiverPublication(contratVente.getDemandeAchat().getPublication().getId());
+
+                paiement.getPlanificationPaiement().setStatutPlanification("Payé");
+                planificationPaiementService.setPlanificationPaiement(paiement.getPlanificationPaiement());
+
+                contratVente.setEtatContrat("Confirmé");
+                contratVenteService.setEtatContrat(contratVente);
+            }
+        }
+        paiementRepository.save(paiement);
+    }
+
+    @Override
+    public void validerPaiement(Long id, Principal principal) {
+        Personne personne = personneService.findByUsername(principal.getName());
+
+        Paiement paiement = paiementRepository.findById(id).orElse(null);
+
+        assert paiement != null;
+        paiement.setStatutPaiement("Effectué");
+        ContratLocation contratLocation = contratLocationService.findById(paiement.getPlanificationPaiement().getContrat().getId());
+        ContratVente contratVente = contratVenteService.findById(paiement.getPlanificationPaiement().getContrat().getId());
+
+        Notification notification = new Notification();
+        notification.setTitre("Validation d'un paiement");
+        notification.setMessage("Votre paiement de " + paiement.getPlanificationPaiement().getTypePlanification() + " " + paiement.getCodePaiement() + " a été validé.");
+        notification.setSendTo(String.valueOf(paiement.getPlanificationPaiement().getContrat().getClient().getId()));
+        notification.setDateNotification(new Date());
+        notification.setLu(false);
+        notification.setUrl("/paiements/" + paiement.getId());
+        notification.setCreerPar(personne.getId());
+        notification.setCreerLe(new Date());
+        notificationService.save(notification);
+
+        if (contratLocation != null) {
+            if (paiement.getPlanificationPaiement().getLibelle().equals("Avance/Caution")) {
+                paiement.getPlanificationPaiement().getContrat().getBienImmobilier().setStatutBien("Loué");
+                bienImmobilierService.setBienImmobilier(paiement.getPlanificationPaiement().getContrat().getBienImmobilier());
+
+                if (typeDeBienService.isTypeBienSupport(paiement.getPlanificationPaiement().getContrat().getBienImmobilier().getTypeDeBien().getDesignation())) {
+                    List<BienImmAssocie> bienImmAssocieList = bienImmAssocieService.getBiensAssocies(paiement.getPlanificationPaiement().getContrat().getBienImmobilier());
+
+                    if (!bienImmAssocieList.isEmpty()) {
+                        for (BienImmAssocie bienImmAssocie : bienImmAssocieList) {
+                            bienImmAssocie.setStatutBien("Loué");
+                            bienImmobilierService.setBienImmobilier(bienImmAssocie);
+                        }
+                    }
+                }
+
+                publicationService.desactiverPublication(contratLocation.getDemandeLocation().getPublication().getId());
+            }
+
+            paiement.getPlanificationPaiement().setRestePaye(paiement.getPlanificationPaiement().getMontantDu() - paiement.getMontant());
+            paiement.getPlanificationPaiement().setStatutPlanification("Payé");
+            planificationPaiementService.setPlanificationPaiement(paiement.getPlanificationPaiement());
+
+            contratLocation.setEtatContrat("En cours");
+            contratLocationService.setEtatContrat(contratLocation);
+        } else {
+            List<Paiement> lastPaiements = dernierePaiement(paiement.getPlanificationPaiement().getContrat().getCodeContrat());
+
+            if (!lastPaiements.isEmpty()) {
+                double montantTotal = 0;
+                for (Paiement paiement1: lastPaiements) {
+                    montantTotal += paiement1.getMontant();
+                }
+
+                if (contratVente.getPrixVente().equals(montantTotal)) {
+                    contratVente.getBienImmobilier().setStatutBien("Vendu");
+                    bienImmobilierService.setBienImmobilier(contratVente.getBienImmobilier());
+
+                    if (typeDeBienService.isTypeBienSupport(contratVente.getBienImmobilier().getTypeDeBien().getDesignation())) {
+                        List<BienImmAssocie> bienImmAssocieList = bienImmAssocieService.getBiensAssocies(contratVente.getBienImmobilier());
+
+                        if (!bienImmAssocieList.isEmpty()) {
+                            for (BienImmAssocie bienImmAssocie : bienImmAssocieList) {
+                                bienImmAssocie.setStatutBien("Vendu");
+                                bienImmobilierService.setBienImmobilier(bienImmAssocie);
+                            }
+                        }
+                    }
+
+                    publicationService.desactiverPublication(contratVente.getDemandeAchat().getPublication().getId());
+
+                    paiement.getPlanificationPaiement().setStatutPlanification("Payé");
+                    planificationPaiementService.setPlanificationPaiement(paiement.getPlanificationPaiement());
+
+                    contratVente.setEtatContrat("Confirmé");
+                    contratVenteService.setEtatContrat(contratVente);
+
+                }
+            } else {
+                contratVente.getBienImmobilier().setStatutBien("Vendu");
+                bienImmobilierService.setBienImmobilier(contratVente.getBienImmobilier());
+
+                if (typeDeBienService.isTypeBienSupport(contratVente.getBienImmobilier().getTypeDeBien().getDesignation())) {
+                    List<BienImmAssocie> bienImmAssocieList = bienImmAssocieService.getBiensAssocies(contratVente.getBienImmobilier());
+
+                    if (!bienImmAssocieList.isEmpty()) {
+                        for (BienImmAssocie bienImmAssocie : bienImmAssocieList) {
+                            bienImmAssocie.setStatutBien("Loué");
+                            bienImmobilierService.setBienImmobilier(bienImmAssocie);
+                        }
+                    }
+                }
+
+                publicationService.desactiverPublication(contratVente.getDemandeAchat().getPublication().getId());
+
+                paiement.getPlanificationPaiement().setStatutPlanification("Payé");
+                planificationPaiementService.setPlanificationPaiement(paiement.getPlanificationPaiement());
+
+                contratVente.setEtatContrat("Confirmé");
+                contratVenteService.setEtatContrat(contratVente);
+            }
+        }
+    }
+
+    @Override
     public byte[] generatePdf(Long id) throws IOException {
         Paiement paiement = paiementRepository.findById(id).orElse(null);
 
+        assert paiement != null;
         if (paiement.getPlanificationPaiement().getTypePlanification().equals("Paiement de location")) {
             return this.generatePaiementLocationPdf(paiement.getId());
         } else {
@@ -331,22 +1056,22 @@ public class PaiementServiceImpl implements PaiementService {
         detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph(paiement.getCodePaiement()), false));
         detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph(paiement.getModePaiement()), false));
 
-        if (paiement.getModePaiement().equals("Manuel")) {
-            detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph("Numero compte de paiement"), true));
-            detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph("Référence de la transaction"), true));
-            detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph(paiement.getNumeroComptePaiement()), false));
-            detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph(paiement.getReferenceTransaction()), false));
-        }
+//        if (paiement.getModePaiement().equals("Manuel")) {
+//            detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph("Numero compte de paiement"), true));
+//            detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph("Référence de la transaction"), true));
+//            detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph(paiement.getNumeroComptePaiement()), false));
+//            detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph(paiement.getReferenceTransaction()), false));
+//        }
 
         detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph("Libelle").setMarginTop(10), true));
         detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph("Montant dû").setMarginTop(10), true));
         detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph(paiement.getPlanificationPaiement().getLibelle()), false));
-        detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph(String.valueOf(paiement.getPlanificationPaiement().getMontantDu()) + " FCFA"), false));
+        detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph(String.format("%.0f", paiement.getPlanificationPaiement().getMontantDu()) + " FCFA"), false));
 
         detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph("Montant payé").setMarginTop(10), true));
         detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph("Montant restant").setMarginTop(10), true));
-        detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph(String.valueOf(paiement.getMontant()) + " FCFA"), false));
-        detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph(String.valueOf(paiement.getPlanificationPaiement().getRestePaye()) + " FCFA"), false));
+        detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph(String.format("%.0f", paiement.getMontant()) + " FCFA"), false));
+        detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph(String.format("%.0f", paiement.getPlanificationPaiement().getRestePaye()) + " FCFA"), false));
 
         document.add(detailPaiementTwoColumn);
 
@@ -575,22 +1300,22 @@ public class PaiementServiceImpl implements PaiementService {
         detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph(paiement.getCodePaiement()), false));
         detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph(paiement.getModePaiement()), false));
 
-        if (paiement.getModePaiement().equals("Manuel")) {
-            detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph("Numero compte de paiement"), true));
-            detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph("Référence de la transaction"), true));
-            detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph(paiement.getNumeroComptePaiement()), false));
-            detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph(paiement.getReferenceTransaction()), false));
-        }
+//        if (paiement.getModePaiement().equals("Manuel")) {
+//            detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph("Numero compte de paiement"), true));
+//            detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph("Référence de la transaction"), true));
+//            detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph(paiement.getNumeroComptePaiement()), false));
+//            detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph(paiement.getReferenceTransaction()), false));
+//        }
 
         detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph("Libelle").setMarginTop(10), true));
         detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph("Montant dû").setMarginTop(10), true));
         detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph(paiement.getPlanificationPaiement().getLibelle()), false));
-        detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph(String.valueOf(paiement.getPlanificationPaiement().getMontantDu()) + " FCFA"), false));
+        detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph(String.format("%.0f", paiement.getPlanificationPaiement().getMontantDu()) + " FCFA"), false));
 
         detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph("Montant payé").setMarginTop(10), true));
         detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph("Montant restant").setMarginTop(10), true));
-        detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph(String.valueOf(paiement.getMontant()) + " FCFA"), false));
-        detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph(String.valueOf(paiement.getPlanificationPaiement().getRestePaye()) + " FCFA"), false));
+        detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph(String.format("%.0f", paiement.getMontant()) + " FCFA"), false));
+        detailPaiementTwoColumn.addCell(getCell10fLeft(new Paragraph(String.format("%.0f", paiement.getPlanificationPaiement().getRestePaye()) + " FCFA"), false));
 
         document.add(detailPaiementTwoColumn);
 
@@ -775,5 +1500,43 @@ public class PaiementServiceImpl implements PaiementService {
                 contrat.getBienImmobilier().getTypeDeBien().getDesignation().equals("Chambre salon") ||
                 contrat.getBienImmobilier().getTypeDeBien().getDesignation().equals("Chambre") ||
                 contrat.getBienImmobilier().getTypeDeBien().getDesignation().equals("Bureau");
+    }
+
+    @Override
+    public String enregistrerPreuve(MultipartFile file) {
+        String nomPreuve = null;
+        try {
+            String repertoireImage = "src/main/resources/preuves";
+            File repertoire = creerRepertoire(repertoireImage);
+            String preuve = file.getOriginalFilename();
+            nomPreuve = FilenameUtils.getBaseName(preuve) + "." + FilenameUtils.getExtension(preuve);
+            File ressourceImage = new File(repertoire, nomPreuve);
+            FileUtils.writeByteArrayToFile(ressourceImage, file.getBytes());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return nomPreuve;
+    }
+
+    private File creerRepertoire(String repertoireLogo) {
+        File repertoire = new File(repertoireLogo);
+        if (!repertoire.exists()) {
+            boolean repertoireCree = repertoire.mkdirs();
+            if (!repertoireCree) {
+                throw new RuntimeException("Impossible de créer ce répertoire.");
+            }
+        }
+        return repertoire;
+    }
+
+    @Override
+    public String construireCheminFichier(Paiement paiement) {
+        String repertoireFichier = "src/main/resources/preuves";
+        return repertoireFichier + "/" + paiement.getPreuve();
+    }
+
+    @Override
+    public void setPaiement(Paiement paiement) {
+        paiementRepository.save(paiement);
     }
 }

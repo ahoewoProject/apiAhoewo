@@ -1,7 +1,7 @@
 package com.memoire.apiAhoewo.controllers.gestionDesLocationsEtVentes;
 
 import com.itextpdf.io.exceptions.IOException;
-import com.memoire.apiAhoewo.dto.MotifRejetForm;
+import com.memoire.apiAhoewo.dto.MotifForm;
 import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.BienImmAssocie;
 import com.memoire.apiAhoewo.models.gestionDesLocationsEtVentes.ContratVente;
 import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.BienImmobilierAssocieService;
@@ -87,6 +87,18 @@ public class ContratVenteController {
         return contratVente;
     }
 
+    @RequestMapping(value = "/contrat-vente/code-contrat/{codeContrat}", method = RequestMethod.GET)
+    public ContratVente findByCodeContrat(@PathVariable String codeContrat) {
+
+        ContratVente contratVente = new ContratVente();
+        try {
+            contratVente = this.contratVenteService.findByCodeContrat(codeContrat);
+        } catch (Exception e) {
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return contratVente;
+    }
+
     @RequestMapping(value = "/contrat-vente/ajouter", method = RequestMethod.POST)
     public ResponseEntity<?> ajouterContratVente(Principal principal, @RequestBody ContratVente contratVente) {
         try {
@@ -147,12 +159,12 @@ public class ContratVenteController {
     }
 
     @RequestMapping(value = "/contrat-vente/demande-modification/{id}", method = RequestMethod.POST, headers = "accept=Application/json")
-    public void demandeModificationContratVente(@PathVariable Long id, @RequestBody MotifRejetForm motifRejetForm, Principal principal) {
+    public void demandeModificationContratVente(@PathVariable Long id, @RequestBody MotifForm motifRejetForm, Principal principal) {
         this.contratVenteService.demandeModification(principal, id, motifRejetForm);
     }
 
     @RequestMapping(value = "/contrat-vente/refuser/{id}", method = RequestMethod.POST, headers = "accept=Application/json")
-    public void refuserContratVente(@PathVariable Long id, @RequestBody MotifRejetForm motifRejetForm, Principal principal) {
+    public void refuserContratVente(@PathVariable Long id, @RequestBody MotifForm motifRejetForm, Principal principal) {
         this.contratVenteService.refuser(principal, id, motifRejetForm);
     }
 

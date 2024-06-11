@@ -13,6 +13,12 @@ public interface NotificationService {
 
     public List<Notification> getNotificationsNonLuesByOwner(Principal principal);
 
+    public List<Notification> getNotificationsListByAdmin();
+
+    public List<Notification> getNotificationsListByNotaire();
+
+    public List<Notification> getNotificationsListByOwner(Principal principal);
+
     public Page<Notification> getNotificationsByAdmin(int numeroDeLaPage, int elementsParPage);
 
     public Page<Notification> getNotificationsByNotaire(int numeroDeLaPage, int elementsParPage);

@@ -33,8 +33,46 @@ public class AffectationAgentAgenceServiceImpl implements AffectationAgentAgence
     private AgentImmobilierService agentImmobilierService;
 
     @Override
-    public List<AffectationAgentAgence> getAll() {
-        return affectationAgentAgenceRepository.findAll();
+    public Page<AffectationAgentAgence> getAffectationsAgentAgencePage(Principal principal, int numeroDeLaPage, int elementsParPage) {
+        Personne personne = personneService.findByUsername(principal.getName());
+        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
+
+        String roleCode = personne.getRole().getCode();
+
+        if (personneService.estResponsable(roleCode)) {
+            List<AffectationResponsableAgence> affectationResponsableAgences =
+                    affectationResponsableAgenceRepository.findByResponsableAgenceImmobiliere((ResponsableAgenceImmobiliere) personne);
+
+            List<AgenceImmobiliere> agenceImmobilieres = affectationResponsableAgences.stream()
+                    .map(AffectationResponsableAgence::getAgenceImmobiliere)
+                    .collect(Collectors.toList());
+
+            return affectationAgentAgenceRepository.findByAgenceImmobiliereInOrderByIdDesc(agenceImmobilieres, pageRequest);
+        } else if (personneService.estAgentImmobilier(roleCode)) {
+            return affectationAgentAgenceRepository.findByAgentImmobilierOrderByIdDesc((AgentImmobilier) personne, pageRequest);
+        }
+        return null;
+    }
+
+    @Override
+    public List<AffectationAgentAgence> getAffectationsAgentAgenceList(Principal principal) {
+        Personne personne = personneService.findByUsername(principal.getName());
+
+        String roleCode = personne.getRole().getCode();
+
+        if (personneService.estResponsable(roleCode)) {
+            List<AffectationResponsableAgence> affectationResponsableAgences =
+                    affectationResponsableAgenceRepository.findByResponsableAgenceImmobiliere((ResponsableAgenceImmobiliere) personne);
+
+            List<AgenceImmobiliere> agenceImmobilieres = affectationResponsableAgences.stream()
+                    .map(AffectationResponsableAgence::getAgenceImmobiliere)
+                    .collect(Collectors.toList());
+
+            return affectationAgentAgenceRepository.findByAgenceImmobiliereInOrderByIdDesc(agenceImmobilieres);
+        } else if (personneService.estAgentImmobilier(roleCode)) {
+            return affectationAgentAgenceRepository.findByAgentImmobilierOrderByIdDesc((AgentImmobilier) personne);
+        }
+        return null;
     }
 
     @Override
@@ -49,33 +87,20 @@ public class AffectationAgentAgenceServiceImpl implements AffectationAgentAgence
                 .map(AffectationResponsableAgence::getAgenceImmobiliere)
                 .collect(Collectors.toList());
 
-        return affectationAgentAgenceRepository.findByAgenceImmobiliereIn(agenceImmobilieres);
+        return affectationAgentAgenceRepository.findByAgenceImmobiliereInOrderByIdDesc(agenceImmobilieres);
     }
 
     @Override
     public List<AffectationResponsableAgence> getAgencesByAgent(Principal principal) {
         AgentImmobilier agentImmobilier = (AgentImmobilier) personneService.findByUsername(principal.getName());
 
-        List<AffectationAgentAgence> agentAgences =  affectationAgentAgenceRepository.findByAgentImmobilier(agentImmobilier);
+        List<AffectationAgentAgence> agentAgences =  affectationAgentAgenceRepository.findByAgentImmobilierOrderByIdDesc(agentImmobilier);
 
         List<AgenceImmobiliere> agenceImmobilieres = agentAgences.stream()
                 .map(AffectationAgentAgence::getAgenceImmobiliere)
                 .collect(Collectors.toList());
 
-        return  affectationResponsableAgenceRepository.findByAgenceImmobiliereIn(agenceImmobilieres);
-    }
-
-    @Override
-    public Page<AffectationResponsableAgence> getAgencesByAgentPaginees(Principal principal, int numeroDeLaPage, int elementsParPage) {
-        AgentImmobilier agentImmobilier = (AgentImmobilier) personneService.findByUsername(principal.getName());
-        PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
-        List<AffectationAgentAgence> agentAgences =  affectationAgentAgenceRepository.findByAgentImmobilier(agentImmobilier);
-
-        List<AgenceImmobiliere> agenceImmobilieres = agentAgences.stream()
-                .map(AffectationAgentAgence::getAgenceImmobiliere)
-                .collect(Collectors.toList());
-
-        return affectationResponsableAgenceRepository.findAllByAgenceImmobiliereInOrderByCreerLeDesc(agenceImmobilieres, pageRequest);
+        return  affectationResponsableAgenceRepository.findByAgenceImmobiliereInOrderByIdDesc(agenceImmobilieres);
     }
 
     @Override

@@ -20,6 +20,8 @@ public interface ContratVenteRepository extends JpaRepository<ContratVente, Long
 
     List<ContratVente> findByEtatContrat(String etatContrat);
 
+    ContratVente findByCodeContrat(String codeContrat);
+
     boolean existsByDemandeAchat(DemandeAchat demandeAchat);
 
     boolean existsByBienImmobilierAndEtatContrat(BienImmobilier bienImmobilier, String etatContrat);

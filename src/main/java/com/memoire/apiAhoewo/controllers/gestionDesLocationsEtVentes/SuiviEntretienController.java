@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -41,6 +43,19 @@ public class SuiviEntretienController {
             System.out.println("Erreur " + e.getMessage());
             throw new RuntimeException("Une erreur s'est produite lors de la récupération des suivis d'entretiens .", e);
         }
+    }
+
+    @RequestMapping(value = "/suivis-entretiens-list", method = RequestMethod.GET)
+    public List<SuiviEntretien> getSuivisEntretiensList(Principal principal) {
+
+        List<SuiviEntretien> suiviEntretienList = new ArrayList<>();
+        try {
+            suiviEntretienList = this.suiviEntretienService.getSuivisEntretiens(principal);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return suiviEntretienList;
     }
 
     @RequestMapping(value = "/suivi-entretien/{id}", method = RequestMethod.GET)

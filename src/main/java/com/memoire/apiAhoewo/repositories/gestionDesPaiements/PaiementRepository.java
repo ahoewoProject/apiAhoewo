@@ -13,11 +13,19 @@ import java.util.List;
 public interface PaiementRepository extends JpaRepository<Paiement, Long> {
     Page<Paiement> findByPlanificationPaiementInOrderByIdDesc(List<PlanificationPaiement> planificationPaiementList, Pageable pageable);
 
+    List<Paiement> findByPlanificationPaiementInOrderByIdDesc(List<PlanificationPaiement> planificationPaiementList);
+
     List<Paiement> findByPlanificationPaiement_Contrat_CodeContrat(String codeContrat);
 
-    Page<Paiement> findByPlanificationPaiement_CodePlanificationOrderByIdDesc(String codePlanification, Pageable pageable);
+    List<Paiement> findByStatutPaiementAndPayoutBatchIdIsNotNull(String statutPaiement);
+
+    Page<Paiement> findByPlanificationPaiement_Contrat_CodeContratOrderByIdDesc(String codePlanification, Pageable pageable);
 
     Paiement findByPlanificationPaiement_Contrat_Id(Long id);
 
     Paiement findByPlanificationPaiement_CodePlanification(String codePlanification);
+
+    Paiement findByPayoutBatchId(String payoutBatchId);
+
+    List<Paiement> findByModePaiementAndStatutPaiementOrderByIdDesc(String modePaiement, String statutPaiement);
 }

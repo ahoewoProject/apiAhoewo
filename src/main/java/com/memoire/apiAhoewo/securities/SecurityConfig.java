@@ -12,9 +12,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +26,6 @@ import java.util.Map;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
     protected void configure(HttpSecurity http) throws Exception{
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean());
         customAuthenticationFilter.setFilterProcessesUrl("/api/login");
@@ -31,50 +34,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //http.authorizeRequests()
              //   .anyRequest().permitAll();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        http.authorizeRequests().antMatchers("/api/register/**",
-                "/api/login/**",
-                "/api/refresh-token/**",
-                "/api/roles/**",
-                "/api/request-reset-password",
-                "/api/reset-password",
-                "/api/cni/demande-certification/{id}/**",
-                "/api/carte-cfe/demande-certification/{id}/**",
-                "/api/logo/agence-immobiliere/{id}/**",
-                "/api/image/bien-immobilier/{id}/**",
-                "/api/images/bien-immobilier/{id}/**",
-                "/api/premiere-image/bien-immobilier/{id}/**",
-                "/api/caracteristiques/bien-immobilier/{id}/**",
-                "/api/types-de-bien/location/**",
-                "/api/types-de-bien/vente/**",
-                "/api/types-de-bien/actifs/**",
-                "/api/pays/actifs/**",
-                "/api/regions/actifs/**",
-                "/api/villes/actifs/**",
-                "/api/quartiers/actifs/**",
-                "/api/regions/pays/{id}/**",
-                "/api/villes/region/{id}/**",
-                "/api/quartiers/ville/{id}/**",
-                "/api/agences-immobilieres/actives/**",
-                "/api/agence/{nomAgence}/**",
-                "/api/services/agence/{nomAgence}/**",
-                "/api/agences/actives/region/{id}/**",
-                "/api/agences/actives/ville/{id}/**",
-                "/api/agences/actives/quartier/{id}/**",
-                "/api/publications/actives/**",
-                "/api/publications/actives/vente/**",
-                "/api/publications/actives/location/**",
-                "/api/publications/actives/recherche-simple/**",
-                "/api/publications/actives/recherche-avancee/**",
-                "/api/publications/actives/region/{libelle}/**",
-                "/api/publications/actives/type-de-bien/{designation}/**",
-                "/api/publications/actives/region-list/**",
-                "/api/publications/actives/type-de-bien-list/**",
-                "/api/publication/{id}/**",
-                "/api/publication/code/{code}/**",
-                "/api/contrat-location/generer-pdf/{id}/**",
-                "/api/contrat-vente/generer-pdf/{id}/**",
-                "/api/paiement/generer-pdf/{id}/**",
-                "/api/contactez-nous/**").permitAll();
+        http.authorizeRequests().antMatchers(SecurityConfigUrls.PERMIT_ALL_URLS).permitAll();
         //http.authorizeRequests().antMatchers(GET,"/api/user/**").hasAnyAuthority("ROLE_USER");
         //http.authorizeRequests().antMatchers(POST,"/api/user/save/**").hasAnyAuthority("ROLE_ADMIN");
         http.authorizeRequests().anyRequest().authenticated();
@@ -98,5 +58,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception{
         return super.authenticationManagerBean();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:56650", "http://localhost:4200", "http://localhost:4040"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

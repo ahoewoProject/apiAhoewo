@@ -156,15 +156,17 @@ public class PublicationServiceImpl implements PublicationService {
         Personne personne = personneService.findByUsername(principal.getName());
         List<BienImmobilier> bienImmobilierList = new ArrayList<>();
 
-        if (personne.getRole().getCode().equals("ROLE_PROPRIETAIRE")) {
+        String roleCode = personne.getRole().getCode();
+
+        if (personneService.estProprietaire(roleCode)) {
             bienImmobilierList = bienImmobilierRepository.findByPersonne(personne);
-        } else if (personne.getRole().getCode().equals("ROLE_GERANT")) {
+        } else if (personneService.estGerant(roleCode)) {
             List<DelegationGestion> delegationGestionList = delegationGestionRepository.findByGestionnaireAndStatutDelegation(personne, 1);
 
             bienImmobilierList = delegationGestionList.stream()
                     .map(DelegationGestion::getBienImmobilier)
                     .collect(Collectors.toList());
-        } else if (personne.getRole().getCode().equals("ROLE_DEMARCHEUR")) {
+        } else if (personneService.estDemarcheur(roleCode)) {
             List<BienImmobilier> bienImmobiliers = bienImmobilierRepository.findByPersonne(personne);
             List<DelegationGestion> delegationGestions = delegationGestionRepository.findByGestionnaireAndStatutDelegation(personne, 1);
 
@@ -172,17 +174,8 @@ public class PublicationServiceImpl implements PublicationService {
             bienImmobilierList.addAll(delegationGestions.stream()
                     .map(DelegationGestion::getBienImmobilier)
                     .collect(Collectors.toList()));
-        } else if (personne.getRole().getCode().equals("ROLE_RESPONSABLE")) {
-            List<AgenceImmobiliere> agenceImmobiliereList = agenceImmobiliereService.getAgencesByResponsable(principal);
-            List<BienImmobilier> bienImmobiliers = bienImmobilierRepository.findByAgenceImmobiliereIn(agenceImmobiliereList);
-            List<DelegationGestion> delegationGestionList = delegationGestionRepository.findByAgenceImmobiliereInAndStatutDelegation(agenceImmobiliereList, 1);
-
-            bienImmobilierList = new ArrayList<>(bienImmobiliers);
-            bienImmobilierList.addAll(delegationGestionList.stream()
-                    .map(DelegationGestion::getBienImmobilier)
-                    .collect(Collectors.toList()));
-        } else if (personne.getRole().getCode().equals("ROLE_AGENTIMMOBILIER")) {
-            List<AgenceImmobiliere> agenceImmobiliereList = agenceImmobiliereService.getAgencesByAgent(principal);
+        } else if (personneService.estResponsable(roleCode) || personneService.estAgentImmobilier(roleCode)) {
+            List<AgenceImmobiliere> agenceImmobiliereList = agenceImmobiliereService.getAgencesImmobilieresList(principal);
             List<BienImmobilier> bienImmobiliers = bienImmobilierRepository.findByAgenceImmobiliereIn(agenceImmobiliereList);
             List<DelegationGestion> delegationGestionList = delegationGestionRepository.findByAgenceImmobiliereInAndStatutDelegation(agenceImmobiliereList, 1);
 
@@ -197,19 +190,21 @@ public class PublicationServiceImpl implements PublicationService {
 
     @Override
     public List<Publication> getPublications(Principal principal) {
-
         Personne personne = personneService.findByUsername(principal.getName());
+
         List<BienImmobilier> bienImmobilierList = new ArrayList<>();
 
-        if (personne.getRole().getCode().equals("ROLE_PROPRIETAIRE")) {
+        String roleCode = personne.getRole().getCode();
+
+        if (personneService.estProprietaire(roleCode)) {
             bienImmobilierList = bienImmobilierRepository.findByPersonne(personne);
-        } else if (personne.getRole().getCode().equals("ROLE_GERANT")) {
+        } else if (personneService.estGerant(roleCode)) {
             List<DelegationGestion> delegationGestionList = delegationGestionRepository.findByGestionnaireAndStatutDelegation(personne, 1);
 
             bienImmobilierList = delegationGestionList.stream()
                     .map(DelegationGestion::getBienImmobilier)
                     .collect(Collectors.toList());
-        } else if (personne.getRole().getCode().equals("ROLE_DEMARCHEUR")) {
+        } else if (personneService.estDemarcheur(roleCode)) {
             List<BienImmobilier> bienImmobiliers = bienImmobilierRepository.findByPersonne(personne);
             List<DelegationGestion> delegationGestions = delegationGestionRepository.findByGestionnaireAndStatutDelegation(personne, 1);
 
@@ -217,17 +212,8 @@ public class PublicationServiceImpl implements PublicationService {
             bienImmobilierList.addAll(delegationGestions.stream()
                     .map(DelegationGestion::getBienImmobilier)
                     .collect(Collectors.toList()));
-        } else if (personne.getRole().getCode().equals("ROLE_RESPONSABLE")) {
-            List<AgenceImmobiliere> agenceImmobiliereList = agenceImmobiliereService.getAgencesByResponsable(principal);
-            List<BienImmobilier> bienImmobiliers = bienImmobilierRepository.findByAgenceImmobiliereIn(agenceImmobiliereList);
-            List<DelegationGestion> delegationGestionList = delegationGestionRepository.findByAgenceImmobiliereInAndStatutDelegation(agenceImmobiliereList, 1);
-
-            bienImmobilierList = new ArrayList<>(bienImmobiliers);
-            bienImmobilierList.addAll(delegationGestionList.stream()
-                    .map(DelegationGestion::getBienImmobilier)
-                    .collect(Collectors.toList()));
-        } else if (personne.getRole().getCode().equals("ROLE_AGENTIMMOBILIER")) {
-            List<AgenceImmobiliere> agenceImmobiliereList = agenceImmobiliereService.getAgencesByAgent(principal);
+        } else if (personneService.estResponsable(roleCode) || personneService.estAgentImmobilier(roleCode)) {
+            List<AgenceImmobiliere> agenceImmobiliereList = agenceImmobiliereService.getAgencesImmobilieresList(principal);
             List<BienImmobilier> bienImmobiliers = bienImmobilierRepository.findByAgenceImmobiliereIn(agenceImmobiliereList);
             List<DelegationGestion> delegationGestionList = delegationGestionRepository.findByAgenceImmobiliereInAndStatutDelegation(agenceImmobiliereList, 1);
 
@@ -257,7 +243,7 @@ public class PublicationServiceImpl implements PublicationService {
 
         String publicationLink = "";
 
-        if (roleCode.equals("ROLE_RESPONSABLE") || roleCode.equals("ROLE_AGENTIMMOBILIER")) {
+        if (personneService.estResponsable(roleCode) || personneService.estAgentImmobilier(roleCode)) {
             DelegationGestion delegationGestion = delegationGestionService.getDelegationByBienImmobilierAndEtatDelegation(publication.getBienImmobilier(), true);
 
             if (delegationGestion != null) {
@@ -267,12 +253,12 @@ public class PublicationServiceImpl implements PublicationService {
                 notification.setSendTo(String.valueOf(publication.getBienImmobilier().getPersonne().getId()));
                 notification.setDateNotification(new Date());
                 notification.setLu(false);
-                notification.setUrl("/publications/" + publicationAdd.getId() + "?idBien=" + publicationAdd.getBienImmobilier().getId());
+                notification.setUrl("/publication/" + publicationAdd.getId() + "?idBien=" + publicationAdd.getBienImmobilier().getId());
                 notification.setCreerPar(personne.getId());
                 notification.setCreerLe(new Date());
                 notificationService.save(notification);
 
-                publicationLink = "http://localhost:4200/proprietaire/publications/" + publicationAdd.getId() + "?idBien=" + publicationAdd.getBienImmobilier().getId();
+                publicationLink = env.getProperty("client.web") + "#/proprietaire/publication/" + publicationAdd.getId() + "?idBien=" + publicationAdd.getBienImmobilier().getId();
 
                 String contenu = "Bonjour M./Mlle " + publication.getBienImmobilier().getPersonne().getNom() + " " + publication.getBienImmobilier().getPersonne().getPrenom() + ",\n" +
                         "Le bien immobilier " + publication.getBienImmobilier().getCodeBien() + " que vous avez délégué à l'agence " + delegationGestion.getAgenceImmobiliere().getNomAgence() + " a été publié avec succès.\n" +
@@ -283,10 +269,8 @@ public class PublicationServiceImpl implements PublicationService {
                 CompletableFuture.runAsync(() -> {
                     emailSenderService.sendMail(env.getProperty("spring.mail.username"), publication.getBienImmobilier().getPersonne().getEmail(), "Publication de bien", contenu);
                 });
-            } else {
-
             }
-        } else if (roleCode.equals("ROLE_GERANT") || roleCode.equals("ROLE_DEMARCHEUR")) {
+        } else if (personneService.estGerant(roleCode) || personneService.estDemarcheur(roleCode)) {
             DelegationGestion delegationGestion = delegationGestionService.getDelegationByBienImmobilierAndEtatDelegation(publication.getBienImmobilier(), true);
 
             if (delegationGestion != null) {
@@ -297,12 +281,12 @@ public class PublicationServiceImpl implements PublicationService {
                 notification.setSendTo(String.valueOf(publication.getBienImmobilier().getPersonne().getId()));
                 notification.setDateNotification(new Date());
                 notification.setLu(false);
-                notification.setUrl("/publications/" + publicationAdd.getId() + "?idBien=" + publicationAdd.getBienImmobilier().getId());
+                notification.setUrl("/publication/" + publicationAdd.getId() + "?idBien=" + publicationAdd.getBienImmobilier().getId());
                 notification.setCreerPar(personne.getId());
                 notification.setCreerLe(new Date());
                 notificationService.save(notification);
 
-                publicationLink = "http://localhost:4200/proprietaire/publications/" + publicationAdd.getId() + "?idBien=" + publicationAdd.getBienImmobilier().getId();
+                publicationLink = env.getProperty("client.web") + "#/proprietaire/publication/" + publicationAdd.getId() + "?idBien=" + publicationAdd.getBienImmobilier().getId();
 
                 String contenu = "Bonjour M./Mlle " + publication.getBienImmobilier().getPersonne().getNom() + " " + publication.getBienImmobilier().getPersonne().getPrenom() +
                         "Le bien immobilier " + publication.getBienImmobilier().getCodeBien() + " délégué à M./Mlle " + delegationGestion.getGestionnaire().getNom() +
@@ -345,7 +329,7 @@ public class PublicationServiceImpl implements PublicationService {
         publication.setModifierPar(personne.getId());
 
         String publicationLink = "";
-        if (roleCode.equals("ROLE_RESPONSABLE") || roleCode.equals("ROLE_AGENTIMMOBILIER")) {
+        if (personneService.estResponsable(roleCode) || personneService.estAgentImmobilier(roleCode)) {
             DelegationGestion delegationGestion = delegationGestionService.getDelegationByBienImmobilierAndEtatDelegation(publication.getBienImmobilier(), true);
 
             if (delegationGestion != null) {
@@ -355,12 +339,12 @@ public class PublicationServiceImpl implements PublicationService {
                 notification.setSendTo(String.valueOf(publication.getBienImmobilier().getPersonne().getId()));
                 notification.setDateNotification(new Date());
                 notification.setLu(false);
-                notification.setUrl("/publications/" + publication.getId() + "?idBien=" + publication.getBienImmobilier().getId());
+                notification.setUrl("/publication/" + publication.getId() + "?idBien=" + publication.getBienImmobilier().getId());
                 notification.setCreerPar(personne.getId());
                 notification.setCreerLe(new Date());
                 notificationService.save(notification);
 
-                publicationLink = "http://localhost:4200/proprietaire/publications/" + publication.getId() + "?idBien=" + publication.getBienImmobilier().getId();
+                publicationLink = env.getProperty("client.web") + "#/proprietaire/publication/" + publication.getId() + "?idBien=" + publication.getBienImmobilier().getId();
 
                 String contenu = "Bonjour M./Mlle " + publication.getBienImmobilier().getPersonne().getNom() + " " + publication.getBienImmobilier().getPersonne().getPrenom() + ",\n" +
                         "Le bien immobilier " + publication.getBienImmobilier().getCodeBien() + " que vous avez délégué à l'agence " + delegationGestion.getAgenceImmobiliere().getNomAgence() + " a été modifié avec succès.\n" +
@@ -372,7 +356,7 @@ public class PublicationServiceImpl implements PublicationService {
                     emailSenderService.sendMail(env.getProperty("spring.mail.username"), publication.getBienImmobilier().getPersonne().getEmail(), "Modification de publication de bien", contenu);
                 });
             }
-        } else if (roleCode.equals("ROLE_GERANT") || roleCode.equals("ROLE_DEMARCHEUR")) {
+        } else if (personneService.estGerant(roleCode) || personneService.estDemarcheur(roleCode)) {
             DelegationGestion delegationGestion = delegationGestionService.getDelegationByBienImmobilierAndEtatDelegation(publication.getBienImmobilier(), true);
 
             if (delegationGestion != null) {
@@ -383,12 +367,12 @@ public class PublicationServiceImpl implements PublicationService {
                 notification.setSendTo(String.valueOf(publication.getBienImmobilier().getPersonne().getId()));
                 notification.setDateNotification(new Date());
                 notification.setLu(false);
-                notification.setUrl("/publications/" + publication.getId() + "?idBien=" + publication.getBienImmobilier().getId());
+                notification.setUrl("/publication/" + publication.getId() + "?idBien=" + publication.getBienImmobilier().getId());
                 notification.setCreerPar(personne.getId());
                 notification.setCreerLe(new Date());
                 notificationService.save(notification);
 
-                publicationLink = "http://localhost:4200/proprietaire/publications/" + publication.getId() + "?idBien=" + publication.getBienImmobilier().getId();
+                publicationLink = env.getProperty("client.web") + "#/proprietaire/publication/" + publication.getId() + "?idBien=" + publication.getBienImmobilier().getId();
 
                 String contenu = "Bonjour M./Mlle " + publication.getBienImmobilier().getPersonne().getNom() + " " + publication.getBienImmobilier().getPersonne().getPrenom() +
                         "Le bien immobilier " + publication.getBienImmobilier().getCodeBien() + " délégué à M./Mlle " + delegationGestion.getGestionnaire().getNom() +

@@ -2,7 +2,7 @@ package com.memoire.apiAhoewo.controllers.gestionDesLocationsEtVentes;
 
 import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.BienImmAssocie;
 import com.memoire.apiAhoewo.models.gestionDesLocationsEtVentes.ContratLocation;
-import com.memoire.apiAhoewo.dto.MotifRejetForm;
+import com.memoire.apiAhoewo.dto.MotifForm;
 import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.BienImmobilierAssocieService;
 import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.BienImmobilierService;
 import com.memoire.apiAhoewo.services.gestionDesBiensImmobiliers.TypeDeBienService;
@@ -87,6 +87,18 @@ public class ContratLocationController {
         return contratLocation;
     }
 
+    @RequestMapping(value = "/contrat-location/code-contrat/{codeContrat}", method = RequestMethod.GET)
+    public ContratLocation findByCodeContrat(@PathVariable String codeContrat) {
+
+        ContratLocation contratLocation = new ContratLocation();
+        try {
+            contratLocation = this.contratLocationService.findByCodeContrat(codeContrat);
+        } catch (Exception e) {
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return contratLocation;
+    }
+
     @RequestMapping(value = "/contrat-location/ajouter", method = RequestMethod.POST)
     public ResponseEntity<?> ajouterContratLocation(Principal principal, @RequestBody ContratLocation contratLocation) {
         try {
@@ -147,12 +159,12 @@ public class ContratLocationController {
     }
 
     @RequestMapping(value = "/contrat-location/demande-modification/{id}", method = RequestMethod.POST, headers = "accept=Application/json")
-    public void demandeModificationContratLocation(@PathVariable Long id, @RequestBody MotifRejetForm motifRejetForm, Principal principal) {
+    public void demandeModificationContratLocation(@PathVariable Long id, @RequestBody MotifForm motifRejetForm, Principal principal) {
         this.contratLocationService.demandeModification(principal, motifRejetForm, id);
     }
 
     @RequestMapping(value = "/contrat-location/refuser/{id}", method = RequestMethod.POST, headers = "accept=Application/json")
-    public void refuserContratLocation(@PathVariable Long id, @RequestBody MotifRejetForm motifRejetForm, Principal principal) {
+    public void refuserContratLocation(@PathVariable Long id, @RequestBody MotifForm motifRejetForm, Principal principal) {
         this.contratLocationService.refuser(principal, id, motifRejetForm);
     }
 

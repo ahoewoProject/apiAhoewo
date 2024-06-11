@@ -17,6 +17,10 @@ public interface BienImmobilierRepository extends JpaRepository<BienImmobilier, 
 
     Page<BienImmobilier> findAllByAgenceImmobiliereInAndTypeDeBien_DesignationInOrderByCreerLeDesc(List<AgenceImmobiliere> agenceImmobilieres, Pageable pageable, List<String> designations);
 
+    List<BienImmobilier> findAllByPersonneAndTypeDeBien_DesignationInOrderByCreerLeDesc(Personne personne, List<String> designations);
+
+    List<BienImmobilier> findAllByAgenceImmobiliereInAndTypeDeBien_DesignationInOrderByCreerLeDesc(List<AgenceImmobiliere> agenceImmobilieres, List<String> designations);
+
     List<BienImmobilier> findByPersonne(Personne personne);
 
     List<BienImmobilier> findByTypeDeBien(TypeDeBien typeDeBien);

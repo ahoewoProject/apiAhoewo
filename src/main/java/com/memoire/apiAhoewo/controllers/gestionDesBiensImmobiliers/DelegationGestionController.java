@@ -5,6 +5,7 @@ import com.memoire.apiAhoewo.dto.DelegationGestionForm1;
 import com.memoire.apiAhoewo.dto.DelegationGestionForm2;
 import com.memoire.apiAhoewo.models.gestionDesAgencesImmobilieres.AgenceImmobiliere;
 import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.BienImmAssocie;
+import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.BienImmobilier;
 import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.Caracteristiques;
 import com.memoire.apiAhoewo.models.gestionDesBiensImmobiliers.DelegationGestion;
 import com.memoire.apiAhoewo.models.gestionDesComptes.Personne;
@@ -71,6 +72,19 @@ public class DelegationGestionController {
         DelegationGestion delegationGestion = new DelegationGestion();
         try {
             delegationGestion = this.delegationGestionService.findById(id);
+        } catch (Exception e) {
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return delegationGestion;
+    }
+
+    @RequestMapping(value = "/delegation-gestion/bien-immobilier/{idBienImmobilier}", method = RequestMethod.GET)
+    public DelegationGestion findByBienImmobilier(@PathVariable Long idBienImmobilier) {
+
+        BienImmobilier bienImmobilier = bienImmobilierService.findById(idBienImmobilier);
+        DelegationGestion delegationGestion = new DelegationGestion();
+        try {
+            delegationGestion = this.delegationGestionService.findByBienImmobilier(bienImmobilier);
         } catch (Exception e) {
             System.out.println("Erreur " + e.getMessage());
         }

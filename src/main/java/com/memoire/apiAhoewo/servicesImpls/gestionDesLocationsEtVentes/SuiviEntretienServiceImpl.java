@@ -74,6 +74,13 @@ public class SuiviEntretienServiceImpl implements SuiviEntretienService {
     }
 
     @Override
+    public List<SuiviEntretien> getSuivisEntretiens(Principal principal) {
+        List<ContratLocation> contratLocations = contratLocationService.getContratLocations(principal);
+
+        return suiviEntretienRepository.findByContratLocationInOrderByIdDesc(contratLocations);
+    }
+
+    @Override
     public SuiviEntretien findById(Long id) {
         return suiviEntretienRepository.findById(id).orElse(null);
     }
@@ -103,7 +110,7 @@ public class SuiviEntretienServiceImpl implements SuiviEntretienService {
         notification2.setMessage("Un nouvel entretien a été soumis pour le contrat " + suiviEntretien.getContratLocation().getCodeContrat());
         notification2.setSendTo(String.valueOf(suiviEntretien.getContratLocation().getBienImmobilier().getPersonne().getId()));
         notification2.setLu(false);
-        notification2.setUrl("/suivis-entretiens/" + suiviEntretien.getId());
+        notification2.setUrl("/suivi-entretien/" + suiviEntretien.getId());
         notification2.setDateNotification(new Date());
         notification2.setCreerLe(new Date());
         notification2.setCreerPar(personne.getId());
@@ -132,7 +139,7 @@ public class SuiviEntretienServiceImpl implements SuiviEntretienService {
         notification2.setSendTo(String.valueOf(suiviEntretien.getContratLocation().getBienImmobilier().getPersonne().getId()));
         notification2.setLu(false);
         notification2.setDateNotification(new Date());
-        notification2.setUrl("/suivis-entretiens/" + suiviEntretien.getId());
+        notification2.setUrl("/suivi-entretien/" + suiviEntretien.getId());
         notification2.setDateNotification(new Date());
         notification2.setCreerLe(new Date());
         notification2.setCreerPar(personne.getId());
@@ -157,7 +164,7 @@ public class SuiviEntretienServiceImpl implements SuiviEntretienService {
             notification1.setSendTo(String.valueOf(suiviEntretien.getContratLocation().getClient().getId()));
             notification1.setLu(false);
             notification1.setDateNotification(new Date());
-            notification1.setUrl("/suivis-entretiens/" + suiviEntretien.getId());
+            notification1.setUrl("/suivi-entretien/" + suiviEntretien.getId());
             notification1.setCreerLe(new Date());
             notification1.setCreerPar(personne.getId());
 
@@ -169,7 +176,7 @@ public class SuiviEntretienServiceImpl implements SuiviEntretienService {
             notification1.setSendTo(String.valueOf(suiviEntretien.getContratLocation().getCreerPar()));
             notification1.setLu(false);
             notification1.setDateNotification(new Date());
-            notification1.setUrl("/suivis-entretiens/" + suiviEntretien.getId());
+            notification1.setUrl("/suivi-entretien/" + suiviEntretien.getId());
             notification1.setCreerLe(new Date());
             notification1.setCreerPar(personne.getId());
 
@@ -193,7 +200,7 @@ public class SuiviEntretienServiceImpl implements SuiviEntretienService {
             notification1.setSendTo(String.valueOf(suiviEntretien.getContratLocation().getClient().getId()));
             notification1.setLu(false);
             notification1.setDateNotification(new Date());
-            notification1.setUrl("/suivis-entretiens/" + suiviEntretien.getId());
+            notification1.setUrl("/suivi-entretien/" + suiviEntretien.getId());
             notification1.setCreerLe(new Date());
             notification1.setCreerPar(personne.getId());
 
@@ -205,7 +212,7 @@ public class SuiviEntretienServiceImpl implements SuiviEntretienService {
             notification1.setSendTo(String.valueOf(suiviEntretien.getContratLocation().getCreerPar()));
             notification1.setLu(false);
             notification1.setDateNotification(new Date());
-            notification1.setUrl("/suivis-entretiens/" + suiviEntretien.getId());
+            notification1.setUrl("/suivi-entretien/" + suiviEntretien.getId());
             notification1.setCreerLe(new Date());
             notification1.setCreerPar(personne.getId());
 

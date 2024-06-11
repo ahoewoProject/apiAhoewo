@@ -1,8 +1,8 @@
 package com.memoire.apiAhoewo.controllers.gestionDesLocationsEtVentes;
 
+import com.memoire.apiAhoewo.dto.MotifForm;
 import com.memoire.apiAhoewo.models.gestionDesComptes.Client;
 import com.memoire.apiAhoewo.models.gestionDesLocationsEtVentes.DemandeVisite;
-import com.memoire.apiAhoewo.dto.MotifRejetForm;
 import com.memoire.apiAhoewo.services.gestionDesComptes.PersonneService;
 import com.memoire.apiAhoewo.services.gestionDesLocationsEtVentes.DemandeVisiteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -33,6 +35,19 @@ public class DemandeVisiteController {
             System.out.println("Erreur " + e.getMessage());
             throw new RuntimeException("Une erreur s'est produite lors de la récupération des demandes de visites.", e);
         }
+    }
+
+    @RequestMapping(value = "/demandes-visites-list", method = RequestMethod.GET)
+    public List<DemandeVisite> getDemandesVisitesList(Principal principal) {
+
+        List<DemandeVisite> demandeVisiteList = new ArrayList<>();
+        try {
+            demandeVisiteList = this.demandeVisiteService.getDemandesVisites(principal);
+        } catch (Exception e) {
+            // TODO: handle exception
+            System.out.println("Erreur " + e.getMessage());
+        }
+        return demandeVisiteList;
     }
 
     @RequestMapping(value = "/demande-visite/{id}", method = RequestMethod.GET)
@@ -93,12 +108,12 @@ public class DemandeVisiteController {
     }
 
     @RequestMapping(value = "/demande-visite/refuser/{id}", method = RequestMethod.POST, headers = "accept=Application/json")
-    public void refuser(@PathVariable Long id, @RequestBody MotifRejetForm motifRejetForm, Principal principal) {
+    public void refuser(@PathVariable Long id, @RequestBody MotifForm motifRejetForm, Principal principal) {
         this.demandeVisiteService.refuser(id, motifRejetForm, principal);
     }
 
     @RequestMapping(value = "/demande-visite/annuler/{id}", method = RequestMethod.POST, headers = "accept=Application/json")
-    public void annuler(@PathVariable Long id, @RequestBody MotifRejetForm motifRejetForm, Principal principal) {
+    public void annuler(@PathVariable Long id, @RequestBody MotifForm motifRejetForm, Principal principal) {
         this.demandeVisiteService.annuler(id, motifRejetForm, principal);
     }
 }

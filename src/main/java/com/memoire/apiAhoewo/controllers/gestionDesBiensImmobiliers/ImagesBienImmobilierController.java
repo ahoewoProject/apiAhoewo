@@ -78,7 +78,6 @@ public class ImagesBienImmobilierController {
         }
     }
 
-
     @RequestMapping(value = "/image/bien-immobilier/{id}", method = RequestMethod.GET)
     public ResponseEntity<byte[]> getImageBienImmobilier(@PathVariable Long id) {
         ImagesBienImmobilier imagesBienImmobilier = imagesBienImmobilierService.findById(id);

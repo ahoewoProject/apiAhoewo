@@ -52,6 +52,11 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
     public PersonneServiceImpl() {
     }
 
+    @Override
+    public List<Personne> getAll() {
+        return personneRepository.findAll();
+    }
+
     public Personne findByUsername(String username){
         return this.personneRepository.findByUsername(username);
     }
@@ -177,7 +182,7 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
         personne.setResetToken(token);
         personneRepository.save(personne);
 
-        String resetLink = "http://localhost:4200/#/reset-password?token=" + token;
+        String resetLink = env.getProperty("client.web") + "#/reset-password?token=" + token;
 
         String contenu = "Bonjour M/Mlle " + personne.getPrenom() + " " + personne.getNom() + ",\n\n" +
                 "Pour réinitialiser votre mot de passe, veuillez cliquer sur le lien ci-dessous :\n" +
@@ -241,6 +246,11 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
     @Override
     public boolean estAdministrateur(String code) {
         return code.equals("ROLE_ADMINISTRATEUR");
+    }
+
+    @Override
+    public boolean estClient(String code) {
+        return code.equals("ROLE_CLIENT");
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.memoire.apiAhoewo.controllers.gestionDesAgencesImmobilieres;
 
 import com.memoire.apiAhoewo.models.gestionDesAgencesImmobilieres.Services;
-import com.memoire.apiAhoewo.dto.MotifRejetForm;
+import com.memoire.apiAhoewo.dto.MotifForm;
 import com.memoire.apiAhoewo.services.gestionDesAgencesImmobilieres.ServicesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -141,7 +141,7 @@ public class ServicesController {
     }
 
     @RequestMapping(value = "/rejeter/services", method = RequestMethod.POST, headers = "accept=Application/json")
-    public void rejeterServices(@RequestBody MotifRejetForm motifRejetForm, Principal principal) {
+    public void rejeterServices(@RequestBody MotifForm motifRejetForm, Principal principal) {
         this.servicesService.rejeterServices(motifRejetForm, principal);
     }
 }

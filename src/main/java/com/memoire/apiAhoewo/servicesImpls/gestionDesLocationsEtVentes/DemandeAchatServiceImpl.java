@@ -1,15 +1,15 @@
 package com.memoire.apiAhoewo.servicesImpls.gestionDesLocationsEtVentes;
 
-import com.memoire.apiAhoewo.models.MotifRejet;
+import com.memoire.apiAhoewo.dto.MotifForm;
+import com.memoire.apiAhoewo.models.Motif;
 import com.memoire.apiAhoewo.models.Notification;
 import com.memoire.apiAhoewo.models.gestionDesComptes.Client;
 import com.memoire.apiAhoewo.models.gestionDesComptes.Personne;
 import com.memoire.apiAhoewo.models.gestionDesLocationsEtVentes.DemandeAchat;
 import com.memoire.apiAhoewo.models.gestionDesPublications.Publication;
 import com.memoire.apiAhoewo.repositories.gestionDesLocationsEtVentes.DemandeAchatRepository;
-import com.memoire.apiAhoewo.dto.MotifRejetForm;
 import com.memoire.apiAhoewo.services.EmailSenderService;
-import com.memoire.apiAhoewo.services.MotifRejetService;
+import com.memoire.apiAhoewo.services.MotifService;
 import com.memoire.apiAhoewo.services.NotificationService;
 import com.memoire.apiAhoewo.services.gestionDesComptes.PersonneService;
 import com.memoire.apiAhoewo.services.gestionDesLocationsEtVentes.DemandeAchatService;
@@ -24,7 +24,6 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 public class DemandeAchatServiceImpl implements DemandeAchatService {
@@ -39,7 +38,7 @@ public class DemandeAchatServiceImpl implements DemandeAchatService {
     @Autowired
     private NotificationService notificationService;
     @Autowired
-    private MotifRejetService motifRejetService;
+    private MotifService motifService;
     @Autowired
     private Environment env;
 
@@ -48,9 +47,12 @@ public class DemandeAchatServiceImpl implements DemandeAchatService {
         Personne personne = personneService.findByUsername(principal.getName());
         PageRequest pageRequest = PageRequest.of(numeroDeLaPage, elementsParPage);
 
-        if (personne.getRole().getCode().equals("ROLE_PROPRIETAIRE") || personne.getRole().getCode().equals("ROLE_RESPONSABLE") ||
-                personne.getRole().getCode().equals("ROLE_AGENTIMMOBILIER") || personne.getRole().getCode().equals("ROLE_DEMARCHEUR") ||
-                personne.getRole().getCode().equals("ROLE_GERANT")) {
+        String roleCode = personne.getRole().getCode();
+
+        if (personneService.estProprietaire(roleCode) || personneService.estResponsable(roleCode) ||
+                personneService.estAgentImmobilier(roleCode) || personneService.estDemarcheur(roleCode) ||
+                personneService.estGerant(roleCode)) {
+
             List<Publication> publicationList = publicationService.getPublications(principal);
             return demandeAchatRepository.findByPublicationInOrderByIdDesc(publicationList, pageRequest);
         } else {
@@ -62,9 +64,11 @@ public class DemandeAchatServiceImpl implements DemandeAchatService {
     public List<DemandeAchat> getDemandesAchats(Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
 
-        if (personne.getRole().getCode().equals("ROLE_PROPRIETAIRE") || personne.getRole().getCode().equals("ROLE_RESPONSABLE") ||
-                personne.getRole().getCode().equals("ROLE_AGENTIMMOBILIER") || personne.getRole().getCode().equals("ROLE_DEMARCHEUR") ||
-                personne.getRole().getCode().equals("ROLE_GERANT")) {
+        String roleCode = personne.getRole().getCode();
+
+        if (personneService.estProprietaire(roleCode) || personneService.estResponsable(roleCode) ||
+                personneService.estAgentImmobilier(roleCode) || personneService.estDemarcheur(roleCode) ||
+                personneService.estGerant(roleCode)) {
             List<Publication> publicationList = publicationService.getPublications(principal);
             return demandeAchatRepository.findByPublicationInOrderByIdDesc(publicationList);
         } else {
@@ -101,12 +105,12 @@ public class DemandeAchatServiceImpl implements DemandeAchatService {
         notification.setSendTo(String.valueOf(demandeAchatAdd.getPublication().getCreerPar()));
         notification.setDateNotification(new Date());
         notification.setLu(false);
-        notification.setUrl("/demandes-achats/" + demandeAchatAdd.getId());
+        notification.setUrl("/demande-achat/" + demandeAchatAdd.getId());
         notification.setCreerPar(personne.getId());
         notification.setCreerLe(new Date());
         notificationService.save(notification);
 
-        demandeAchatAdd.setCodeDemande("DEACH" + demandeAchatAdd.getId());
+        demandeAchatAdd.setCodeDemande("DEACH00" + demandeAchatAdd.getId());
         return demandeAchatRepository.save(demandeAchatAdd);
     }
 
@@ -124,7 +128,7 @@ public class DemandeAchatServiceImpl implements DemandeAchatService {
         notification.setSendTo(String.valueOf(demandeAchat.getPublication().getCreerPar()));
         notification.setDateNotification(new Date());
         notification.setLu(false);
-        notification.setUrl("/demandes-achats/" + demandeAchat.getId());
+        notification.setUrl("/demande-achat/" + demandeAchat.getId());
         notification.setCreerPar(personne.getId());
         notification.setCreerLe(new Date());
         notificationService.save(notification);
@@ -147,22 +151,22 @@ public class DemandeAchatServiceImpl implements DemandeAchatService {
         notification.setSendTo(String.valueOf(demandeAchat.getClient().getId()));
         notification.setDateNotification(new Date());
         notification.setLu(false);
-        notification.setUrl("/demandes-achats/" + demandeAchat.getId());
+        notification.setUrl("/demande-achat/" + demandeAchat.getId());
         notification.setCreerPar(personne.getId());
         notification.setCreerLe(new Date());
         notificationService.save(notification);
 
         demandeAchatLink = "http://localhost:4200/client/demandes-achats/" + demandeAchat.getId();
 
-        String contenu = "Bonjour M./Mlle " + demandeAchat.getClient().getNom() + " " + demandeAchat.getClient().getPrenom() + ",\n" +
-                "Votre demande d'achat pour la publication de " + demandeAchat.getPublication().getLibelle() + " a été validée.\n" +
-                "Vous pouvez consulter les détails de la demande en cliquant sur le lien suivant : " + demandeAchatLink + "\n" +
-                "Cordialement,\n" +
-                "L'équipe Ahoewo";
-
-        CompletableFuture.runAsync(() -> {
-            emailSenderService.sendMail(env.getProperty("spring.mail.username"), demandeAchat.getClient().getEmail(), "Demande d'achat validée", contenu);
-        });
+//        String contenu = "Bonjour M./Mlle " + demandeAchat.getClient().getNom() + " " + demandeAchat.getClient().getPrenom() + ",\n" +
+//                "Votre demande d'achat pour la publication de " + demandeAchat.getPublication().getLibelle() + " a été validée.\n" +
+//                "Vous pouvez consulter les détails de la demande en cliquant sur le lien suivant : " + demandeAchatLink + "\n" +
+//                "Cordialement,\n" +
+//                "L'équipe Ahoewo";
+//
+//        CompletableFuture.runAsync(() -> {
+//            emailSenderService.sendMail(env.getProperty("spring.mail.username"), demandeAchat.getClient().getEmail(), "Demande d'achat validée", contenu);
+//        });
 
         demandeAchatRepository.save(demandeAchat);
     }
@@ -179,14 +183,14 @@ public class DemandeAchatServiceImpl implements DemandeAchatService {
         notification.setSendTo(String.valueOf(demandeAchat.getPublication().getCreerPar()));
         notification.setDateNotification(new Date());
         notification.setLu(false);
-        notification.setUrl("/demandes-achats/" + demandeAchat.getId());
+        notification.setUrl("/demande-achat/" + demandeAchat.getId());
         notification.setCreerPar(personne.getId());
         notification.setCreerLe(new Date());
         notificationService.save(notification);
     }
 
     @Override
-    public void annuler(Long id, MotifRejetForm motifRejetForm, Principal principal) {
+    public void annuler(Long id, MotifForm motifForm, Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
 
         DemandeAchat demandeAchat = demandeAchatRepository.findById(id).orElse(null);
@@ -200,23 +204,23 @@ public class DemandeAchatServiceImpl implements DemandeAchatService {
         notification.setSendTo(String.valueOf(demandeAchat.getPublication().getCreerPar()));
         notification.setDateNotification(new Date());
         notification.setLu(false);
-        notification.setUrl("/demandes-achats/" + demandeAchat.getId());
+        notification.setUrl("/demande-achat/" + demandeAchat.getId());
         notification.setCreerPar(personne.getId());
         notification.setCreerLe(new Date());
         notificationService.save(notification);
 
-        if (motifRejetForm != null) {
-            MotifRejet motifRejet = new MotifRejet();
-            motifRejet.setCode(demandeAchat.getCodeDemande());
-            motifRejet.setMotif(motifRejetForm.getMotif());
-            motifRejetService.save(motifRejet, principal);
+        if (motifForm != null) {
+            Motif motif = new Motif();
+            motif.setCode(demandeAchat.getCodeDemande());
+            motif.setMotif(motifForm.getMotif());
+            motifService.save(motif, principal);
         }
 
         demandeAchatRepository.save(demandeAchat);
     }
 
     @Override
-    public void refuser(Long id, MotifRejetForm motifRejetForm, Principal principal) {
+    public void refuser(Long id, MotifForm motifForm, Principal principal) {
         Personne personne = personneService.findByUsername(principal.getName());
 
         DemandeAchat demandeAchat = demandeAchatRepository.findById(id).orElse(null);
@@ -232,28 +236,28 @@ public class DemandeAchatServiceImpl implements DemandeAchatService {
         notification.setSendTo(String.valueOf(demandeAchat.getClient().getId()));
         notification.setDateNotification(new Date());
         notification.setLu(false);
-        notification.setUrl("/demandes-achats/" + demandeAchat.getId());
+        notification.setUrl("/demande-achat/" + demandeAchat.getId());
         notification.setCreerPar(personne.getId());
         notification.setCreerLe(new Date());
         notificationService.save(notification);
 
-        if (motifRejetForm != null) {
-            MotifRejet motifRejet = new MotifRejet();
-            motifRejet.setCode(demandeAchat.getCodeDemande());
-            motifRejet.setMotif(motifRejetForm.getMotif());
-            motifRejetService.save(motifRejet, principal);
+        if (motifForm != null) {
+            Motif motif = new Motif();
+            motif.setCode(demandeAchat.getCodeDemande());
+            motif.setMotif(motifForm.getMotif());
+            motifService.save(motif, principal);
         }
 
-        String contenu = "Bonjour M./Mlle " + demandeAchat.getClient().getNom() + " " + demandeAchat.getClient().getPrenom() + ",\n" +
-                "Votre demande d'achat pour la publication de " + demandeAchat.getPublication().getLibelle() + " a été refusée.\n" +
-                "Vous pouvez consulter les détails de la demande en cliquant sur le lien suivant : " + demandeAchatLink + "\n" +
-                "Cordialement,\n" +
-                "L'équipe Ahoewo";
-
-        CompletableFuture.runAsync(() -> {
-            emailSenderService.sendMail(env.getProperty("spring.mail.username"), demandeAchat.getClient().getEmail(), "Demande d'achat refusée", contenu);
-                }
-        );
+//        String contenu = "Bonjour M./Mlle " + demandeAchat.getClient().getNom() + " " + demandeAchat.getClient().getPrenom() + ",\n" +
+//                "Votre demande d'achat pour la publication de " + demandeAchat.getPublication().getLibelle() + " a été refusée.\n" +
+//                "Vous pouvez consulter les détails de la demande en cliquant sur le lien suivant : " + demandeAchatLink + "\n" +
+//                "Cordialement,\n" +
+//                "L'équipe Ahoewo";
+//
+//        CompletableFuture.runAsync(() -> {
+//            emailSenderService.sendMail(env.getProperty("spring.mail.username"), demandeAchat.getClient().getEmail(), "Demande d'achat refusée", contenu);
+//                }
+//        );
 
         demandeAchatRepository.save(demandeAchat);
     }
