@@ -876,7 +876,7 @@ public class PaiementServiceImpl implements PaiementService {
         notification.setSendTo(String.valueOf(paiement.getPlanificationPaiement().getContrat().getClient().getId()));
         notification.setDateNotification(new Date());
         notification.setLu(false);
-        notification.setUrl("/paiements/" + paiement.getId());
+        notification.setUrl("/paiement/" + paiement.getId());
         notification.setCreerPar(personne.getId());
         notification.setCreerLe(new Date());
         notificationService.save(notification);

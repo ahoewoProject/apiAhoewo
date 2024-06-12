@@ -212,6 +212,7 @@ public class DemandeAchatServiceImpl implements DemandeAchatService {
         if (motifForm != null) {
             Motif motif = new Motif();
             motif.setCode(demandeAchat.getCodeDemande());
+            motif.setLibelle("Motif d'annulation d'une demande d'achat");
             motif.setMotif(motifForm.getMotif());
             motifService.save(motif, principal);
         }
@@ -244,6 +245,7 @@ public class DemandeAchatServiceImpl implements DemandeAchatService {
         if (motifForm != null) {
             Motif motif = new Motif();
             motif.setCode(demandeAchat.getCodeDemande());
+            motif.setLibelle("Motif de refus d'une demande d'achat");
             motif.setMotif(motifForm.getMotif());
             motifService.save(motif, principal);
         }

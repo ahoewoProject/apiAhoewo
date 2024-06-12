@@ -214,6 +214,7 @@ public class DemandeLocationServiceImpl implements DemandeLocationService {
         if (motifForm != null) {
             Motif motif = new Motif();
             motif.setCode(demandeLocation.getCodeDemande());
+            motif.setLibelle("Motif d'annulation d'une demande de location");
             motif.setMotif(motifForm.getMotif());
             motifService.save(motif, principal);
         }
@@ -246,6 +247,7 @@ public class DemandeLocationServiceImpl implements DemandeLocationService {
         if (motifForm != null) {
             Motif motif = new Motif();
             motif.setCode(demandeLocation.getCodeDemande());
+            motif.setLibelle("Motif de refus d'une demande de location");
             motif.setMotif(motifForm.getMotif());
             motifService.save(motif, principal);
         }

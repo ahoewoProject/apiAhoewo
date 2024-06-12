@@ -247,6 +247,7 @@ public class DemandeVisiteServiceImpl implements DemandeVisiteService {
         if (motifForm != null) {
             Motif motif = new Motif();
             motif.setCode(demandeVisite.getCodeDemande());
+            motif.setLibelle("Motif d'annulation d'une demande de visite");
             motif.setMotif(motifForm.getMotif());
             motifService.save(motif, principal);
         }
@@ -280,6 +281,7 @@ public class DemandeVisiteServiceImpl implements DemandeVisiteService {
         if (motifForm != null) {
             Motif motif = new Motif();
             motif.setCode(demandeVisite.getCodeDemande());
+            motif.setLibelle("Motif de refus d'une demande de visite");
             motif.setMotif(motifForm.getMotif());
              motifService.save(motif, principal);
         }

@@ -27,7 +27,7 @@ public class SecurityConfigUrls {
             "/api/quartiers/ville/{id}/**",
             "/api/agences-immobilieres/actives/**",
             "/api/agence/{nomAgence}/**",
-            "/api/services/agence/{nomAgence}/**",
+            "/api/services/agence-immobiliere/{nomAgence}/**",
             "/api/agences/actives/region/{id}/**",
             "/api/agences/actives/ville/{id}/**",
             "/api/agences/actives/quartier/{id}/**",

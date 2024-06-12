@@ -1,8 +1,10 @@
 package com.memoire.apiAhoewo.schedulers;
 
 import com.memoire.apiAhoewo.models.Notification;
+import com.memoire.apiAhoewo.models.gestionDesPaiements.Paiement;
 import com.memoire.apiAhoewo.models.gestionDesPaiements.PlanificationPaiement;
 import com.memoire.apiAhoewo.services.NotificationService;
+import com.memoire.apiAhoewo.services.gestionDesPaiements.PaiementService;
 import com.memoire.apiAhoewo.services.gestionDesPaiements.PlanificationPaiementService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,6 +19,8 @@ public class PlanificationPaiementScheduler {
     private PlanificationPaiementService planificationPaiementService;
     @Autowired
     private NotificationService notificationService;
+    @Autowired
+    private PaiementService paiementService;
 
     @Scheduled(cron = "0 0 8 * * ?")
     public void envoyerRappelsPlanificationsPaiementsEnAttente() {
@@ -34,26 +38,57 @@ public class PlanificationPaiementScheduler {
                 client = "L'acquéreur";
             }
 
-            if (diffDays == -1) {
-                envoyerNotificationClient(planificationPaiement, "Demain", "Vous avez une planification de paiement : " + planificationPaiement.getLibelle() + " pour demain.");
-                envoyerNotificationProprietaire(planificationPaiement, "Demain", client + " " + planificationPaiement.getContrat().getClient().getNom() + " " + planificationPaiement.getContrat().getClient().getPrenom() + " a une planification de paiement : " + planificationPaiement.getLibelle() + " pour demain.");
-            } else if (diffDays == 0) {
-                envoyerNotificationClient(planificationPaiement, "Aujourd'hui", "Vous avez une planification de paiement : " + planificationPaiement.getLibelle() + " pour aujourd'hui.");
-                envoyerNotificationProprietaire(planificationPaiement, "Aujourd'hui",  client + " " + planificationPaiement.getContrat().getClient().getNom() + " " + planificationPaiement.getContrat().getClient().getPrenom() + " a une planification de paiement : " + planificationPaiement.getLibelle() + " pour aujourd'hui.");
-            } else if (diffDays == 1) {
-                envoyerNotificationClient(planificationPaiement, "Un jour de retard", "Votre planification de paiement : " + planificationPaiement.getLibelle() + " est en retard d'un jour.");
-                envoyerNotificationProprietaire(planificationPaiement, "Un jour de retard", client + " " + planificationPaiement.getContrat().getClient().getNom() + " " + planificationPaiement.getContrat().getClient().getPrenom() + " a une planification de paiement : " + planificationPaiement.getLibelle() + " en retard d'un jour.");
-            } else if (diffDays == 2) {
-                envoyerNotificationClient(planificationPaiement, "Deux jours de retard", "Votre planification de paiement : " + planificationPaiement.getLibelle() + " est en retard de deux jours.");
-                envoyerNotificationProprietaire(planificationPaiement, "Deux jours de retard", client + " " + planificationPaiement.getContrat().getClient().getNom() + " " + planificationPaiement.getContrat().getClient().getPrenom() + " a une planification de paiement : " + planificationPaiement.getLibelle() + " en retard de deux jours.");
-            } else if (diffDays == 3) {
-                envoyerNotificationClient(planificationPaiement, "Trois jours de retard", "Votre planification de paiement : " + planificationPaiement.getLibelle() + " est en retard de trois jours.");
-                envoyerNotificationProprietaire(planificationPaiement, "Trois jours de retard", client + " " + planificationPaiement.getContrat().getClient().getNom() + " " + planificationPaiement.getContrat().getClient().getPrenom() + " a une planification de paiement : " + planificationPaiement.getLibelle() + " en retard de trois jours.");
-            } else if (diffDays == 5) {
-                envoyerNotificationClient(planificationPaiement, "Cinq jours de retard", "Votre planification de paiement : " + planificationPaiement.getLibelle() + " est en retard de cinq jours.");
-                envoyerNotificationProprietaire(planificationPaiement, "Cinq jours de retard", client + " " + planificationPaiement.getContrat().getClient().getNom() + " " + planificationPaiement.getContrat().getClient().getPrenom() + " a une planification de paiement : " + planificationPaiement.getLibelle() + " en retard de cinq jours.");
+            Paiement paiement = paiementService.findByCodePlanification(planificationPaiement.getCodePlanification());
+            if (paiement != null) {
+                notifierPlanification(diffDays, planificationPaiement, client);
             }
         }
+    }
+
+    private void notifierPlanification(long diffDays, PlanificationPaiement planificationPaiement, String client) {
+        String when;
+        String messageClient;
+        String messageProprietaire;
+        String clientNomPrenom = planificationPaiement.getContrat().getClient().getNom() + " " + planificationPaiement.getContrat().getClient().getPrenom();
+        String planificationLibelle = planificationPaiement.getLibelle();
+
+        switch ((int) diffDays) {
+            case -1:
+                when = "Demain";
+                messageClient = "Vous avez une planification de paiement : " + planificationLibelle + " pour demain.";
+                messageProprietaire = client + " " + clientNomPrenom + " a une planification de paiement : " + planificationLibelle + " pour demain.";
+                break;
+            case 0:
+                when = "Aujourd'hui";
+                messageClient = "Vous avez une planification de paiement : " + planificationLibelle + " pour aujourd'hui.";
+                messageProprietaire = client + " " + clientNomPrenom + " a une planification de paiement : " + planificationLibelle + " pour aujourd'hui.";
+                break;
+            case 1:
+                when = "Un jour de retard";
+                messageClient = "Votre planification de paiement : " + planificationLibelle + " est en retard d'un jour.";
+                messageProprietaire = client + " " + clientNomPrenom + " a une planification de paiement : " + planificationLibelle + " en retard d'un jour.";
+                break;
+            case 2:
+                when = "Deux jours de retard";
+                messageClient = "Votre planification de paiement : " + planificationLibelle + " est en retard de deux jours.";
+                messageProprietaire = client + " " + clientNomPrenom + " a une planification de paiement : " + planificationLibelle + " en retard de deux jours.";
+                break;
+            case 3:
+                when = "Trois jours de retard";
+                messageClient = "Votre planification de paiement : " + planificationLibelle + " est en retard de trois jours.";
+                messageProprietaire = client + " " + clientNomPrenom + " a une planification de paiement : " + planificationLibelle + " en retard de trois jours.";
+                break;
+            case 5:
+                when = "Cinq jours de retard";
+                messageClient = "Votre planification de paiement : " + planificationLibelle + " est en retard de cinq jours.";
+                messageProprietaire = client + " " + clientNomPrenom + " a une planification de paiement : " + planificationLibelle + " en retard de cinq jours.";
+                break;
+            default:
+                return; // Aucun message pour les autres cas
+        }
+
+        envoyerNotificationClient(planificationPaiement, when, messageClient);
+        envoyerNotificationProprietaire(planificationPaiement, when, messageProprietaire);
     }
 
     private void envoyerNotificationClient(PlanificationPaiement planificationPaiement, String titreSuffixe, String message) {
@@ -73,7 +108,12 @@ public class PlanificationPaiementScheduler {
         Notification notification = new Notification();
         notification.setTitre("Planification de paiement - " + titreSuffixe);
         notification.setMessage(message + " pour le contrat de location " + planificationPaiement.getContrat().getCodeContrat());
-        notification.setSendTo(String.valueOf(planificationPaiement.getCreerPar())); // Assuming 'getProprietaire()' method exists
+        if (planificationPaiement.getLibelle().equals("Avance/Caution")) {
+            notification.setSendTo(String.valueOf(planificationPaiement.getContrat().getCreerPar()));
+        } else {
+            notification.setSendTo(String.valueOf(planificationPaiement.getCreerPar()));
+        }
+         // Assuming 'getProprietaire()' method exists
         notification.setDateNotification(new Date());
         notification.setLu(false);
         notification.setUrl("/planification-paiement/" + planificationPaiement.getId());
