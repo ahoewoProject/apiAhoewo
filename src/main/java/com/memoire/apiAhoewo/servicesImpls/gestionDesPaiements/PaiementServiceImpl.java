@@ -34,8 +34,6 @@ import com.memoire.apiAhoewo.services.gestionDesLocationsEtVentes.ContratVenteSe
 import com.memoire.apiAhoewo.services.gestionDesPaiements.PaiementService;
 import com.memoire.apiAhoewo.services.gestionDesPaiements.PlanificationPaiementService;
 import com.memoire.apiAhoewo.services.gestionDesPublications.PublicationService;
-import com.paydunya.neptune.PaydunyaCheckoutStore;
-import com.paydunya.neptune.PaydunyaSetup;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,10 +76,6 @@ public class PaiementServiceImpl implements PaiementService {
     private TypeDeBienService typeDeBienService;
     @Autowired
     private BienImmobilierAssocieService bienImmAssocieService;
-    @Autowired
-    private PaydunyaSetup paydunyaSetup;
-    @Autowired
-    private PaydunyaCheckoutStore paydunyaStore;
 
     @Override
     public Page<Paiement> getPaiements(Principal principal, int numeroDeLaPage, int elementsParPage) {

@@ -123,13 +123,6 @@
 			<artifactId>rest-api-sdk</artifactId>
 			<version>1.14.0</version>
 		</dependency>
-		<dependency>
-			<groupId>com.paydunya</groupId>
-			<artifactId>paydunya</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/src/main/resources/libs/paydunya_java_latest.jar</systemPath>
-		</dependency>
 	</dependencies>
 
 	<build>

@@ -103,21 +103,45 @@ public class SuiviEntretienServiceImpl implements SuiviEntretienService {
             suiviEntretien.setEtatSuiviEntretien("Terminé");
         }
 
-        suiviEntretien = suiviEntretienRepository.save(suiviEntretien);
+        SuiviEntretien suiviEntretienAdd = suiviEntretienRepository.save(suiviEntretien);
 
-        Notification notification2 = new Notification();
-        notification2.setTitre("Nouvel entretien pour un contrat de location.");
-        notification2.setMessage("Un nouvel entretien a été soumis pour le contrat " + suiviEntretien.getContratLocation().getCodeContrat());
-        notification2.setSendTo(String.valueOf(suiviEntretien.getContratLocation().getBienImmobilier().getPersonne().getId()));
-        notification2.setLu(false);
-        notification2.setUrl("/suivi-entretien/" + suiviEntretien.getId());
-        notification2.setDateNotification(new Date());
-        notification2.setCreerLe(new Date());
-        notification2.setCreerPar(personne.getId());
-        notificationService.save(notification2);
+        if (suiviEntretien.getContratLocation().getBienImmobilier().getEstDelegue()) {
+            Notification notification1 = new Notification();
+            notification1.setTitre("Nouvel entretien pour un contrat de location.");
+            notification1.setMessage("Un nouvel entretien a été soumis pour le contrat " + suiviEntretien.getContratLocation().getCodeContrat());
+            notification1.setSendTo(String.valueOf(suiviEntretien.getContratLocation().getBienImmobilier().getPersonne().getId()));
+            notification1.setLu(false);
+            notification1.setUrl("/suivi-entretien/" + suiviEntretienAdd.getId());
+            notification1.setDateNotification(new Date());
+            notification1.setCreerLe(new Date());
+            notification1.setCreerPar(personne.getId());
+            notificationService.save(notification1);
 
-        suiviEntretien.setCodeSuiviEntretien("SUIEN00" + suiviEntretien.getId());
-        return suiviEntretienRepository.save(suiviEntretien);
+            Notification notification2 = new Notification();
+            notification2.setTitre("Nouvel entretien pour un contrat de location.");
+            notification2.setMessage("Un nouvel entretien a été soumis pour le contrat " + suiviEntretien.getContratLocation().getCodeContrat());
+            notification2.setSendTo(String.valueOf(suiviEntretien.getContratLocation().getCreerPar()));
+            notification2.setLu(false);
+            notification2.setUrl("/suivi-entretien/" + suiviEntretienAdd.getId());
+            notification2.setDateNotification(new Date());
+            notification2.setCreerLe(new Date());
+            notification2.setCreerPar(personne.getId());
+            notificationService.save(notification2);
+        } else {
+            Notification notification = new Notification();
+            notification.setTitre("Nouvel entretien pour un contrat de location.");
+            notification.setMessage("Un nouvel entretien a été soumis pour le contrat " + suiviEntretien.getContratLocation().getCodeContrat());
+            notification.setSendTo(String.valueOf(suiviEntretien.getContratLocation().getCreerPar()));
+            notification.setLu(false);
+            notification.setUrl("/suivi-entretien/" + suiviEntretienAdd.getId());
+            notification.setDateNotification(new Date());
+            notification.setCreerLe(new Date());
+            notification.setCreerPar(personne.getId());
+            notificationService.save(notification);
+        }
+
+        suiviEntretienAdd.setCodeSuiviEntretien("SUIEN00" + suiviEntretienAdd.getId());
+        return suiviEntretienRepository.save(suiviEntretienAdd);
     }
 
     @Override

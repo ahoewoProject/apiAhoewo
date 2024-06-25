@@ -182,7 +182,7 @@ public class PersonneServiceImpl implements PersonneService, UserDetailsService 
         personne.setResetToken(token);
         personneRepository.save(personne);
 
-        String resetLink = env.getProperty("client.web") + "#/reset-password?token=" + token;
+        String resetLink = env.getProperty("client.web") + "/reset-password?token=" + token;
 
         String contenu = "Bonjour M/Mlle " + personne.getPrenom() + " " + personne.getNom() + ",\n\n" +
                 "Pour réinitialiser votre mot de passe, veuillez cliquer sur le lien ci-dessous :\n" +

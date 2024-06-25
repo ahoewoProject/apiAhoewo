@@ -129,7 +129,7 @@ public class ServicesServiceImpl implements ServicesService {
         notification.setSendTo(String.valueOf(services.getCreerPar()));
         notification.setLu(false);
         notification.setDateNotification(new Date());
-        notification.setUrl("/agence-immobiliere/service/" + services.getId());
+        notification.setUrl("/service/" + services.getId());
         notification.setCreerPar(personne.getId());
         notification.setCreerLe(new Date());
         notificationService.save(notification);
